@@ -1,7 +1,8 @@
 package com.community.tools.service;
 
-import com.community.tools.SlackService;
+
 import com.community.tools.service.github.GitHubConnectService;
+import com.community.tools.service.slack.SlackService;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
