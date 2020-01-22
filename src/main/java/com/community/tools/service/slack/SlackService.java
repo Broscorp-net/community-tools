@@ -6,6 +6,7 @@ import com.github.seratch.jslack.api.methods.request.users.UsersListRequest;
 import com.github.seratch.jslack.api.methods.response.chat.ChatPostMessageResponse;
 import com.github.seratch.jslack.api.model.Channel;
 import com.github.seratch.jslack.api.model.User;
+import com.github.seratch.jslack.api.webhook.Payload;
 import java.util.HashSet;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,8 @@ public class SlackService {
 
   @Value("${slack.token}")
   private String token;
+  @Value("${slack.webhook}")
+  private String slackWebHook;
 
   public String sendPrivateMessage(String username, String messageText)
       throws IOException, SlackApiException {
@@ -64,6 +67,15 @@ public class SlackService {
 
       return users;
     } catch (IOException | SlackApiException e) {
+      throw new RuntimeException(e);
+    }
+  }
+  public void sendAnnouncement(String message) {
+    try {
+      Payload payload = Payload.builder().text(message).build();
+      Slack slack = Slack.getInstance();
+      slack.send(slackWebHook, payload);
+    } catch (IOException e) {
       throw new RuntimeException(e);
     }
   }
