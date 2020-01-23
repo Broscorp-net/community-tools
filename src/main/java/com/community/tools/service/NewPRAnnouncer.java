@@ -13,12 +13,13 @@ import org.kohsuke.github.GHEventInfo;
 import org.kohsuke.github.GHIssueState;
 import org.kohsuke.github.GHPullRequest;
 import org.kohsuke.github.GHRepository;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service("PRAnnouncer")
-
+@EnableScheduling
 public class NewPRAnnouncer {
 
   private final GitHubConnectService service;
