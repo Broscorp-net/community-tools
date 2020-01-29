@@ -39,6 +39,6 @@ public class GreetNewMemberService {
 
   @Bean
   public ServletRegistrationBean<GreatNewMemberServlet> servletRegistrationBean() {
-    return new ServletRegistrationBean<>(new GreatNewMemberServlet(), "/greatNewMember");
+    return new ServletRegistrationBean<>(new GreatNewMemberServlet(), "/greatNewMember/*");
   }
 }
