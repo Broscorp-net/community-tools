@@ -1,4 +1,4 @@
-package com.community.tools.service;
+package com.community.tools.service.slack.GreetNewMember;
 
 import com.community.tools.service.slack.SlackService;
 import com.github.seratch.jslack.api.methods.SlackApiException;
@@ -40,5 +40,11 @@ public class GreetNewMemberService {
   @Bean
   public ServletRegistrationBean<GreatNewMemberServlet> servletRegistrationBean() {
     return new ServletRegistrationBean<>(new GreatNewMemberServlet(), "/greatNewMember/*");
+  }
+
+
+  @Bean
+  public ServletRegistrationBean<ChannelServlet> servletRegistrationBAMBean() {
+    return new ServletRegistrationBean<>(new ChannelServlet(), "/channelCreated/*");
   }
 }
