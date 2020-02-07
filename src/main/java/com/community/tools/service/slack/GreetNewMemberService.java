@@ -42,30 +42,4 @@ public class GreetNewMemberService {
   public ServletRegistrationBean<GreatNewMemberServlet> servletRegistrationBean() {
     return new ServletRegistrationBean<>(new GreatNewMemberServlet(), "/greatNewMember/*");
   }
-
-  public ChannelCreatedHandler channelCreatedHandler = new ChannelCreatedHandler() {
-    @Override
-    public void handle(ChannelCreatedPayload teamJoinPayload) {
-
-      try {
-        slackService.sendPrivateMessage("roman",
-            teamJoinPayload.getEvent().getChannel().getName() +" Welcome to the club buddy :dealwithit:");
-      } catch (IOException | SlackApiException e) {
-        throw new RuntimeException(e);
-      }
-    }
-  };
-
-  public class ChannelServlet extends SlackEventsApiServlet {
-
-    @Override
-    protected void setupDispatcher(EventsDispatcher dispatcher) {
-      dispatcher.register(channelCreatedHandler);
-    }
-  }
-
-  @Bean
-  public ServletRegistrationBean<ChannelServlet> servletRegistrationBAMBean() {
-    return new ServletRegistrationBean<>(new ChannelServlet(), "/channelCreated/*");
-  }
 }
