@@ -30,7 +30,7 @@ class PublishWeekStatsServiceTest {
     PublishWeekStatsService taskTestService = new PublishWeekStatsService(gitHubEventService,
         slackService);
     assertDoesNotThrow(() -> {
-      taskTestService.exportStat("test");
+      taskTestService.exportStat();
       Mockito.verify(slackService).sendMessageToChat(eq("test"), anyString());
     });
   }
@@ -60,7 +60,7 @@ class PublishWeekStatsServiceTest {
     PublishWeekStatsService taskTestService = new PublishWeekStatsService(gitHubEventService,
         slackService);
     assertDoesNotThrow(() -> {
-      taskTestService.exportStat("test");
+      taskTestService.exportStat();
       Mockito.verify(slackService).sendMessageToChat(anyString(), eq(message));
     });
   }
@@ -97,7 +97,7 @@ class PublishWeekStatsServiceTest {
     PublishWeekStatsService taskTestService = new PublishWeekStatsService(gitHubEventService,
         slackService);
     assertDoesNotThrow(() -> {
-      taskTestService.exportStat("test");
+      taskTestService.exportStat();
       Mockito.verify(slackService).sendMessageToChat(anyString(), eq(message));
     });
   }
