@@ -27,10 +27,9 @@ public class PublishWeekStatsService {
   private final GitHubService ghEventService;
   private final SlackService slackService;
 
-  @Scheduled(cron = "*/1 * * * * *")
+  @Scheduled(cron = "0 0 0 * * MON")
   public void exportStat()
       throws SlackApiException, IOException {
-    System.out.println("шедулина тригернулась " + new Date());
     Date endDate = new Date();
     Calendar cal = Calendar.getInstance();
     cal.add(Calendar.DATE, -7);
@@ -75,7 +74,6 @@ public class PublishWeekStatsService {
         });
 
     slackService.sendMessageToChat("test", messageBuilder.toString());
-    System.out.println("выход из шедулины");
   }
 
   private String emojiGen(Event type) {
