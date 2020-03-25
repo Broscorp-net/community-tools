@@ -9,6 +9,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class Application {
 
   public static void main(String[] args) {
+    System.setProperty("java.io.tmpdir", "/tmp");
+    System.out.println(System.getProperty("java.io.tmpdir"));
     SpringApplication.run(Application.class, args);
   }
 }
