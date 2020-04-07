@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 @Component
-public class Payload extends HttpServlet {
+public class GitHubHookServlet extends HttpServlet {
 
   @Override
   protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -28,15 +28,15 @@ public class Payload extends HttpServlet {
     try {
       JSONObject json = new JSONObject(text);
 
-      String teams_url = json.getJSONObject("repository").getString("teams_url");
-      System.out.println("Teams URL:: " + teams_url);
+      /*String teams_url = json.getJSONObject("config").getString("url");
+      System.out.println("Teams URL:: " + teams_url);*/
     } catch (JSONException e) {
       throw new RuntimeException(e);
     }
   }
 
   @Bean
-  public ServletRegistrationBean<Payload> servletRegistrationBean() {
-    return new ServletRegistrationBean<>(new Payload(), "/gitHook/*");
+  public ServletRegistrationBean<GitHubHookServlet> servletRegistrationBeanGitHook() {
+    return new ServletRegistrationBean<>(new GitHubHookServlet(), "/gitHook/*");
   }
 }
