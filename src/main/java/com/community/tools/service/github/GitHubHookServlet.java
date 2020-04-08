@@ -1,6 +1,9 @@
 package com.community.tools.service.github;
 
 import com.community.tools.util.GithubAuthChecker;
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -24,9 +27,8 @@ public class GitHubHookServlet extends HttpServlet {
   @Value("${SECRET_TOKEN}")
   private String secret;
 
-  @SneakyThrows
   @Override
-  protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
+  protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
     StringBuilder builder = new StringBuilder();
     String aux = "";
@@ -36,18 +38,23 @@ public class GitHubHookServlet extends HttpServlet {
     }
     JSONObject json = new JSONObject(builder.toString());
 
-    if (new GithubAuthChecker(secret)
-        .checkSignature(req.getHeader("X-Hub-Signature"), builder.toString())) {
+    try {
+      if (new GithubAuthChecker(secret)
+          .checkSignature(req.getHeader("X-Hub-Signature"), builder.toString())) {
 
-      SingleConnectionDataSource connect = new SingleConnectionDataSource();
-      connect.setUrl(url);
-      connect.setUsername(username);
-      connect.setPassword(password);
-      JdbcTemplate jdbcTemplate = new JdbcTemplate(connect);
+        SingleConnectionDataSource connect = new SingleConnectionDataSource();
+        connect.setUrl(url);
+        connect.setUsername(username);
+        connect.setPassword(password);
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(connect);
 
-      jdbcTemplate.update(
-          "INSERT INTO public.\"GitHookData\" (time, jsonb_data) VALUES ('" + new Date() + "','"
-              + json + "'::jsonb);");
+        jdbcTemplate.update(
+            "INSERT INTO public.\"GitHookData\" (time, jsonb_data) VALUES ('" + new Date() + "','"
+                + json + "'::jsonb);");
+      }
+    } catch (NoSuchAlgorithmException | InvalidKeyException e) {
+      throw new RuntimeException(e);
     }
+
   }
 }
