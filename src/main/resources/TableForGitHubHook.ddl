@@ -1,0 +1,1 @@
+CREATE TABLE public."GitHookData"(    "time" text,    "jsonb_data" jsonb);

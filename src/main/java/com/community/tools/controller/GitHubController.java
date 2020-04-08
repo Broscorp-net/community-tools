@@ -4,7 +4,6 @@ import static org.springframework.http.ResponseEntity.ok;
 
 import com.community.tools.model.EventData;
 import com.community.tools.service.CountingCompletedTasksService;
-import com.community.tools.service.github.GitHubHookServlet;
 import com.community.tools.service.github.GitHubService;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -15,8 +14,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.web.servlet.ServletRegistrationBean;
-import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,7 +25,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class GitHubController {
 
-  private final GitHubHookServlet gitHubHookServlet;
   private final GitHubService gitHubService;
   private final CountingCompletedTasksService completedTasksService;
 
@@ -64,10 +60,5 @@ public class GitHubController {
 
     List<EventData> eventData = gitHubService.getEvents(start, end);
     return ok().body(eventData);
-  }
-
-  @Bean
-  public ServletRegistrationBean<GitHubHookServlet> servletRegistrationBeanGitHook() {
-    return new ServletRegistrationBean<>(gitHubHookServlet, "/gitHook/*");
   }
 }
