@@ -7,12 +7,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.kohsuke.github.GHIssueState;
 import org.kohsuke.github.GHPullRequest;
-import org.kohsuke.github.GHUser;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
