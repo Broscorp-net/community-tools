@@ -1,32 +1,16 @@
 package com.community.tools.util.statemachie.actions;
 
-import com.community.tools.service.slack.SlackService;
-import com.community.tools.util.statemachie.Event;
-import com.community.tools.util.statemachie.State;
-import com.github.seratch.jslack.api.methods.SlackApiException;
-import java.io.IOException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import com.community.tools.util.statemachie.PurchaseEvent;
+import com.community.tools.util.statemachie.PurchaseState;
 import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.action.Action;
-import org.springframework.stereotype.Component;
 
 
-public class AddGitNameAction implements Action<State, Event> {
-
-  @Value("${congratsAvailableNick}")
-  private String congratsAvailableNick;
-  @Autowired
-  private SlackService slackService;
+public class AddGitNameAction implements Action<PurchaseState, PurchaseEvent> {
 
   @Override
-  public void execute(final StateContext<State, Event> context) {
-    String user = context.getExtendedState().getVariables().get("id").toString();
-
-    try {
-      slackService.sendPrivateMessage(slackService.getUserById(user), congratsAvailableNick);
-    } catch (IOException | SlackApiException e) {
-      throw new RuntimeException(e);
-    }
+  public void execute(final StateContext<PurchaseState, PurchaseEvent> context) {
+    // TODO: 22.04.2020 добавиь логику для использования гит никнейма
+    System.out.println("Добавили гит ник нейм");
   }
 }

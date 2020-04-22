@@ -1,12 +1,12 @@
 package com.community.tools.util.statemachie;
 
-import static com.community.tools.util.statemachie.PurchaseEvent.BUY;
-import static com.community.tools.util.statemachie.PurchaseEvent.RESERVE;
-import static com.community.tools.util.statemachie.PurchaseEvent.RESERVE_DECLINE;
-import static com.community.tools.util.statemachie.PurchaseState.CANCEL_RESERVED;
-import static com.community.tools.util.statemachie.PurchaseState.NEW;
-import static com.community.tools.util.statemachie.PurchaseState.PURCHASE_COMPLETE;
-import static com.community.tools.util.statemachie.PurchaseState.RESERVED;
+import static com.community.tools.util.statemachie.PurchaseEvent.ADD_GIT_NAME;
+import static com.community.tools.util.statemachie.PurchaseEvent.AGREE_LICENSE;
+import static com.community.tools.util.statemachie.PurchaseEvent.GET_THE_FIRST_TASK;
+import static com.community.tools.util.statemachie.PurchaseState.ADDED_GIT;
+import static com.community.tools.util.statemachie.PurchaseState.NEW_USER;
+import static com.community.tools.util.statemachie.PurchaseState.GOT_THE_FIRST_TASK;
+import static com.community.tools.util.statemachie.PurchaseState.AGREED_LICENSE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.Test;
@@ -44,7 +44,7 @@ public class ConfTest {
 
     StateMachine<PurchaseState, PurchaseEvent> machine = factory.getStateMachine();
     machine.start();
-    machine.sendEvent(RESERVE);
+    machine.sendEvent(AGREE_LICENSE);
     persister.persist(machine, "007");
 
     StateMachine<PurchaseState, PurchaseEvent> machine2 = factory.getStateMachine();
@@ -55,24 +55,24 @@ public class ConfTest {
 
 
   @Test
-  public void testWhenReservedCancel() throws Exception {
+  public void testWhenAddGitName() throws Exception {
     StateMachine<PurchaseState, PurchaseEvent> machine = factory.getStateMachine();
     StateMachineTestPlan<PurchaseState, PurchaseEvent> plan =
         StateMachineTestPlanBuilder.<PurchaseState, PurchaseEvent>builder()
             .defaultAwaitTime(2)
             .stateMachine(machine)
             .step()
-            .expectStates(NEW)
+            .expectStates(NEW_USER)
             .expectStateChanged(0)
             .and()
             .step()
-            .sendEvent(RESERVE)
-            .expectState(RESERVED)
+            .sendEvent(AGREE_LICENSE)
+            .expectState(AGREED_LICENSE)
             .expectStateChanged(1)
             .and()
             .step()
-            .sendEvent(RESERVE_DECLINE)
-            .expectState(CANCEL_RESERVED)
+            .sendEvent(ADD_GIT_NAME)
+            .expectState(ADDED_GIT)
             .expectStateChanged(1)
             .and()
             .build();
@@ -88,18 +88,24 @@ public class ConfTest {
             .defaultAwaitTime(2)
             .stateMachine(machine)
             .step()
-            .expectStates(NEW)
+            .expectStates(NEW_USER)
             .expectStateChanged(0)
             .and()
             .step()
-            .sendEvent(RESERVE)
-            .expectState(RESERVED)
+            .sendEvent(AGREE_LICENSE)
+            .expectState(AGREED_LICENSE)
             .expectStateChanged(1)
             .and()
             .step()
-            .sendEvent(BUY)
-            .expectState(PURCHASE_COMPLETE)
+            .sendEvent(ADD_GIT_NAME)
+            .expectState(ADDED_GIT)
             .expectStateChanged(1)
+            .and()
+            .step()
+            .sendEvent(GET_THE_FIRST_TASK)
+            .expectState(GOT_THE_FIRST_TASK)
+            .expectStateChanged(1)
+            .expectStateMachineStopped(1)
             .and()
             .build();
     plan.test();

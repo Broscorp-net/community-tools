@@ -1,8 +1,5 @@
 package com.community.tools.util.statemachie;
 
-import org.springframework.stereotype.Component;
-
-
 public enum PurchaseEvent {
-  RESERVE, BUY, RESERVE_DECLINE
+  AGREE_LICENSE, ADD_GIT_NAME, GET_THE_FIRST_TASK
 }

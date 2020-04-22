@@ -1,31 +1,16 @@
 package com.community.tools.util.statemachie.actions;
 
-import com.community.tools.service.slack.SlackService;
-import com.community.tools.util.statemachie.Event;
-import com.community.tools.util.statemachie.State;
-import com.github.seratch.jslack.api.methods.SlackApiException;
-import java.io.IOException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import com.community.tools.util.statemachie.PurchaseEvent;
+import com.community.tools.util.statemachie.PurchaseState;
 import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.action.Action;
-import org.springframework.stereotype.Component;
 
 
-public class GetTheFirstTaskAction implements Action<State, Event> {
-
-  @Value("${getFirstTask}")
-  private String getFirstTask;
-  @Autowired
-  private SlackService slackService;
+public class GetTheFirstTaskAction implements Action<PurchaseState, PurchaseEvent> {
 
   @Override
-  public void execute(final StateContext<State, Event> context) {
-    String user = context.getExtendedState().getVariables().get("id").toString();
-    try {
-      slackService.sendBlocksMessage(slackService.getUserById(user), getFirstTask);
-    } catch (IOException | SlackApiException e) {
-      throw new RuntimeException(e);
-    }
+  public void execute(final StateContext<PurchaseState, PurchaseEvent> context) {
+    // TODO: 22.04.2020 Добавить логику для получения юзером первого задания
+    System.out.println("Юзер получил первое задание");
   }
 }

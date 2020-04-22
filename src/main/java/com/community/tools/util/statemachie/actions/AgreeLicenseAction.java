@@ -1,31 +1,18 @@
 package com.community.tools.util.statemachie.actions;
 
-import com.community.tools.service.slack.SlackService;
-import com.community.tools.util.statemachie.Event;
-import com.community.tools.util.statemachie.State;
-import com.github.seratch.jslack.api.methods.SlackApiException;
-import java.io.IOException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import com.community.tools.util.statemachie.PurchaseEvent;
+import com.community.tools.util.statemachie.PurchaseState;
 import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.action.Action;
 import org.springframework.stereotype.Component;
 
+public class AgreeLicenseAction implements Action<PurchaseState, PurchaseEvent> {
 
-public class AgreeLicenseAction implements Action<State, Event> {
 
-  @Value("${addGitName}")
-  private String addGitName;
-  @Autowired
-  private SlackService slackService;
 
   @Override
-  public void execute(StateContext<State, Event> stateContext) {
-    String user = stateContext.getExtendedState().getVariables().get("id").toString();
-    try {
-      slackService.sendBlocksMessage(slackService.getUserById(user), addGitName);
-    } catch (IOException | SlackApiException e) {
-      throw new RuntimeException(e);
-    }
+  public void execute(StateContext<PurchaseState, PurchaseEvent> stateContext) {
+    // TODO: 22.04.2020 Добавить логику для пользоваельского соглашения
+    System.out.println("Юзер принял пльзовательское соглашение");
   }
 }

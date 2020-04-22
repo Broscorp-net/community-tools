@@ -23,7 +23,7 @@ public class PurchaseServiceReal implements PurchaseService {
     final StateMachine<PurchaseState, PurchaseEvent> stateMachine = stateMachineFactory
         .getStateMachine();
     stateMachine.getExtendedState().getVariables().put("PRODUCT_ID", productId);
-    stateMachine.sendEvent(PurchaseEvent.RESERVE);
+    stateMachine.sendEvent(PurchaseEvent.AGREE_LICENSE);
     try {
       persister.persist(stateMachine,userId);
     }catch (final Exception e){
@@ -38,7 +38,7 @@ public class PurchaseServiceReal implements PurchaseService {
     final StateMachine<PurchaseState, PurchaseEvent> stateMachine = stateMachineFactory.getStateMachine();
     try{
       persister.restore(stateMachine, userId);
-      stateMachine.sendEvent(PurchaseEvent.RESERVE_DECLINE);
+      stateMachine.sendEvent(PurchaseEvent.GET_THE_FIRST_TASK);
     }catch (Exception e){
       e.printStackTrace();
       return false;
@@ -51,7 +51,7 @@ public class PurchaseServiceReal implements PurchaseService {
     final StateMachine<PurchaseState, PurchaseEvent> stateMachine = stateMachineFactory.getStateMachine();
     try {
       persister.restore(stateMachine, userId);
-      stateMachine.sendEvent(PurchaseEvent.BUY);
+      stateMachine.sendEvent(PurchaseEvent.ADD_GIT_NAME);
     } catch (Exception e) {
       e.printStackTrace();
       return false;

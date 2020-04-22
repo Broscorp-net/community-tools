@@ -1,8 +1,6 @@
 package com.community.tools.util.statemachie;
 
-import org.springframework.stereotype.Component;
-
 
 public enum PurchaseState {
-  NEW, RESERVED, CANCEL_RESERVED, PURCHASE_COMPLETE
+  NEW_USER, AGREED_LICENSE, ADDED_GIT, GOT_THE_FIRST_TASK
 }
