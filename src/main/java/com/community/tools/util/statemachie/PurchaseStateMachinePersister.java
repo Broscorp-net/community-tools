@@ -1,62 +1,97 @@
 package com.community.tools.util.statemachie;
 
-import java.util.HashMap;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
-import org.springframework.statemachine.StateMachine;
 import org.springframework.statemachine.StateMachineContext;
 import org.springframework.statemachine.StateMachinePersist;
-import org.springframework.statemachine.config.StateMachineFactory;
+import org.springframework.statemachine.kryo.StateMachineContextSerializer;
+import org.springframework.stereotype.Component;
 
-
+@Component
 public class PurchaseStateMachinePersister implements
     StateMachinePersist<PurchaseState, PurchaseEvent, String> {
-  @Autowired
-  private StateMachineFactory<PurchaseState, PurchaseEvent> factory;
-  @Value("${spring.datasource.url}")
+
+
+  @Value("${DB_URL}")
   private String url;
   @Value("${spring.datasource.username}")
   private String username;
   @Value("${spring.datasource.password}")
   private String password;
 
-  // TODO: 15.04.2020 сделаь запись в базу данных а не в hashMap
-  private final HashMap<String, StateMachineContext<PurchaseState, PurchaseEvent>> contexts =
-      new HashMap<>();
+  private static final ThreadLocal<Kryo> kryoThreadLocal = ThreadLocal.withInitial(() -> {
+    Kryo kryo = new Kryo();
+    kryo.addDefaultSerializer(StateMachineContext.class, new StateMachineContextSerializer());
+    return kryo;
+  });
+
 
   @Override
-  public void write(StateMachineContext<PurchaseState, PurchaseEvent> context, String userID)
-      throws Exception {
-
+  public void write(StateMachineContext<PurchaseState, PurchaseEvent> context, String userID) {
+    byte[] data = serialize(context);
     SingleConnectionDataSource connect = new SingleConnectionDataSource();
     connect.setUrl(url);
     connect.setUsername(username);
     connect.setPassword(password);
     JdbcTemplate jdbcTemplate = new JdbcTemplate(connect);
-
     jdbcTemplate.update(
-        "INSERT INTO public.\"StateMachine\" (state_machine, context) VALUES ('" + context.getState() + "','"
-            + userID + "');");
-
-    System.out.println(context.getState());
-     // contexts.put(userID,context);
+        "UPDATE public.\"StateMachine\" SET state_machine='" + Arrays.toString(data)
+            + "'  WHERE context ='" + userID + "';");
   }
 
   @Override
-  public StateMachineContext<PurchaseState, PurchaseEvent> read(String s) throws Exception {
+  public StateMachineContext<PurchaseState, PurchaseEvent> read(String s) {
     SingleConnectionDataSource connect = new SingleConnectionDataSource();
     connect.setUrl(url);
     connect.setUsername(username);
     connect.setPassword(password);
     JdbcTemplate jdbcTemplate = new JdbcTemplate(connect);
-    PurchaseState state = jdbcTemplate.queryForObject(
-        "SELECT ALL FROM public.\"StateMachine\" WHERE context = " + s,PurchaseState.class);
-    // TODO: 16.04.2020 инициализировать и вернуть стэйт машин контекст
-    StateMachineContext<PurchaseState, PurchaseEvent> machine = null;
 
-    System.out.println(state.name());
-    return machine;
+    String state = jdbcTemplate.queryForObject(
+        "SELECT state_machine FROM public.\"StateMachine\" WHERE context = '" + s + "';",
+        String.class);
+    byte[] arr = getBytes(state);
+
+    return deserialize(arr);
   }
+
+  private byte[] getBytes(String state) {
+    String[] s = state.replaceAll("[^0-9 \\-]", "").split(" ");
+    byte[] bytes = new byte[s.length];
+    for (int i = 0; i < s.length; i++) {
+      bytes[i] = Byte.parseByte(s[i]);
+    }
+    return bytes;
+  }
+
+  private byte[] serialize(StateMachineContext<PurchaseState, PurchaseEvent> context) {
+    Kryo kryo = kryoThreadLocal.get();
+
+    ByteArrayOutputStream out = new ByteArrayOutputStream();
+    Output output = new Output(out);
+    kryo.writeClassAndObject(output, context);
+    output.flush();
+    output.close();
+    return out.toByteArray();
+  }
+
+
+  private StateMachineContext<PurchaseState, PurchaseEvent> deserialize(byte[] data) {
+    if (data == null || data.length == 0) {
+      return null;
+    }
+    Kryo kryo = kryoThreadLocal.get();
+    ByteArrayInputStream in = new ByteArrayInputStream(data);
+    return (StateMachineContext<PurchaseState, PurchaseEvent>) kryo
+        .readClassAndObject(new Input(in));
+  }
+
 }

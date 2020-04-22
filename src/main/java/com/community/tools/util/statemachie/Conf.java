@@ -8,18 +8,16 @@ import static com.community.tools.util.statemachie.PurchaseState.NEW;
 import static com.community.tools.util.statemachie.PurchaseState.PURCHASE_COMPLETE;
 import static com.community.tools.util.statemachie.PurchaseState.RESERVED;
 
-import com.community.tools.service.github.GitHubHookServlet;
 import com.community.tools.util.statemachie.actions.BuyAction;
 import com.community.tools.util.statemachie.actions.CancelAction;
 import com.community.tools.util.statemachie.actions.ErrorAction;
 import com.community.tools.util.statemachie.actions.HideGuard;
 import com.community.tools.util.statemachie.actions.ReservedAction;
 import java.util.EnumSet;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.statemachine.action.Action;
-import org.springframework.statemachine.config.EnableStateMachine;
 import org.springframework.statemachine.config.EnableStateMachineFactory;
 import org.springframework.statemachine.config.EnumStateMachineConfigurerAdapter;
 import org.springframework.statemachine.config.builders.StateMachineConfigurationConfigurer;
@@ -33,6 +31,8 @@ import org.springframework.statemachine.persist.StateMachinePersister;
 @EnableStateMachineFactory
 public class Conf extends EnumStateMachineConfigurerAdapter<PurchaseState, PurchaseEvent> {
 
+  @Autowired
+  PurchaseStateMachinePersister persister;
 
   @Override
   public void configure(final StateMachineStateConfigurer<PurchaseState, PurchaseEvent> states)
@@ -48,6 +48,8 @@ public class Conf extends EnumStateMachineConfigurerAdapter<PurchaseState, Purch
         .withConfiguration()
         .autoStartup(true)
         .listener(new PurchaseStateMachineApplicationListeer());
+//    config.withPersistence()
+//        .runtimePersister(stateMachineRuntimePersister);
   }
 
   @Override
@@ -104,6 +106,6 @@ public class Conf extends EnumStateMachineConfigurerAdapter<PurchaseState, Purch
 
   @Bean
   public StateMachinePersister<PurchaseState, PurchaseEvent, String> persister() {
-    return new DefaultStateMachinePersister<>(new PurchaseStateMachinePersister());
+    return new DefaultStateMachinePersister<>(persister);
   }
 }
