@@ -30,8 +30,7 @@ public class ConfTest {
   @Autowired
   private StateMachinePersister<State, Event, String> persister;
 
-  @Autowired
-  private StateController stateController;
+
   @Autowired
   private ApplicationContext conf;
 
