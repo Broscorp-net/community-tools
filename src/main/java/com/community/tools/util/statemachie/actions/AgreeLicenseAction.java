@@ -1,17 +1,16 @@
 package com.community.tools.util.statemachie.actions;
 
-import com.community.tools.util.statemachie.PurchaseEvent;
-import com.community.tools.util.statemachie.PurchaseState;
+import com.community.tools.util.statemachie.Event;
+import com.community.tools.util.statemachie.State;
 import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.action.Action;
-import org.springframework.stereotype.Component;
 
-public class AgreeLicenseAction implements Action<PurchaseState, PurchaseEvent> {
+public class AgreeLicenseAction implements Action<State, Event> {
 
 
 
   @Override
-  public void execute(StateContext<PurchaseState, PurchaseEvent> stateContext) {
+  public void execute(StateContext<State, Event> stateContext) {
     // TODO: 22.04.2020 Добавить логику для пользоваельского соглашения
     System.out.println("Юзер принял пльзовательское соглашение");
   }

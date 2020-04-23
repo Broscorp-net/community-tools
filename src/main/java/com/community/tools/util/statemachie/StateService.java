@@ -1,6 +1,6 @@
 package com.community.tools.util.statemachie;
 
-public interface PurchaseService {
+public interface StateService {
 
   public boolean reserved(String userId, String productId) ;
 

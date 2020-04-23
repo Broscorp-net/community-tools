@@ -1,12 +1,12 @@
 package com.community.tools.util.statemachie;
 
-import static com.community.tools.util.statemachie.PurchaseEvent.ADD_GIT_NAME;
-import static com.community.tools.util.statemachie.PurchaseEvent.AGREE_LICENSE;
-import static com.community.tools.util.statemachie.PurchaseEvent.GET_THE_FIRST_TASK;
-import static com.community.tools.util.statemachie.PurchaseState.ADDED_GIT;
-import static com.community.tools.util.statemachie.PurchaseState.NEW_USER;
-import static com.community.tools.util.statemachie.PurchaseState.GOT_THE_FIRST_TASK;
-import static com.community.tools.util.statemachie.PurchaseState.AGREED_LICENSE;
+import static com.community.tools.util.statemachie.Event.ADD_GIT_NAME;
+import static com.community.tools.util.statemachie.Event.AGREE_LICENSE;
+import static com.community.tools.util.statemachie.Event.GET_THE_FIRST_TASK;
+import static com.community.tools.util.statemachie.State.ADDED_GIT;
+import static com.community.tools.util.statemachie.State.NEW_USER;
+import static com.community.tools.util.statemachie.State.GOT_THE_FIRST_TASK;
+import static com.community.tools.util.statemachie.State.AGREED_LICENSE;
 
 import com.community.tools.util.statemachie.actions.GetTheFirstTaskAction;
 import com.community.tools.util.statemachie.actions.AddGitNameAction;
@@ -25,33 +25,32 @@ import org.springframework.statemachine.config.builders.StateMachineStateConfigu
 import org.springframework.statemachine.config.builders.StateMachineTransitionConfigurer;
 import org.springframework.statemachine.guard.Guard;
 import org.springframework.statemachine.persist.DefaultStateMachinePersister;
-import org.springframework.statemachine.persist.StateMachinePersister;
 
 @Configuration
 @EnableStateMachineFactory
-public class Conf extends EnumStateMachineConfigurerAdapter<PurchaseState, PurchaseEvent> {
+public class Conf extends EnumStateMachineConfigurerAdapter<State, Event> {
 
   @Autowired
-  PurchaseStateMachinePersister persister;
+  StateMachinePersister persister;
 
   @Override
-  public void configure(final StateMachineStateConfigurer<PurchaseState, PurchaseEvent> states)
+  public void configure(final StateMachineStateConfigurer<State, Event> states)
       throws Exception {
-    states.withStates().initial(NEW_USER).end(GOT_THE_FIRST_TASK).states(EnumSet.allOf(PurchaseState.class));
+    states.withStates().initial(NEW_USER).states(EnumSet.allOf(State.class));
   }
 
   @Override
   public void configure(
-      final StateMachineConfigurationConfigurer<PurchaseState, PurchaseEvent> config)
+      final StateMachineConfigurationConfigurer<State, Event> config)
       throws Exception {
     config
         .withConfiguration()
         .autoStartup(true)
-        .listener(new PurchaseStateMachineApplicationListeer());
+        .listener(new StateMachineApplicationListeer());
   }
 
   @Override
-  public  void configure(final StateMachineTransitionConfigurer<PurchaseState,PurchaseEvent> transitions)
+  public  void configure(final StateMachineTransitionConfigurer<State, Event> transitions)
     throws Exception{
     transitions
         .withExternal()
@@ -77,32 +76,32 @@ public class Conf extends EnumStateMachineConfigurerAdapter<PurchaseState, Purch
   }
 
   @Bean
-  public Action<PurchaseState, PurchaseEvent> agreeLicenseAction() {
+  public Action<State, Event> agreeLicenseAction() {
     return new AgreeLicenseAction();
   }
 
   @Bean
-  public Action<PurchaseState, PurchaseEvent> addGitNameAction() {
+  public Action<State, Event> addGitNameAction() {
     return new AddGitNameAction();
   }
 
   @Bean
-  public Action<PurchaseState, PurchaseEvent> getTheFirstTaskAction() {
+  public Action<State, Event> getTheFirstTaskAction() {
     return new GetTheFirstTaskAction();
   }
 
   @Bean
-  public Action<PurchaseState, PurchaseEvent> errorAction() {
+  public Action<State, Event> errorAction() {
     return new ErrorAction();
   }
 
   @Bean
-  public Guard<PurchaseState, PurchaseEvent> hideGuard() {
+  public Guard<State, Event> hideGuard() {
     return new HideGuard();
   }
 
   @Bean
-  public StateMachinePersister<PurchaseState, PurchaseEvent, String> persister() {
+  public org.springframework.statemachine.persist.StateMachinePersister persister() {
     return new DefaultStateMachinePersister<>(persister);
   }
 }

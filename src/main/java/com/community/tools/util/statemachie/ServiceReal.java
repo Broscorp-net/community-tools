@@ -6,24 +6,24 @@ import org.springframework.statemachine.persist.StateMachinePersister;
 import org.springframework.stereotype.Service;
 
 @Service
-public class PurchaseServiceReal implements PurchaseService {
+public class ServiceReal implements StateService {
 
-  private final StateMachinePersister<PurchaseState, PurchaseEvent, String> persister;
-  private final StateMachineFactory<PurchaseState, PurchaseEvent> stateMachineFactory;
+  private final StateMachinePersister<State, Event, String> persister;
+  private final StateMachineFactory<State, Event> stateMachineFactory;
 
-  public PurchaseServiceReal(
-      StateMachinePersister<PurchaseState, PurchaseEvent, String> persister,
-      StateMachineFactory<PurchaseState, PurchaseEvent> stateMachineFactory) {
+  public ServiceReal(
+      StateMachinePersister<State, Event, String> persister,
+      StateMachineFactory<State, Event> stateMachineFactory) {
     this.persister = persister;
     this.stateMachineFactory = stateMachineFactory;
   }
 
   @Override
   public boolean reserved(String userId, String productId) {
-    final StateMachine<PurchaseState, PurchaseEvent> stateMachine = stateMachineFactory
+    final StateMachine<State, Event> stateMachine = stateMachineFactory
         .getStateMachine();
     stateMachine.getExtendedState().getVariables().put("PRODUCT_ID", productId);
-    stateMachine.sendEvent(PurchaseEvent.AGREE_LICENSE);
+    stateMachine.sendEvent(Event.AGREE_LICENSE);
     try {
       persister.persist(stateMachine,userId);
     }catch (final Exception e){
@@ -35,10 +35,10 @@ public class PurchaseServiceReal implements PurchaseService {
 
   @Override
   public boolean cancelReserve(String userId) {
-    final StateMachine<PurchaseState, PurchaseEvent> stateMachine = stateMachineFactory.getStateMachine();
+    final StateMachine<State, Event> stateMachine = stateMachineFactory.getStateMachine();
     try{
       persister.restore(stateMachine, userId);
-      stateMachine.sendEvent(PurchaseEvent.GET_THE_FIRST_TASK);
+      stateMachine.sendEvent(Event.GET_THE_FIRST_TASK);
     }catch (Exception e){
       e.printStackTrace();
       return false;
@@ -48,10 +48,10 @@ public class PurchaseServiceReal implements PurchaseService {
 
   @Override
   public boolean buy(String userId) {
-    final StateMachine<PurchaseState, PurchaseEvent> stateMachine = stateMachineFactory.getStateMachine();
+    final StateMachine<State, Event> stateMachine = stateMachineFactory.getStateMachine();
     try {
       persister.restore(stateMachine, userId);
-      stateMachine.sendEvent(PurchaseEvent.ADD_GIT_NAME);
+      stateMachine.sendEvent(Event.ADD_GIT_NAME);
     } catch (Exception e) {
       e.printStackTrace();
       return false;

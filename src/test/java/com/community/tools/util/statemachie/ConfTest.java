@@ -1,12 +1,12 @@
 package com.community.tools.util.statemachie;
 
-import static com.community.tools.util.statemachie.PurchaseEvent.ADD_GIT_NAME;
-import static com.community.tools.util.statemachie.PurchaseEvent.AGREE_LICENSE;
-import static com.community.tools.util.statemachie.PurchaseEvent.GET_THE_FIRST_TASK;
-import static com.community.tools.util.statemachie.PurchaseState.ADDED_GIT;
-import static com.community.tools.util.statemachie.PurchaseState.NEW_USER;
-import static com.community.tools.util.statemachie.PurchaseState.GOT_THE_FIRST_TASK;
-import static com.community.tools.util.statemachie.PurchaseState.AGREED_LICENSE;
+import static com.community.tools.util.statemachie.Event.ADD_GIT_NAME;
+import static com.community.tools.util.statemachie.Event.AGREE_LICENSE;
+import static com.community.tools.util.statemachie.Event.GET_THE_FIRST_TASK;
+import static com.community.tools.util.statemachie.State.ADDED_GIT;
+import static com.community.tools.util.statemachie.State.NEW_USER;
+import static com.community.tools.util.statemachie.State.GOT_THE_FIRST_TASK;
+import static com.community.tools.util.statemachie.State.AGREED_LICENSE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.Test;
@@ -26,12 +26,12 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class ConfTest {
 
   @Autowired
-  private StateMachineFactory<PurchaseState, PurchaseEvent> factory;
+  private StateMachineFactory<State, Event> factory;
   @Autowired
-  private StateMachinePersister<PurchaseState, PurchaseEvent, String> persister;
+  private StateMachinePersister<State, Event, String> persister;
 
   @Autowired
-  private PurchaseController purchaseController;
+  private StateController stateController;
   @Autowired
   private ApplicationContext conf;
 
@@ -42,12 +42,12 @@ public class ConfTest {
   @Test
   public void testPersist() throws Exception {
 
-    StateMachine<PurchaseState, PurchaseEvent> machine = factory.getStateMachine();
+    StateMachine<State, Event> machine = factory.getStateMachine();
     machine.start();
     machine.sendEvent(AGREE_LICENSE);
     persister.persist(machine, "007");
 
-    StateMachine<PurchaseState, PurchaseEvent> machine2 = factory.getStateMachine();
+    StateMachine<State, Event> machine2 = factory.getStateMachine();
     persister.restore(machine2, "007");
 
     assertEquals(machine.getId(), machine2.getId());
@@ -56,9 +56,9 @@ public class ConfTest {
 
   @Test
   public void testWhenAddGitName() throws Exception {
-    StateMachine<PurchaseState, PurchaseEvent> machine = factory.getStateMachine();
-    StateMachineTestPlan<PurchaseState, PurchaseEvent> plan =
-        StateMachineTestPlanBuilder.<PurchaseState, PurchaseEvent>builder()
+    StateMachine<State, Event> machine = factory.getStateMachine();
+    StateMachineTestPlan<State, Event> plan =
+        StateMachineTestPlanBuilder.<State, Event>builder()
             .defaultAwaitTime(2)
             .stateMachine(machine)
             .step()
@@ -82,9 +82,9 @@ public class ConfTest {
   @Test
   public void testWhenPurchaseComplete() throws Exception {
 
-    StateMachine<PurchaseState, PurchaseEvent> machine = factory.getStateMachine();
-    StateMachineTestPlan<PurchaseState, PurchaseEvent> plan =
-        StateMachineTestPlanBuilder.<PurchaseState, PurchaseEvent>builder()
+    StateMachine<State, Event> machine = factory.getStateMachine();
+    StateMachineTestPlan<State, Event> plan =
+        StateMachineTestPlanBuilder.<State, Event>builder()
             .defaultAwaitTime(2)
             .stateMachine(machine)
             .step()
@@ -105,7 +105,6 @@ public class ConfTest {
             .sendEvent(GET_THE_FIRST_TASK)
             .expectState(GOT_THE_FIRST_TASK)
             .expectStateChanged(1)
-            .expectStateMachineStopped(1)
             .and()
             .build();
     plan.test();
