@@ -11,6 +11,7 @@ import com.github.seratch.jslack.api.methods.SlackApiException;
 import com.github.seratch.jslack.api.model.User;
 import com.github.seratch.jslack.api.model.User.Profile;
 import com.github.seratch.jslack.app_backend.interactive_messages.payload.BlockActionPayload;
+import com.github.seratch.jslack.app_backend.interactive_messages.payload.BlockActionPayload.Action;
 import com.github.seratch.jslack.common.json.GsonFactory;
 import com.google.gson.Gson;
 import java.io.IOException;
@@ -94,7 +95,7 @@ public class GitSlackUsersController {
         + "\t\t\t\t\"text\": \"Agree\",\n"
         + "\t\t\t\t\"emoji\": true\n"
         + "\t\t\t},\n"
-        + "\t\t\t\"value\": \"click_me_123\"\n"
+        + "\t\t\t\"value\": \"1_Agree\"\n"
         + "\t\t}\n"
         + "\t}\n"
         + "]";
@@ -124,7 +125,7 @@ public class GitSlackUsersController {
         + "\t\t\t\t\"text\": \"Button\",\n"
         + "\t\t\t\t\"emoji\": true\n"
         + "\t\t\t},\n"
-        + "\t\t\t\"value\": \"click_me_123\"\n"
+        + "\t\t\t\"value\": \"1_bad\"\n"
         + "\t\t}\n"
         + "\t}\n"
         + "]";
@@ -144,9 +145,7 @@ public class GitSlackUsersController {
   }
 
   @RequestMapping(value = "/slack/action", method = RequestMethod.POST)
-  public void action(
-      @RequestParam(name = "payload") String payload
-  ) throws Exception {
+  public void action(@RequestParam(name = "payload") String payload) throws Exception {
 
     Gson snakeCase = GsonFactory.createSnakeCase();
     BlockActionPayload pl = snakeCase.fromJson(payload, BlockActionPayload.class);
@@ -163,24 +162,27 @@ public class GitSlackUsersController {
         + " Team:\n " + pl.getTeam() + "\n\n"
         + " Message:\n " + pl.getMessage() + "\n\n";*/
     StringBuilder message2 = new StringBuilder("User:\n " + pl.getUser() + "\n\n" +
-        " Message:\n " + pl.getMessage().toString() + "\n\n");
-
+        " Message:\n " + pl.getMessage().toString() + "\n\n" +
+        " Action:\n " + pl.getActions().toString() + "\n\n");
+    try {
+      usersService.sendPrivateMessage("roman", "Change the stateMachine: \n" + message2.toString());
+    } catch (IOException | SlackApiException e) {
+      throw new RuntimeException(e);
+    }
     boolean changeMachine = false;
-    StateMachine<State, Event> machine = factory.getStateMachine();
-    StateMachine<State, Event> machine1 = factory.getStateMachine();
-
-    persister.restore(machine, pl.getUser().toString());
-
-    if (pl.getMessage().toString()
-        .contains("text=Read and confirm that you agree to")) {
-      changeMachine = true;
-      machine.sendEvent(AGREE_LICENSE);
-      persister.persist(machine, pl.getUser().toString());
-      machine.stop();
-      persister.restore(machine1, pl.getUser().toString());
+    for (Action action : pl.getActions()) {
+      if (action.getValue().equals("1_Agree")) {
+        StateMachine<State, Event> machine = factory.getStateMachine();
+        StateMachine<State, Event> machine1 = factory.getStateMachine();
+        persister.restore(machine, pl.getUser().toString());
+        machine.sendEvent(AGREE_LICENSE);
+        persister.persist(machine, pl.getUser().toString());
+        persister.restore(machine1, pl.getUser().toString());
+        message2.append("\n\nState of Machine : ").append(machine1.getState().getId());
+        changeMachine = true;
+      }
     }
 
-    message2.append("\n\nState of Machine : ").append(machine1.getState().getId());
     message2.append("\n\nChange Machine :").append(changeMachine);
     try {
       usersService.sendPrivateMessage("roman", "Change the stateMachine: \n" + message2.toString());
