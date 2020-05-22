@@ -174,10 +174,10 @@ public class GitSlackUsersController {
       if (action.getValue().equals("1_Agree")) {
         StateMachine<State, Event> machine = factory.getStateMachine();
         StateMachine<State, Event> machine1 = factory.getStateMachine();
-        persister.restore(machine, pl.getUser().toString());
+        persister.restore(machine, pl.getUser().getName());
         machine.sendEvent(AGREE_LICENSE);
-        persister.persist(machine, pl.getUser().toString());
-        persister.restore(machine1, pl.getUser().toString());
+        persister.persist(machine, pl.getUser().getName());
+        persister.restore(machine1, pl.getUser().getName());
         message2.append("\n\nState of Machine : ").append(machine1.getState().getId());
         changeMachine = true;
       }
