@@ -258,7 +258,7 @@ public class GitSlackUsersController {
         + "\t\t\t\"type\": \"button\",\n"
         + "\t\t\t\"text\": {\n"
         + "\t\t\t\t\"type\": \"plain_text\",\n"
-        + "\t\t\t\t\"text\": \"GetTask\",\n"
+        + "\t\t\t\t\"text\": \"DO NOTHING\",\n"
         + "\t\t\t\t\"emoji\": true\n"
         + "\t\t\t},\n"
         + "\t\t\t\"value\": \"theEnd\"\n"
@@ -308,26 +308,35 @@ public class GitSlackUsersController {
         case "AddUser":
           persister.persist(machine, pl.getUser().getName());
           usersService.sendEventsMessage("roman", agreeMessage);
+          usersService.sendPrivateMessage("roman", "Machine: " + machine.getState().toString());
           break;
         case "AGREE_LICENSE":
           persister.restore(machine, pl.getUser().getName());
           machine.sendEvent(AGREE_LICENSE);
           persister.persist(machine, pl.getUser().getName());
           usersService.sendEventsMessage("roman", addGitName);
+          usersService.sendPrivateMessage("roman", "Machine: " + machine.getState().toString());
           break;
         case "ADD_GIT_NAME":
           persister.restore(machine, pl.getUser().getName());
           machine.sendEvent(ADD_GIT_NAME);
           persister.persist(machine, pl.getUser().getName());
           usersService.sendEventsMessage("roman", getFirstTask);
+          usersService.sendPrivateMessage("roman", "Machine: " + machine.getState().toString());
           break;
         case "GET_THE_FIRST_TASK":
           persister.restore(machine, pl.getUser().getName());
           machine.sendEvent(GET_THE_FIRST_TASK);
           persister.persist(machine, pl.getUser().getName());
           usersService.sendEventsMessage("roman", theEnd);
+          usersService.sendPrivateMessage("roman", "Machine: " + machine.getState().toString());
           break;
-        default: usersService.sendPrivateMessage("roman", noOneCase);
+        case "theEnd":
+          usersService.sendPrivateMessage("roman", "that was the end, congrats, stop pushing the button");
+          break;
+        default:
+          usersService.sendEventsMessage("roman", noOneCase);
+          usersService.sendPrivateMessage("roman", "Machine: " + machine.getState().toString());
       }
     }
   }
