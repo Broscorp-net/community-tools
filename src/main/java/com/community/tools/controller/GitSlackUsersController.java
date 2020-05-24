@@ -307,25 +307,25 @@ public class GitSlackUsersController {
       switch (action.getValue()) {
         case "AddUser":
           persister.persist(machine, pl.getUser().getName());
-          usersService.sendPrivateMessage("roman", agreeMessage);
+          usersService.sendEventsMessage("roman", agreeMessage);
           break;
         case "AGREE_LICENSE":
           persister.restore(machine, pl.getUser().getName());
           machine.sendEvent(AGREE_LICENSE);
           persister.persist(machine, pl.getUser().getName());
-          usersService.sendPrivateMessage("roman", addGitName);
+          usersService.sendEventsMessage("roman", addGitName);
           break;
         case "ADD_GIT_NAME":
           persister.restore(machine, pl.getUser().getName());
           machine.sendEvent(ADD_GIT_NAME);
           persister.persist(machine, pl.getUser().getName());
-          usersService.sendPrivateMessage("roman", getFirstTask);
+          usersService.sendEventsMessage("roman", getFirstTask);
           break;
         case "GET_THE_FIRST_TASK":
           persister.restore(machine, pl.getUser().getName());
           machine.sendEvent(GET_THE_FIRST_TASK);
           persister.persist(machine, pl.getUser().getName());
-          usersService.sendPrivateMessage("roman", theEnd);
+          usersService.sendEventsMessage("roman", theEnd);
           break;
         default: usersService.sendPrivateMessage("roman", noOneCase);
       }
