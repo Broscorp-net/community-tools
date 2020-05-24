@@ -1,6 +1,8 @@
 package com.community.tools.controller;
 
+import static com.community.tools.util.statemachie.Event.ADD_GIT_NAME;
 import static com.community.tools.util.statemachie.Event.AGREE_LICENSE;
+import static com.community.tools.util.statemachie.Event.GET_THE_FIRST_TASK;
 import static org.springframework.http.ResponseEntity.ok;
 
 import com.community.tools.service.github.GitHubService;
@@ -136,6 +138,36 @@ public class GitSlackUsersController {
     }
   }
 
+  @GetMapping(value = "/newUser", produces = MediaType.APPLICATION_JSON_VALUE)
+  public void getSendMessageNewUser() throws ParseException {
+    String message = "[\n"
+        + "\t{\n"
+        + "\t\t\"type\": \"divider\"\n"
+        + "\t},\n"
+        + "\t{\n"
+        + "\t\t\"type\": \"section\",\n"
+        + "\t\t\"text\": {\n"
+        + "\t\t\t\"type\": \"mrkdwn\",\n"
+        + "\t\t\t\"text\": \"New User. \"\n"
+        + "\t\t},\n"
+        + "\t\t\"accessory\": {\n"
+        + "\t\t\t\"type\": \"button\",\n"
+        + "\t\t\t\"text\": {\n"
+        + "\t\t\t\t\"type\": \"plain_text\",\n"
+        + "\t\t\t\t\"text\": \"Add\",\n"
+        + "\t\t\t\t\"emoji\": true\n"
+        + "\t\t\t},\n"
+        + "\t\t\t\"value\": \"AddUser\"\n"
+        + "\t\t}\n"
+        + "\t}\n"
+        + "]";
+    try {
+      usersService.sendEventsMessage("roman", message);
+    } catch (IOException | SlackApiException e) {
+      e.printStackTrace();
+    }
+  }
+
   @GetMapping(value = "/addUserToStateMachine", produces = MediaType.APPLICATION_JSON_VALUE)
   public void getUserToStateMachine() throws Exception {
 
@@ -146,6 +178,114 @@ public class GitSlackUsersController {
 
   @RequestMapping(value = "/slack/action", method = RequestMethod.POST)
   public void action(@RequestParam(name = "payload") String payload) throws Exception {
+
+    String agreeMessage = "[\n"
+        + "\t{\n"
+        + "\t\t\"type\": \"divider\"\n"
+        + "\t},\n"
+        + "\t{\n"
+        + "\t\t\"type\": \"section\",\n"
+        + "\t\t\"text\": {\n"
+        + "\t\t\t\"type\": \"mrkdwn\",\n"
+        + "\t\t\t\"text\": \"First of all, you need to agree with rules. \"\n"
+        + "\t\t},\n"
+        + "\t\t\"accessory\": {\n"
+        + "\t\t\t\"type\": \"button\",\n"
+        + "\t\t\t\"text\": {\n"
+        + "\t\t\t\t\"type\": \"plain_text\",\n"
+        + "\t\t\t\t\"text\": \"Agree\",\n"
+        + "\t\t\t\t\"emoji\": true\n"
+        + "\t\t\t},\n"
+        + "\t\t\t\"value\": \"AGREE_LICENSE\"\n"
+        + "\t\t}\n"
+        + "\t}\n"
+        + "]";
+
+    String addGitName = "[\n"
+        + "\t{\n"
+        + "\t\t\"type\": \"divider\"\n"
+        + "\t},\n"
+        + "\t{\n"
+        + "\t\t\"type\": \"section\",\n"
+        + "\t\t\"text\": {\n"
+        + "\t\t\t\"type\": \"mrkdwn\",\n"
+        + "\t\t\t\"text\": \"Now you should add your git name. \"\n"
+        + "\t\t},\n"
+        + "\t\t\"accessory\": {\n"
+        + "\t\t\t\"type\": \"button\",\n"
+        + "\t\t\t\"text\": {\n"
+        + "\t\t\t\t\"type\": \"plain_text\",\n"
+        + "\t\t\t\t\"text\": \"AddedGitName\",\n"
+        + "\t\t\t\t\"emoji\": true\n"
+        + "\t\t\t},\n"
+        + "\t\t\t\"value\": \"ADD_GIT_NAME\"\n"
+        + "\t\t}\n"
+        + "\t}\n"
+        + "]";
+
+    String getFirstTask = "[\n"
+        + "\t{\n"
+        + "\t\t\"type\": \"divider\"\n"
+        + "\t},\n"
+        + "\t{\n"
+        + "\t\t\"type\": \"section\",\n"
+        + "\t\t\"text\": {\n"
+        + "\t\t\t\"type\": \"mrkdwn\",\n"
+        + "\t\t\t\"text\": \"ICE, now pick first task. \"\n"
+        + "\t\t},\n"
+        + "\t\t\"accessory\": {\n"
+        + "\t\t\t\"type\": \"button\",\n"
+        + "\t\t\t\"text\": {\n"
+        + "\t\t\t\t\"type\": \"plain_text\",\n"
+        + "\t\t\t\t\"text\": \"GetTask\",\n"
+        + "\t\t\t\t\"emoji\": true\n"
+        + "\t\t\t},\n"
+        + "\t\t\t\"value\": \"GET_THE_FIRST_TASK\"\n"
+        + "\t\t}\n"
+        + "\t}\n"
+        + "]";
+    String theEnd = "[\n"
+        + "\t{\n"
+        + "\t\t\"type\": \"divider\"\n"
+        + "\t},\n"
+        + "\t{\n"
+        + "\t\t\"type\": \"section\",\n"
+        + "\t\t\"text\": {\n"
+        + "\t\t\t\"type\": \"mrkdwn\",\n"
+        + "\t\t\t\"text\": \"This is the end for now, the button will do nothing. \"\n"
+        + "\t\t},\n"
+        + "\t\t\"accessory\": {\n"
+        + "\t\t\t\"type\": \"button\",\n"
+        + "\t\t\t\"text\": {\n"
+        + "\t\t\t\t\"type\": \"plain_text\",\n"
+        + "\t\t\t\t\"text\": \"GetTask\",\n"
+        + "\t\t\t\t\"emoji\": true\n"
+        + "\t\t\t},\n"
+        + "\t\t\t\"value\": \"theEnd\"\n"
+        + "\t\t}\n"
+        + "\t}\n"
+        + "]";
+    String noOneCase = "[\n"
+        + "\t{\n"
+        + "\t\t\"type\": \"divider\"\n"
+        + "\t},\n"
+        + "\t{\n"
+        + "\t\t\"type\": \"section\",\n"
+        + "\t\t\"text\": {\n"
+        + "\t\t\t\"type\": \"mrkdwn\",\n"
+        + "\t\t\t\"text\": \"NO ONE CASE \"\n"
+        + "\t\t},\n"
+        + "\t\t\"accessory\": {\n"
+        + "\t\t\t\"type\": \"button\",\n"
+        + "\t\t\t\"text\": {\n"
+        + "\t\t\t\t\"type\": \"plain_text\",\n"
+        + "\t\t\t\t\"text\": \"Button\",\n"
+        + "\t\t\t\t\"emoji\": true\n"
+        + "\t\t\t},\n"
+        + "\t\t\t\"value\": \"Button\"\n"
+        + "\t\t}\n"
+        + "\t}\n"
+        + "]";
 
     Gson snakeCase = GsonFactory.createSnakeCase();
     BlockActionPayload pl = snakeCase.fromJson(payload, BlockActionPayload.class);
@@ -161,34 +301,34 @@ public class GitSlackUsersController {
         + " Container: \n" + pl.getContainer() + "\n\n"
         + " Team:\n " + pl.getTeam() + "\n\n"
         + " Message:\n " + pl.getMessage() + "\n\n";*/
-    StringBuilder message2 = new StringBuilder("User:\n " + pl.getUser() + "\n\n" +
-        " Message:\n " + pl.getMessage().toString() + "\n\n" +
-        " Action:\n " + pl.getActions().toString() + "\n\n");
-    try {
-      usersService.sendPrivateMessage("roman", "Change the stateMachine: \n" + message2.toString());
-    } catch (IOException | SlackApiException e) {
-      throw new RuntimeException(e);
-    }
-    boolean changeMachine = false;
+
+    StateMachine<State, Event> machine = factory.getStateMachine();
     for (Action action : pl.getActions()) {
-      if (action.getValue().equals("1_Agree")) {
-        StateMachine<State, Event> machine = factory.getStateMachine();
-        StateMachine<State, Event> machine1 = factory.getStateMachine();
-        persister.restore(machine, pl.getUser().getName());
-        machine.sendEvent(AGREE_LICENSE);
-        persister.persist(machine, pl.getUser().getName());
-        persister.restore(machine1, pl.getUser().getName());
-        message2.append("\n\nState of Machine : ").append(machine1.getState().getId());
-        changeMachine = true;
+      switch (action.getValue()) {
+        case "AddUser":
+          persister.persist(machine, pl.getUser().getName());
+          usersService.sendPrivateMessage("roman", agreeMessage);
+          break;
+        case "AGREE_LICENSE":
+          persister.restore(machine, pl.getUser().getName());
+          machine.sendEvent(AGREE_LICENSE);
+          persister.persist(machine, pl.getUser().getName());
+          usersService.sendPrivateMessage("roman", addGitName);
+          break;
+        case "ADD_GIT_NAME":
+          persister.restore(machine, pl.getUser().getName());
+          machine.sendEvent(ADD_GIT_NAME);
+          persister.persist(machine, pl.getUser().getName());
+          usersService.sendPrivateMessage("roman", getFirstTask);
+          break;
+        case "GET_THE_FIRST_TASK":
+          persister.restore(machine, pl.getUser().getName());
+          machine.sendEvent(GET_THE_FIRST_TASK);
+          persister.persist(machine, pl.getUser().getName());
+          usersService.sendPrivateMessage("roman", theEnd);
+          break;
+        default: usersService.sendPrivateMessage("roman", noOneCase);
       }
     }
-
-    message2.append("\n\nChange Machine :").append(changeMachine);
-    try {
-      usersService.sendPrivateMessage("roman", "Change the stateMachine: \n" + message2.toString());
-    } catch (IOException | SlackApiException e) {
-      throw new RuntimeException(e);
-    }
-
   }
 }
