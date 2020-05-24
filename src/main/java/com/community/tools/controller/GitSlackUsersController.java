@@ -1,8 +1,7 @@
 package com.community.tools.controller;
 
-import static com.community.tools.util.statemachie.Event.ADD_GIT_NAME;
-import static com.community.tools.util.statemachie.Event.AGREE_LICENSE;
-import static com.community.tools.util.statemachie.Event.GET_THE_FIRST_TASK;
+import static com.community.tools.util.statemachie.Event.*;
+import static com.community.tools.util.statemachie.State.*;
 import static org.springframework.http.ResponseEntity.ok;
 
 import com.community.tools.service.github.GitHubService;
@@ -286,6 +285,15 @@ public class GitSlackUsersController {
         + "\t\t}\n"
         + "\t}\n"
         + "]";
+    String notThatMessage = "[\n"
+        + "\t{\n"
+        + "\t\t\"type\": \"section\",\n"
+        + "\t\t\"text\": {\n"
+        + "\t\t\t\"type\": \"mrkdwn\",\n"
+        + "\t\t\t\"text\": \"Please answer the latest message :ghost:\"\n"
+        + "\t\t}\n"
+        + "\t}\n"
+        + "]";
 
     Gson snakeCase = GsonFactory.createSnakeCase();
     BlockActionPayload pl = snakeCase.fromJson(payload, BlockActionPayload.class);
@@ -303,41 +311,58 @@ public class GitSlackUsersController {
         + " Message:\n " + pl.getMessage() + "\n\n";*/
 
     StateMachine<State, Event> machine = factory.getStateMachine();
-    for (Action action : pl.getActions()) {
-      switch (action.getValue()) {
-        case "AddUser":
-          persister.persist(machine, pl.getUser().getName());
-          usersService.sendEventsMessage("roman", agreeMessage);
-          usersService.sendPrivateMessage("roman", "Machine: " + machine.getState().toString());
-          break;
-        case "AGREE_LICENSE":
-          persister.restore(machine, pl.getUser().getName());
+
+    switch (pl.getActions().get(0).getValue()) {
+      case "AddUser":
+        persister.persist(machine, pl.getUser().getName());
+        usersService.sendEventsMessage("roman", agreeMessage);
+        usersService.sendPrivateMessage("roman", "Machine: " + machine.getState().getId());
+        break;
+      case "AGREE_LICENSE":
+        persister.restore(machine, pl.getUser().getName());
+        if(machine.getState().getId() == NEW_USER ) {
           machine.sendEvent(AGREE_LICENSE);
           persister.persist(machine, pl.getUser().getName());
           usersService.sendEventsMessage("roman", addGitName);
-          usersService.sendPrivateMessage("roman", "Machine: " + machine.getState().toString());
-          break;
-        case "ADD_GIT_NAME":
-          persister.restore(machine, pl.getUser().getName());
+        }else{
+          usersService.sendEventsMessage("roman", notThatMessage);
+        }
+        usersService.sendPrivateMessage("roman", "Machine: " + machine.getState().getId());
+        break;
+      case "ADD_GIT_NAME":
+        persister.restore(machine, pl.getUser().getName());
+        if(machine.getState().getId() == AGREED_LICENSE ) {
           machine.sendEvent(ADD_GIT_NAME);
           persister.persist(machine, pl.getUser().getName());
           usersService.sendEventsMessage("roman", getFirstTask);
-          usersService.sendPrivateMessage("roman", "Machine: " + machine.getState().toString());
-          break;
-        case "GET_THE_FIRST_TASK":
-          persister.restore(machine, pl.getUser().getName());
-          machine.sendEvent(GET_THE_FIRST_TASK);
-          persister.persist(machine, pl.getUser().getName());
-          usersService.sendEventsMessage("roman", theEnd);
-          usersService.sendPrivateMessage("roman", "Machine: " + machine.getState().toString());
-          break;
-        case "theEnd":
-          usersService.sendPrivateMessage("roman", "that was the end, congrats, stop pushing the button");
-          break;
-        default:
-          usersService.sendEventsMessage("roman", noOneCase);
-          usersService.sendPrivateMessage("roman", "Machine: " + machine.getState().toString());
-      }
+        }else {
+          usersService.sendEventsMessage("roman", notThatMessage);
+        }
+        usersService.sendPrivateMessage("roman", "Machine: " + machine.getState().getId());
+        break;
+      case "GET_THE_FIRST_TASK":
+        persister.restore(machine, pl.getUser().getName());
+        if(machine.getState().getId() == ADDED_GIT ) {
+        machine.sendEvent(GET_THE_FIRST_TASK);
+        persister.persist(machine, pl.getUser().getName());
+        usersService.sendEventsMessage("roman", theEnd);
+    }else {
+      usersService.sendEventsMessage("roman", notThatMessage);
+    }
+        usersService.sendPrivateMessage("roman", "Machine: " + machine.getState().getId());
+        break;
+      case "theEnd":
+        if(machine.getState().getId() == GOT_THE_FIRST_TASK ) {
+        usersService
+            .sendPrivateMessage("roman", "that was the end, congrats, stop pushing the button");
+        }else {
+          usersService.sendEventsMessage("roman", notThatMessage);
+        }
+        break;
+      default:
+        usersService.sendEventsMessage("roman", noOneCase);
+        usersService.sendPrivateMessage("roman", "Machine: " + machine.getState().getId());
+
     }
   }
 }
