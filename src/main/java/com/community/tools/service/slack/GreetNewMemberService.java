@@ -38,18 +38,22 @@ public class GreetNewMemberService {
   private AppMentionHandler appMentionHandler = new AppMentionHandler() {
     @Override
     public void handle(AppMentionPayload teamJoinPayload) {
-      if(teamJoinPayload.getEvent().getText().contains("My git name is "))
-      {
-        String message = teamJoinPayload.getEvent().getText().replaceAll("My git name is ", "");
+      if (teamJoinPayload.getEvent().getText().contains("My git name is ")) {
+        String check = "My git name is ";
+        String message = teamJoinPayload.getEvent().getText();
+        int p = message.indexOf(check);
+        message = message.substring(p + check.length());
 
         try {
           slackService.sendPrivateMessage("roman",
-              "ok i'll check your nick "+ message);
+              "ok i'll check your nick " + message);
         } catch (IOException | SlackApiException e) {
           throw new RuntimeException(e);
         }
-      }else {
-        String message = teamJoinPayload.getEvent().getText() + " check for " + "@Brobot My git name is |"+teamJoinPayload.getEvent().getText().contains("@Brobot My git name is ");
+      } else {
+        String message =
+            teamJoinPayload.getEvent().getText() + " check for " + "@Brobot My git name is |"
+                + teamJoinPayload.getEvent().getText().contains("@Brobot My git name is ");
         try {
           slackService.sendPrivateMessage("roman",
               message);
@@ -74,6 +78,7 @@ public class GreetNewMemberService {
   };
 
   public class GreatNewMemberServlet extends SlackEventsApiServlet {
+
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
       try {
@@ -84,6 +89,7 @@ public class GreetNewMemberService {
       }
       super.doPost(req, resp);
     }
+
     @Override
     protected void setupDispatcher(EventsDispatcher dispatcher) {
       dispatcher.register(teamJoinHandler);
