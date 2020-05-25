@@ -38,7 +38,7 @@ public class GreetNewMemberService {
   private AppMentionHandler appMentionHandler = new AppMentionHandler() {
     @Override
     public void handle(AppMentionPayload teamJoinPayload) {
-      if(teamJoinPayload.getEvent().getText().contains("@Brobot My git name is "))
+      if(teamJoinPayload.getEvent().getText().contains("My git name is "))
       {
         String message = teamJoinPayload.getEvent().getText().replaceAll("@Brobot My git name is ", "");
         message = message.replaceAll("\"","");
