@@ -320,43 +320,44 @@ public class GitSlackUsersController {
         break;
       case "AGREE_LICENSE":
         persister.restore(machine, pl.getUser().getName());
-        if(machine.getState().getId() == NEW_USER ) {
+        if (machine.getState().getId() == NEW_USER) {
           machine.sendEvent(AGREE_LICENSE);
           persister.persist(machine, pl.getUser().getName());
           usersService.sendEventsMessage("roman", addGitName);
-        }else{
+        } else {
           usersService.sendEventsMessage("roman", notThatMessage);
         }
         usersService.sendPrivateMessage("roman", "Machine: " + machine.getState().getId());
         break;
       case "ADD_GIT_NAME":
         persister.restore(machine, pl.getUser().getName());
-        if(machine.getState().getId() == AGREED_LICENSE ) {
+        if (machine.getState().getId() == AGREED_LICENSE) {
           machine.sendEvent(ADD_GIT_NAME);
           persister.persist(machine, pl.getUser().getName());
           usersService.sendEventsMessage("roman", getFirstTask);
-        }else {
+        } else {
           usersService.sendEventsMessage("roman", notThatMessage);
         }
         usersService.sendPrivateMessage("roman", "Machine: " + machine.getState().getId());
         break;
       case "GET_THE_FIRST_TASK":
         persister.restore(machine, pl.getUser().getName());
-        if(machine.getState().getId() == ADDED_GIT ) {
-        machine.sendEvent(GET_THE_FIRST_TASK);
-        persister.persist(machine, pl.getUser().getName());
-        usersService.sendEventsMessage("roman", theEnd);
-    }else {
-      usersService.sendEventsMessage("roman", notThatMessage);
-    }
+        if (machine.getState().getId() == ADDED_GIT) {
+          machine.sendEvent(GET_THE_FIRST_TASK);
+          persister.persist(machine, pl.getUser().getName());
+          usersService.sendEventsMessage("roman", theEnd);
+        } else {
+          usersService.sendEventsMessage("roman", notThatMessage);
+        }
         usersService.sendPrivateMessage("roman", "Machine: " + machine.getState().getId());
         break;
       case "theEnd":
-        if(machine.getState().getId() == GOT_THE_FIRST_TASK ) {
-        usersService
-            .sendPrivateMessage("roman", "that was the end, congrats, stop pushing the button");
-        }else {
+        if (machine.getState().getId() == GOT_THE_FIRST_TASK) {
+          usersService
+              .sendPrivateMessage("roman", "that was the end, congrats, stop pushing the button");
+        } else {
           usersService.sendEventsMessage("roman", notThatMessage);
+          usersService.sendPrivateMessage("roman", "boolean: " + machine.getState().getId() +  " == " + GOT_THE_FIRST_TASK + " = "+ (machine.getState().getId() == GOT_THE_FIRST_TASK));
         }
         break;
       default:

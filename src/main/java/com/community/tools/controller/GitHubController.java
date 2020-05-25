@@ -6,7 +6,6 @@ import com.community.tools.model.EventData;
 import com.community.tools.service.CountingCompletedTasksService;
 import com.community.tools.service.github.GitHubService;
 import com.community.tools.service.slack.SlackService;
-import com.github.seratch.jslack.api.methods.SlackApiException;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
