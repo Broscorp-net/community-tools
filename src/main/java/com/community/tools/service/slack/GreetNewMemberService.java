@@ -40,8 +40,8 @@ public class GreetNewMemberService {
     public void handle(AppMentionPayload teamJoinPayload) {
       if(teamJoinPayload.getEvent().getText().contains("My git name is "))
       {
-        String message = teamJoinPayload.getEvent().getText().replaceAll("https://broscorp-community.slack.com/services/BR7T6MUUD", "");
-        message = message.replaceAll("\"","");
+        String message = teamJoinPayload.getEvent().getText().replaceAll("My git name is ", "");
+
         try {
           slackService.sendPrivateMessage("roman",
               "ok i'll check your nick "+ message);
