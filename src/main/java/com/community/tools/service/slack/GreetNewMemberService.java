@@ -38,11 +38,23 @@ public class GreetNewMemberService {
   private AppMentionHandler appMentionHandler = new AppMentionHandler() {
     @Override
     public void handle(AppMentionPayload teamJoinPayload) {
-      try {
-        slackService.sendPrivateMessage("roman",
-            teamJoinPayload.getEvent().getText());
-      } catch (IOException | SlackApiException e) {
-        throw new RuntimeException(e);
+      if(teamJoinPayload.getEvent().getText().contains("@Brobot My git name is \""))
+      {
+        String message = teamJoinPayload.getEvent().getText().replaceAll("@Brobot My git name is ", "");
+        message = message.replaceAll("\"","");
+        try {
+          slackService.sendPrivateMessage("roman",
+              "ok i'll chesck your message "+ message);
+        } catch (IOException | SlackApiException e) {
+          throw new RuntimeException(e);
+        }
+      }else {
+        try {
+          slackService.sendPrivateMessage("roman",
+              teamJoinPayload.getEvent().getText());
+        } catch (IOException | SlackApiException e) {
+          throw new RuntimeException(e);
+        }
       }
     }
   };
