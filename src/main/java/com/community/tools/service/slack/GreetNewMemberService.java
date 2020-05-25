@@ -44,7 +44,7 @@ public class GreetNewMemberService {
         message = message.replaceAll("\"","");
         try {
           slackService.sendPrivateMessage("roman",
-              "ok i'll chesck your message "+ message);
+              "ok i'll check your nick "+ message);
         } catch (IOException | SlackApiException e) {
           throw new RuntimeException(e);
         }
