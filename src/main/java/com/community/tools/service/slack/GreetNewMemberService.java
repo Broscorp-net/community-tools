@@ -13,6 +13,8 @@ import com.github.seratch.jslack.app_backend.events.handler.MessageBotHandler;
 import com.github.seratch.jslack.app_backend.events.payload.MessageBotPayload;
 import com.github.seratch.jslack.app_backend.events.servlet.SlackEventsApiServlet;
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -40,42 +42,38 @@ public class GreetNewMemberService {
   private AppMentionHandler appMentionHandler = new AppMentionHandler() {
     @Override
     public void handle(AppMentionPayload teamJoinPayload) {
-      if (teamJoinPayload.getEvent().getText().contains("My git name is ")) {
-        String check = "My git name is ";
+      String check = "My git name is ";
+      if (teamJoinPayload.getEvent().getText().contains(check)) {
         String message = teamJoinPayload.getEvent().getText();
         int p = message.indexOf(check);
         message = message.substring(p + check.length());
         String nick = message;
-        StringBuilder mes = new StringBuilder(message);
-        mes.append(" is your nick, check: ");
-
         try {
           slackService.sendPrivateMessage("roman",
               "ok i'll check your nick " + nick);
         } catch (IOException | SlackApiException e) {
           throw new RuntimeException(e);
         }
-        gitHubService.getGitHubAllUsers().forEach(users -> {
-          mes.append(users.getLogin()).append(" ");
+        List<String> list = new LinkedList<>();
+        gitHubService.getGitHubAllUsers().stream().filter(user-> user.getLogin().equals(nick)).forEach(users -> {
+          list.add("workaround");
+        });
+        if(list.size()>0) {
           try {
-            if (users.getLogin().equals(nick)) {
-              slackService.sendPrivateMessage("roman",
-                  "congrats your nick available ");
-            } else {
-              slackService.sendPrivateMessage("roman",
-                  "your nick is not available ");
-            }
+            slackService.sendPrivateMessage("roman",
+                "congrats your nick available ");
           } catch (IOException | SlackApiException e) {
             e.printStackTrace();
           }
-        });
+        }else{
+          try {
+            slackService.sendPrivateMessage("roman",
+                "Sry but looks like you are still not added to our team :worried:");
+          } catch (IOException | SlackApiException e) {
+            e.printStackTrace();
+          }
+          }
 
-        try {
-          slackService.sendPrivateMessage("roman",
-              mes.toString());
-        } catch (IOException | SlackApiException e) {
-          throw new RuntimeException(e);
-        }
       } else {
         String message =
             teamJoinPayload.getEvent().getText() + " check for " + "@Brobot My git name is |"
