@@ -39,7 +39,7 @@ public class SlackService {
     return postResponse.getTs();
   }
 
-  public String sendEventsMessage(String username, String messageText)
+  public String sendBlocksMessage(String username, String messageText)
       throws IOException, SlackApiException {
     Slack slack = Slack.getInstance();
 
@@ -51,6 +51,22 @@ public class SlackService {
         slack.methods(token).chatPostMessage(
             req -> req.channel(user.getId()).asUser(true)
                 .blocksAsString(messageText));
+
+    return postResponse.getTs();
+  }
+
+  public String sendAttachmentsMessage(String username, String messageText)
+      throws IOException, SlackApiException {
+    Slack slack = Slack.getInstance();
+
+    User user = slack.methods(token).usersList(req -> req).getMembers().stream()
+        .filter(u -> u.getProfile().getDisplayName().equals(username))
+        .findFirst().get();
+
+    ChatPostMessageResponse postResponse =
+        slack.methods(token).chatPostMessage(
+            req -> req.channel(user.getId()).asUser(true)
+                .attachmentsAsString(messageText));
 
     return postResponse.getTs();
   }

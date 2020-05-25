@@ -12,7 +12,6 @@ import com.github.seratch.jslack.api.methods.SlackApiException;
 import com.github.seratch.jslack.api.model.User;
 import com.github.seratch.jslack.api.model.User.Profile;
 import com.github.seratch.jslack.app_backend.interactive_messages.payload.BlockActionPayload;
-import com.github.seratch.jslack.app_backend.interactive_messages.payload.BlockActionPayload.Action;
 import com.github.seratch.jslack.common.json.GsonFactory;
 import com.google.gson.Gson;
 import java.io.IOException;
@@ -101,7 +100,7 @@ public class GitSlackUsersController {
         + "\t}\n"
         + "]";
     try {
-      usersService.sendEventsMessage("roman", message);
+      usersService.sendBlocksMessage("roman", message);
     } catch (IOException | SlackApiException e) {
       e.printStackTrace();
     }
@@ -111,27 +110,23 @@ public class GitSlackUsersController {
   public void getSendMessage() throws ParseException {
     String message = "[\n"
         + "\t{\n"
-        + "\t\t\"type\": \"divider\"\n"
-        + "\t},\n"
-        + "\t{\n"
-        + "\t\t\"type\": \"section\",\n"
-        + "\t\t\"text\": {\n"
-        + "\t\t\t\"type\": \"mrkdwn\",\n"
-        + "\t\t\t\"text\": \"This is not work button. \"\n"
-        + "\t\t},\n"
-        + "\t\t\"accessory\": {\n"
-        + "\t\t\t\"type\": \"button\",\n"
-        + "\t\t\t\"text\": {\n"
+        + "\t\t\"type\": \"input\",\n"
+        + "\t\t\"element\": {\n"
+        + "\t\t\t\"type\": \"plain_text_input\",\n"
+        + "\t\t\t\"action_id\": \"title\",\n"
+        + "\t\t\t\"placeholder\": {\n"
         + "\t\t\t\t\"type\": \"plain_text\",\n"
-        + "\t\t\t\t\"text\": \"Button\",\n"
-        + "\t\t\t\t\"emoji\": true\n"
-        + "\t\t\t},\n"
-        + "\t\t\t\"value\": \"1_bad\"\n"
+        + "\t\t\t\t\"text\": \"What is your nickame?\"\n"
+        + "\t\t\t}\n"
+        + "\t\t},\n"
+        + "\t\t\"label\": {\n"
+        + "\t\t\t\"type\": \"plain_text\",\n"
+        + "\t\t\t\"text\": \"Add your git hab nickname.\"\n"
         + "\t\t}\n"
         + "\t}\n"
         + "]";
     try {
-      usersService.sendEventsMessage("roman", message);
+      usersService.sendAttachmentsMessage("roman", message);
     } catch (IOException | SlackApiException e) {
       e.printStackTrace();
     }
@@ -161,7 +156,7 @@ public class GitSlackUsersController {
         + "\t}\n"
         + "]";
     try {
-      usersService.sendEventsMessage("roman", message);
+      usersService.sendBlocksMessage("roman", message);
     } catch (IOException | SlackApiException e) {
       e.printStackTrace();
     }
@@ -315,7 +310,7 @@ public class GitSlackUsersController {
     switch (pl.getActions().get(0).getValue()) {
       case "AddUser":
         persister.persist(machine, pl.getUser().getName());
-        usersService.sendEventsMessage("roman", agreeMessage);
+        usersService.sendBlocksMessage("roman", agreeMessage);
         usersService.sendPrivateMessage("roman", "Machine: " + machine.getState().getId());
         break;
       case "AGREE_LICENSE":
@@ -323,9 +318,9 @@ public class GitSlackUsersController {
         if (machine.getState().getId() == NEW_USER) {
           machine.sendEvent(AGREE_LICENSE);
           persister.persist(machine, pl.getUser().getName());
-          usersService.sendEventsMessage("roman", addGitName);
+          usersService.sendBlocksMessage("roman", addGitName);
         } else {
-          usersService.sendEventsMessage("roman", notThatMessage);
+          usersService.sendBlocksMessage("roman", notThatMessage);
         }
         usersService.sendPrivateMessage("roman", "Machine: " + machine.getState().getId());
         break;
@@ -334,9 +329,9 @@ public class GitSlackUsersController {
         if (machine.getState().getId() == AGREED_LICENSE) {
           machine.sendEvent(ADD_GIT_NAME);
           persister.persist(machine, pl.getUser().getName());
-          usersService.sendEventsMessage("roman", getFirstTask);
+          usersService.sendBlocksMessage("roman", getFirstTask);
         } else {
-          usersService.sendEventsMessage("roman", notThatMessage);
+          usersService.sendBlocksMessage("roman", notThatMessage);
         }
         usersService.sendPrivateMessage("roman", "Machine: " + machine.getState().getId());
         break;
@@ -345,9 +340,9 @@ public class GitSlackUsersController {
         if (machine.getState().getId() == ADDED_GIT) {
           machine.sendEvent(GET_THE_FIRST_TASK);
           persister.persist(machine, pl.getUser().getName());
-          usersService.sendEventsMessage("roman", theEnd);
+          usersService.sendBlocksMessage("roman", theEnd);
         } else {
-          usersService.sendEventsMessage("roman", notThatMessage);
+          usersService.sendBlocksMessage("roman", notThatMessage);
         }
         usersService.sendPrivateMessage("roman", "Machine: " + machine.getState().getId());
         break;
@@ -357,11 +352,11 @@ public class GitSlackUsersController {
           usersService
               .sendPrivateMessage("roman", "that was the end, congrats, stop pushing the button");
         } else {
-          usersService.sendEventsMessage("roman", notThatMessage);
+          usersService.sendBlocksMessage("roman", notThatMessage);
         }
         break;
       default:
-        usersService.sendEventsMessage("roman", noOneCase);
+        usersService.sendBlocksMessage("roman", noOneCase);
         usersService.sendPrivateMessage("roman", "Machine: " + machine.getState().getId());
 
     }
