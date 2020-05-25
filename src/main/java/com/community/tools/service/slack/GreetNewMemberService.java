@@ -1,5 +1,6 @@
 package com.community.tools.service.slack;
 
+import com.community.tools.service.github.GitHubService;
 import com.github.seratch.jslack.api.methods.SlackApiException;
 import com.github.seratch.jslack.app_backend.events.EventsDispatcher;
 
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Component;
 public class GreetNewMemberService {
 
   private final SlackService slackService;
+  private final GitHubService gitHubService;
   private TeamJoinHandler teamJoinHandler = new TeamJoinHandler() {
     @Override
     public void handle(TeamJoinPayload teamJoinPayload) {
@@ -43,13 +45,27 @@ public class GreetNewMemberService {
         String message = teamJoinPayload.getEvent().getText();
         int p = message.indexOf(check);
         message = message.substring(p + check.length());
-
+        String nick = message;
         try {
           slackService.sendPrivateMessage("roman",
               "ok i'll check your nick " + message);
         } catch (IOException | SlackApiException e) {
           throw new RuntimeException(e);
         }
+        gitHubService.getGitHubAllUsers().forEach(users-> {
+          try {
+            if(users.getName().equals(nick)){
+              slackService.sendPrivateMessage("roman",
+                  "congrats your nick available ");
+            }else{
+              slackService.sendPrivateMessage("roman",
+                  "your nick is not available ");
+            }
+          } catch (IOException | SlackApiException e) {
+            e.printStackTrace();
+          }
+        });
+
       } else {
         String message =
             teamJoinPayload.getEvent().getText() + " check for " + "@Brobot My git name is |"
