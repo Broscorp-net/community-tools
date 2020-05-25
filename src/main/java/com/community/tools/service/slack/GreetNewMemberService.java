@@ -38,7 +38,7 @@ public class GreetNewMemberService {
   private AppMentionHandler appMentionHandler = new AppMentionHandler() {
     @Override
     public void handle(AppMentionPayload teamJoinPayload) {
-      if(teamJoinPayload.getEvent().getText().contains("@Brobot My git name is \""))
+      if(teamJoinPayload.getEvent().getText().contains("@Brobot My git name is "))
       {
         String message = teamJoinPayload.getEvent().getText().replaceAll("@Brobot My git name is ", "");
         message = message.replaceAll("\"","");
@@ -49,9 +49,10 @@ public class GreetNewMemberService {
           throw new RuntimeException(e);
         }
       }else {
+        String message = teamJoinPayload.getEvent().getText() + " check for " + "@Brobot My git name is |"+teamJoinPayload.getEvent().getText().contains("@Brobot My git name is ");
         try {
           slackService.sendPrivateMessage("roman",
-              teamJoinPayload.getEvent().getText());
+              message);
         } catch (IOException | SlackApiException e) {
           throw new RuntimeException(e);
         }
