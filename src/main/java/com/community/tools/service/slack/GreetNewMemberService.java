@@ -46,14 +46,22 @@ public class GreetNewMemberService {
         int p = message.indexOf(check);
         message = message.substring(p + check.length());
         String nick = message;
-       StringBuilder mes = new StringBuilder(message);
-        gitHubService.getGitHubAllUsers().forEach(users-> {
+        StringBuilder mes = new StringBuilder(message);
+        mes.append(" is your nick, check: ");
+
+        try {
+          slackService.sendPrivateMessage("roman",
+              "ok i'll check your nick " + nick);
+        } catch (IOException | SlackApiException e) {
+          throw new RuntimeException(e);
+        }
+        gitHubService.getGitHubAllUsers().forEach(users -> {
           mes.append(users.getLogin()).append(" ");
           try {
-            if(users.getLogin().equals(nick)){
+            if (users.getLogin().equals(nick)) {
               slackService.sendPrivateMessage("roman",
                   "congrats your nick available ");
-            }else{
+            } else {
               slackService.sendPrivateMessage("roman",
                   "your nick is not available ");
             }
@@ -64,7 +72,7 @@ public class GreetNewMemberService {
 
         try {
           slackService.sendPrivateMessage("roman",
-              "ok i'll check your nick " + mes);
+              mes.toString());
         } catch (IOException | SlackApiException e) {
           throw new RuntimeException(e);
         }
