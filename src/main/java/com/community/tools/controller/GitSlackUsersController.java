@@ -352,12 +352,12 @@ public class GitSlackUsersController {
         usersService.sendPrivateMessage("roman", "Machine: " + machine.getState().getId());
         break;
       case "theEnd":
+        persister.restore(machine, pl.getUser().getName());
         if (machine.getState().getId() == GOT_THE_FIRST_TASK) {
           usersService
               .sendPrivateMessage("roman", "that was the end, congrats, stop pushing the button");
         } else {
           usersService.sendEventsMessage("roman", notThatMessage);
-          usersService.sendPrivateMessage("roman", "boolean: " + machine.getState().getId() +  " == " + GOT_THE_FIRST_TASK + " = "+ (machine.getState().getId() == GOT_THE_FIRST_TASK));
         }
         break;
       default:
