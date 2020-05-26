@@ -18,13 +18,22 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 @Component
 public class GreetNewMemberService {
+  @Value("${spring.datasource.url}")
+  private String dbUrl;
+  @Value("${spring.datasource.username}")
+  private String username;
+  @Value("${spring.datasource.password}")
+  private String password;
 
   private final SlackService slackService;
   private final GitHubService gitHubService;
@@ -55,24 +64,33 @@ public class GreetNewMemberService {
           throw new RuntimeException(e);
         }
         List<String> list = new LinkedList<>();
-        gitHubService.getGitHubAllUsers().stream().filter(user-> user.getLogin().equals(nick)).forEach(users -> {
-          list.add("workaround");
-        });
-        if(list.size()>0) {
+        gitHubService.getGitHubAllUsers().stream().filter(user -> user.getLogin().equals(nick))
+            .forEach(users -> {
+              list.add("workaround");
+            });
+        if (list.size() > 0) {
+          SingleConnectionDataSource connect = new SingleConnectionDataSource();
+          connect.setDriverClassName("org.postgresql.Driver");
+          connect.setUrl(dbUrl);
+          connect.setUsername(username);
+          connect.setPassword(password);
+          JdbcTemplate jdbcTemplate = new JdbcTemplate(connect);
+          jdbcTemplate.update("UPDATE public.state_entity SET  git_name= '" + nick + "'"
+              + "\tWHERE userid='" +teamJoinPayload.getEvent().getUser()+ "';");
           try {
             slackService.sendPrivateMessage("roman",
                 "congrats your nick available ");
           } catch (IOException | SlackApiException e) {
             e.printStackTrace();
           }
-        }else{
+        } else {
           try {
             slackService.sendPrivateMessage("roman",
                 "Sry but looks like you are still not added to our team :worried:");
           } catch (IOException | SlackApiException e) {
             e.printStackTrace();
           }
-          }
+        }
 
       } else {
         String message =
