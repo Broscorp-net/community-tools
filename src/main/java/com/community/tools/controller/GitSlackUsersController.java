@@ -181,7 +181,7 @@ public class GitSlackUsersController {
 
     StateMachine<State, Event> machine = factory.getStateMachine();
     machine.start();
-    persister.persist(machine, "rr.zagorulko");
+    persister.persist(machine, "URANCQXGX");
   }
 
   @RequestMapping(value = "/slack/action", method = RequestMethod.POST)
@@ -320,58 +320,58 @@ public class GitSlackUsersController {
         + " Message:\n " + pl.getMessage() + "\n\n";*/
 
     StateMachine<State, Event> machine = factory.getStateMachine();
-
+    String user = pl.getUser().getId();
     switch (pl.getActions().get(0).getValue()) {
       case "AddUser":
-        persister.persist(machine, pl.getUser().getName());
-        usersService.sendBlocksMessage("roman", agreeMessage);
-        usersService.sendPrivateMessage("roman", "Machine: " + machine.getState().getId());
+        persister.persist(machine, user);
+        usersService.sendBlocksMessage(user, agreeMessage);
+        usersService.sendPrivateMessage(user, "Machine: " + machine.getState().getId());
         break;
       case "AGREE_LICENSE":
-        persister.restore(machine, pl.getUser().getName());
+        persister.restore(machine, user);
         if (machine.getState().getId() == NEW_USER) {
           machine.sendEvent(AGREE_LICENSE);
-          persister.persist(machine, pl.getUser().getName());
-          usersService.sendBlocksMessage("roman", addGitName);
+          persister.persist(machine, user);
+          usersService.sendBlocksMessage(user, addGitName);
         } else {
-          usersService.sendBlocksMessage("roman", notThatMessage);
+          usersService.sendBlocksMessage(user, notThatMessage);
         }
-        usersService.sendPrivateMessage("roman", "Machine: " + machine.getState().getId());
+        usersService.sendPrivateMessage(user, "Machine: " + machine.getState().getId());
         break;
       case "ADD_GIT_NAME":
-        persister.restore(machine, pl.getUser().getName());
+        persister.restore(machine, user);
         if (machine.getState().getId() == AGREED_LICENSE) {
           machine.sendEvent(ADD_GIT_NAME);
-          persister.persist(machine, pl.getUser().getName());
-          usersService.sendBlocksMessage("roman", getFirstTask);
+          persister.persist(machine, user);
+          usersService.sendBlocksMessage(user, getFirstTask);
         } else {
-          usersService.sendBlocksMessage("roman", notThatMessage);
+          usersService.sendBlocksMessage(user, notThatMessage);
         }
-        usersService.sendPrivateMessage("roman", "Machine: " + machine.getState().getId());
+        usersService.sendPrivateMessage(user, "Machine: " + machine.getState().getId());
         break;
       case "GET_THE_FIRST_TASK":
-        persister.restore(machine, pl.getUser().getName());
+        persister.restore(machine, user);
         if (machine.getState().getId() == ADDED_GIT) {
           machine.sendEvent(GET_THE_FIRST_TASK);
-          persister.persist(machine, pl.getUser().getName());
-          usersService.sendBlocksMessage("roman", theEnd);
+          persister.persist(machine, user);
+          usersService.sendBlocksMessage(user, theEnd);
         } else {
-          usersService.sendBlocksMessage("roman", notThatMessage);
+          usersService.sendBlocksMessage(user, notThatMessage);
         }
-        usersService.sendPrivateMessage("roman", "Machine: " + machine.getState().getId());
+        usersService.sendPrivateMessage(user, "Machine: " + machine.getState().getId());
         break;
       case "theEnd":
-        persister.restore(machine, pl.getUser().getName());
+        persister.restore(machine, user);
         if (machine.getState().getId() == GOT_THE_FIRST_TASK) {
           usersService
-              .sendPrivateMessage("roman", "that was the end, congrats, stop pushing the button");
+              .sendPrivateMessage(user, "that was the end, congrats, stop pushing the button");
         } else {
-          usersService.sendBlocksMessage("roman", notThatMessage);
+          usersService.sendBlocksMessage(user, notThatMessage);
         }
         break;
       default:
-        usersService.sendBlocksMessage("roman", noOneCase);
-        usersService.sendPrivateMessage("roman", "Machine: " + machine.getState().getId());
+        usersService.sendBlocksMessage(user, noOneCase);
+        usersService.sendPrivateMessage(user, "Machine: " + machine.getState().getId());
 
     }
   }
