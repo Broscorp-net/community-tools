@@ -89,6 +89,17 @@ public class SlackService {
     return postResponse.getTs();
   }
 
+  public String getUserById(String id){
+    Slack slack = Slack.getInstance();
+    try {
+     User user = slack.methods(token).usersList(req -> req).getMembers().stream()
+          .filter(u -> u.getId().equals(id))
+          .findFirst().get();
+     return user.getRealName();
+    } catch (IOException | SlackApiException e) {
+      throw new RuntimeException(e);
+    }
+  }
   public Set<User> getAllUsers() {
     try {
       Slack slack = Slack.getInstance();

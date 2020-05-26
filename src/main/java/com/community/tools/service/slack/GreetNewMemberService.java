@@ -79,70 +79,14 @@ public class GreetNewMemberService {
       }
     }
   };
-  private AppMentionHandler appMentionHandler = new AppMentionHandler() {
-    @Override
-    public void handle(AppMentionPayload teamJoinPayload) {
-      String check = "My git name is ";
-      if (teamJoinPayload.getEvent().getText().contains(check)) {
-        String message = teamJoinPayload.getEvent().getText();
-        int p = message.indexOf(check);
-        message = message.substring(p + check.length());
-        String nick = message;
-        try {
-          slackService.sendPrivateMessage("roman",
-              "ok i'll check your nick " + nick);
-        } catch (IOException | SlackApiException e) {
-          throw new RuntimeException(e);
-        }
-        List<String> list = new LinkedList<>();
-        gitHubService.getGitHubAllUsers().stream().filter(user -> user.getLogin().equals(nick))
-            .forEach(users -> {
-              list.add("workaround");
-            });
-        if (list.size() > 0) {
-          SingleConnectionDataSource connect = new SingleConnectionDataSource();
-          connect.setDriverClassName("org.postgresql.Driver");
-          connect.setUrl(dbUrl);
-          connect.setUsername(username);
-          connect.setPassword(password);
-          JdbcTemplate jdbcTemplate = new JdbcTemplate(connect);
-          jdbcTemplate.update("UPDATE public.state_entity SET  git_name= '" + nick + "'"
-              + "\tWHERE userid='" + teamJoinPayload.getEvent().getUser() + "';");
-          try {
-            slackService.sendPrivateMessage("roman",
-                "congrats your nick available " + teamJoinPayload.getEvent().getUser());
-          } catch (IOException | SlackApiException e) {
-            e.printStackTrace();
-          }
-        } else {
-          try {
-            slackService.sendPrivateMessage("roman",
-                "Sry but looks like you are still not added to our team :worried:");
-          } catch (IOException | SlackApiException e) {
-            e.printStackTrace();
-          }
-        }
-
-      } else {
-        String message =
-            teamJoinPayload.getEvent().getText() + " check for " + "@Brobot My git name is |"
-                + teamJoinPayload.getEvent().getText().contains("@Brobot My git name is ");
-        try {
-          slackService.sendPrivateMessage("roman",
-              message);
-        } catch (IOException | SlackApiException e) {
-          throw new RuntimeException(e);
-        }
-      }
-    }
-  };
-
 
   private MessageHandler messageHandler = new MessageHandler () {
     @Override
     public void handle(MessagePayload teamJoinPayload) {
       if (!teamJoinPayload.getEvent().getUser().equals("UQWD538CT")) {
         try {
+          String user = teamJoinPayload.getEvent().getUser();
+          user = slackService.getUserById(user);
 
           StateMachine<State, Event> machine = factory.getStateMachine();
           machine.start();
@@ -150,12 +94,12 @@ public class GreetNewMemberService {
 
           if (machine.getState().getId() == AGREED_LICENSE) {
             String message = teamJoinPayload.getEvent().getText();
-            slackService.sendPrivateMessage("roman",
+            slackService.sendPrivateMessage(user,
                 "ok i'll check your nick " + message);
 
             List<String> list = new LinkedList<>();
             gitHubService.getGitHubAllUsers().stream()
-                .filter(user -> user.getLogin().equals(message))
+                .filter(e -> e.getLogin().equals(message))
                 .forEach(users -> {
                   list.add("workaround");
                 });
@@ -169,11 +113,11 @@ public class GreetNewMemberService {
               jdbcTemplate.update("UPDATE public.state_entity SET  git_name= '" + message + "'"
                   + "\tWHERE userid='" + teamJoinPayload.getEvent().getUser() + "';");
 
-              slackService.sendPrivateMessage("roman",
+              slackService.sendPrivateMessage(user,
                   "congrats your nick available " + teamJoinPayload.getEvent().getUser());
 
             } else {
-              slackService.sendPrivateMessage("roman",
+              slackService.sendPrivateMessage(user,
                   "Sry but looks like you are still not added to our team in Git :worried:");
             }
 
@@ -182,7 +126,7 @@ public class GreetNewMemberService {
                 "I do not understand what you want, please call the admin! " + machine.getState()
                     .getId() +
                     "\n user: " + teamJoinPayload.getEvent().getUser();
-            slackService.sendPrivateMessage("roman", message);
+            slackService.sendPrivateMessage(user, message);
 
           }
 
@@ -214,7 +158,6 @@ public class GreetNewMemberService {
     @Override
     protected void setupDispatcher(EventsDispatcher dispatcher) {
       dispatcher.register(teamJoinHandler);
-      dispatcher.register(appMentionHandler);
       dispatcher.register(appHomeOpenedHandler);
       dispatcher.register(messageHandler);
     }
