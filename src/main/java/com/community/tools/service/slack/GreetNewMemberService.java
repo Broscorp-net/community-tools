@@ -175,9 +175,10 @@ public class GreetNewMemberService {
                   "Sry but looks like you are still not added to our team in Git :worried:");
           }
 
-        } else {
+        } else if (!teamJoinPayload.getEvent().getText().contains("I do not understand what you want, please call the admin!"))
+        {
           String message =
-             "I do not understand what you want, please call the admin!";
+             "I do not understand what you want, please call the admin! " + machine.getState().getId();
             slackService.sendPrivateMessage("roman",message);
 
         }
