@@ -8,8 +8,10 @@ import com.github.seratch.jslack.app_backend.events.handler.AppMentionHandler;
 import com.github.seratch.jslack.app_backend.events.payload.AppMentionPayload;
 import com.github.seratch.jslack.app_backend.events.handler.TeamJoinHandler;
 
-import com.github.seratch.jslack.app_backend.events.handler.MessageHandler;
-import com.github.seratch.jslack.app_backend.events.payload.MessagePayload;
+import com.github.seratch.jslack.app_backend.events.handler.AppHomeOpenedHandler;
+import com.github.seratch.jslack.app_backend.events.payload.AppHomeOpenedPayload;
+import com.github.seratch.jslack.app_backend.events.handler.MessageMeHandler;
+import com.github.seratch.jslack.app_backend.events.payload.MessageMePayload;
 
 import com.github.seratch.jslack.app_backend.events.payload.TeamJoinPayload;
 import com.github.seratch.jslack.app_backend.events.handler.MessageBotHandler;
@@ -31,6 +33,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Component
 public class GreetNewMemberService {
+
   @Value("${DB_URL}")
   private String dbUrl;
   @Value("${DB_USER_NAME}")
@@ -52,13 +55,30 @@ public class GreetNewMemberService {
       }
     }
   };
-  private MessageHandler messageHandler = new MessageHandler() {
+  private MessageMeHandler messageHandler = new MessageMeHandler() {
     @Override
-    public void handle(MessagePayload messagePayload) {
+    public void handle(MessageMePayload messagePayload) {
 
       try {
-        slackService.sendPrivateMessage("roman","Ladies and gentleman, we got them");
-        slackService.sendPrivateMessage(messagePayload.getEvent().getUser(),
+        slackService.sendPrivateMessage("roman",
+            "Ladies and gentleman, we got them, username: " + messagePayload.getEvent()
+                .getUsername());
+        slackService.sendPrivateMessage(messagePayload.getEvent().getUsername(),
+            "Welcome to the club buddy :dealwithit:");
+      } catch (IOException | SlackApiException e) {
+        throw new RuntimeException(e);
+      }
+    }
+  };
+  private AppHomeOpenedHandler appHomeOpenedHandler = new AppHomeOpenedHandler() {
+    @Override
+    public void handle(AppHomeOpenedPayload appHomeOpenedPayload) {
+
+      try {
+        slackService.sendPrivateMessage("roman",
+            "Ladies and gentleman, we got them. APPUSERHENDLER user: " +
+                appHomeOpenedPayload.getEvent().getUser());
+        slackService.sendPrivateMessage(appHomeOpenedPayload.getEvent().getUser(),
             "Welcome to the club buddy :dealwithit:");
       } catch (IOException | SlackApiException e) {
         throw new RuntimeException(e);
@@ -93,7 +113,7 @@ public class GreetNewMemberService {
           connect.setPassword(password);
           JdbcTemplate jdbcTemplate = new JdbcTemplate(connect);
           jdbcTemplate.update("UPDATE public.state_entity SET  git_name= '" + nick + "'"
-              + "\tWHERE userid='" +teamJoinPayload.getEvent().getUser()+ "';");
+              + "\tWHERE userid='" + teamJoinPayload.getEvent().getUser() + "';");
           try {
             slackService.sendPrivateMessage("roman",
                 "congrats your nick available " + teamJoinPayload.getEvent().getUser());
@@ -156,6 +176,7 @@ public class GreetNewMemberService {
 
       dispatcher.register(messageBotHandler);
       dispatcher.register(messageHandler);
+      dispatcher.register(appHomeOpenedHandler);
 
     }
   }
