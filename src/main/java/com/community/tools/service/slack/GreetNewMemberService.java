@@ -28,11 +28,11 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Component
 public class GreetNewMemberService {
-  @Value("${spring.datasource.url}")
+  @Value("${DB_URL}")
   private String dbUrl;
-  @Value("${spring.datasource.username}")
+  @Value("${DB_USER_NAME}")
   private String username;
-  @Value("${spring.datasource.password}")
+  @Value("${DB_PASSWORD}")
   private String password;
 
   private final SlackService slackService;
