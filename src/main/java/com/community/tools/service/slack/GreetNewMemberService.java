@@ -141,53 +141,56 @@ public class GreetNewMemberService {
   private MessageHandler messageHandler = new MessageHandler () {
     @Override
     public void handle(MessagePayload teamJoinPayload) {
-      try {
+      if (!teamJoinPayload.getEvent().getUser().equals("UQWD538CT")) {
+        try {
 
-        StateMachine<State, Event> machine = factory.getStateMachine();
-        machine.start();
-        persister.restore(machine, "rr.zagorulko");
+          StateMachine<State, Event> machine = factory.getStateMachine();
+          machine.start();
+          persister.restore(machine, "rr.zagorulko");
 
-        if (machine.getState().getId() == AGREED_LICENSE) {
-          String message = teamJoinPayload.getEvent().getText();
-          slackService.sendPrivateMessage("roman",
+          if (machine.getState().getId() == AGREED_LICENSE) {
+            String message = teamJoinPayload.getEvent().getText();
+            slackService.sendPrivateMessage("roman",
                 "ok i'll check your nick " + message);
 
-          List<String> list = new LinkedList<>();
-          gitHubService.getGitHubAllUsers().stream().filter(user -> user.getLogin().equals(message))
-              .forEach(users -> {
-                list.add("workaround");
-              });
-          if (list.size() > 0) {
-            SingleConnectionDataSource connect = new SingleConnectionDataSource();
-            connect.setDriverClassName("org.postgresql.Driver");
-            connect.setUrl(dbUrl);
-            connect.setUsername(username);
-            connect.setPassword(password);
-            JdbcTemplate jdbcTemplate = new JdbcTemplate(connect);
-            jdbcTemplate.update("UPDATE public.state_entity SET  git_name= '" + message + "'"
-                + "\tWHERE userid='" + teamJoinPayload.getEvent().getUser() + "';");
+            List<String> list = new LinkedList<>();
+            gitHubService.getGitHubAllUsers().stream()
+                .filter(user -> user.getLogin().equals(message))
+                .forEach(users -> {
+                  list.add("workaround");
+                });
+            if (list.size() > 0) {
+              SingleConnectionDataSource connect = new SingleConnectionDataSource();
+              connect.setDriverClassName("org.postgresql.Driver");
+              connect.setUrl(dbUrl);
+              connect.setUsername(username);
+              connect.setPassword(password);
+              JdbcTemplate jdbcTemplate = new JdbcTemplate(connect);
+              jdbcTemplate.update("UPDATE public.state_entity SET  git_name= '" + message + "'"
+                  + "\tWHERE userid='" + teamJoinPayload.getEvent().getUser() + "';");
 
               slackService.sendPrivateMessage("roman",
                   "congrats your nick available " + teamJoinPayload.getEvent().getUser());
 
-          } else {
+            } else {
               slackService.sendPrivateMessage("roman",
                   "Sry but looks like you are still not added to our team in Git :worried:");
+            }
+
+          } else /*if (!teamJoinPayload.getEvent().getText().contains("I do not understand what you want, please call the admin!"))*/ {
+            String message =
+                "I do not understand what you want, please call the admin! " + machine.getState()
+                    .getId() +
+                    "\n user: " + teamJoinPayload.getEvent().getUser();
+            slackService.sendPrivateMessage("roman", message);
+
           }
 
-        } else if (!teamJoinPayload.getEvent().getText().contains("I do not understand what you want, please call the admin!"))
-        {
-          String message =
-             "I do not understand what you want, please call the admin! " + machine.getState().getId()+
-              "\n user: " + teamJoinPayload.getEvent().getUser();
-            slackService.sendPrivateMessage("roman",message);
-
+        } catch (IOException | SlackApiException e) {
+          throw new RuntimeException(e);
+        } catch (Exception e) {
+          e.printStackTrace();
         }
-
-      } catch (IOException | SlackApiException e) {
-        throw new RuntimeException(e);
-      } catch (Exception e) {
-        e.printStackTrace();
       }
     }
   };
