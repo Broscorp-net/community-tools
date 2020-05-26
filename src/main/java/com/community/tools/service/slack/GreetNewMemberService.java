@@ -57,6 +57,7 @@ public class GreetNewMemberService {
     public void handle(MessagePayload messagePayload) {
 
       try {
+        slackService.sendPrivateMessage("roman","Ladies and gentleman, we got them");
         slackService.sendPrivateMessage(messagePayload.getEvent().getUser(),
             "Welcome to the club buddy :dealwithit:");
       } catch (IOException | SlackApiException e) {
