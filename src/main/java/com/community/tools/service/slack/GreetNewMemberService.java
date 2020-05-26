@@ -178,7 +178,8 @@ public class GreetNewMemberService {
         } else if (!teamJoinPayload.getEvent().getText().contains("I do not understand what you want, please call the admin!"))
         {
           String message =
-             "I do not understand what you want, please call the admin! " + machine.getState().getId();
+             "I do not understand what you want, please call the admin! " + machine.getState().getId()+
+              "\n user: " + teamJoinPayload.getEvent().getUser();
             slackService.sendPrivateMessage("roman",message);
 
         }
