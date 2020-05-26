@@ -321,17 +321,19 @@ public class GitSlackUsersController {
 
     StateMachine<State, Event> machine = factory.getStateMachine();
     String user = pl.getUser().getId();
+    user = usersService.getUserById(user);
+    usersService.sendPrivateMessage("roman", "user: " + user);
     switch (pl.getActions().get(0).getValue()) {
       case "AddUser":
-        persister.persist(machine, user);
+        persister.persist(machine, pl.getUser().getId());
         usersService.sendBlocksMessage(user, agreeMessage);
         usersService.sendPrivateMessage(user, "Machine: " + machine.getState().getId());
         break;
       case "AGREE_LICENSE":
-        persister.restore(machine, user);
+        persister.restore(machine, pl.getUser().getId());
         if (machine.getState().getId() == NEW_USER) {
           machine.sendEvent(AGREE_LICENSE);
-          persister.persist(machine, user);
+          persister.persist(machine, pl.getUser().getId());
           usersService.sendBlocksMessage(user, addGitName);
         } else {
           usersService.sendBlocksMessage(user, notThatMessage);
@@ -339,10 +341,10 @@ public class GitSlackUsersController {
         usersService.sendPrivateMessage(user, "Machine: " + machine.getState().getId());
         break;
       case "ADD_GIT_NAME":
-        persister.restore(machine, user);
+        persister.restore(machine, pl.getUser().getId());
         if (machine.getState().getId() == AGREED_LICENSE) {
           machine.sendEvent(ADD_GIT_NAME);
-          persister.persist(machine, user);
+          persister.persist(machine, pl.getUser().getId());
           usersService.sendBlocksMessage(user, getFirstTask);
         } else {
           usersService.sendBlocksMessage(user, notThatMessage);
@@ -350,10 +352,10 @@ public class GitSlackUsersController {
         usersService.sendPrivateMessage(user, "Machine: " + machine.getState().getId());
         break;
       case "GET_THE_FIRST_TASK":
-        persister.restore(machine, user);
+        persister.restore(machine, pl.getUser().getId());
         if (machine.getState().getId() == ADDED_GIT) {
           machine.sendEvent(GET_THE_FIRST_TASK);
-          persister.persist(machine, user);
+          persister.persist(machine, pl.getUser().getId());
           usersService.sendBlocksMessage(user, theEnd);
         } else {
           usersService.sendBlocksMessage(user, notThatMessage);
@@ -361,7 +363,7 @@ public class GitSlackUsersController {
         usersService.sendPrivateMessage(user, "Machine: " + machine.getState().getId());
         break;
       case "theEnd":
-        persister.restore(machine, user);
+        persister.restore(machine, pl.getUser().getId());
         if (machine.getState().getId() == GOT_THE_FIRST_TASK) {
           usersService
               .sendPrivateMessage(user, "that was the end, congrats, stop pushing the button");
