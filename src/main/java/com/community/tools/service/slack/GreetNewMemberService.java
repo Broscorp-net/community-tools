@@ -3,32 +3,14 @@ package com.community.tools.service.slack;
 import com.community.tools.service.github.GitHubService;
 import com.github.seratch.jslack.api.methods.SlackApiException;
 import com.github.seratch.jslack.app_backend.events.EventsDispatcher;
-
-import com.github.seratch.jslack.app_backend.events.handler.AppMentionHandler;
-import com.github.seratch.jslack.app_backend.events.payload.AppMentionPayload;
-import com.github.seratch.jslack.app_backend.events.handler.TeamJoinHandler;
-
 import com.github.seratch.jslack.app_backend.events.handler.AppHomeOpenedHandler;
-import com.github.seratch.jslack.app_backend.events.payload.AppHomeOpenedPayload;
-import com.github.seratch.jslack.app_backend.events.handler.MessageMeHandler;
-import com.github.seratch.jslack.app_backend.events.payload.MessageMePayload;
-
+import com.github.seratch.jslack.app_backend.events.handler.AppMentionHandler;
 import com.github.seratch.jslack.app_backend.events.handler.MessageHandler;
-import com.github.seratch.jslack.app_backend.events.handler.MessageEkmAccessDeniedHandler;
-import com.github.seratch.jslack.app_backend.events.handler.MessageChangedHandler;
-import com.github.seratch.jslack.app_backend.events.handler.MessageDeletedHandler;
-import com.github.seratch.jslack.app_backend.events.handler.MessageThreadBroadcastHandler;
-
+import com.github.seratch.jslack.app_backend.events.handler.TeamJoinHandler;
+import com.github.seratch.jslack.app_backend.events.payload.AppHomeOpenedPayload;
+import com.github.seratch.jslack.app_backend.events.payload.AppMentionPayload;
 import com.github.seratch.jslack.app_backend.events.payload.MessagePayload;
-import com.github.seratch.jslack.app_backend.events.payload.MessageEkmAccessDeniedPayload;
-import com.github.seratch.jslack.app_backend.events.payload.MessageChangedPayload;
-import com.github.seratch.jslack.app_backend.events.payload.MessageDeletedPayload;
-import com.github.seratch.jslack.app_backend.events.payload.MessageThreadBroadcastPayload;
-
-
 import com.github.seratch.jslack.app_backend.events.payload.TeamJoinPayload;
-import com.github.seratch.jslack.app_backend.events.handler.MessageBotHandler;
-import com.github.seratch.jslack.app_backend.events.payload.MessageBotPayload;
 import com.github.seratch.jslack.app_backend.events.servlet.SlackEventsApiServlet;
 import java.io.IOException;
 import java.util.LinkedList;
@@ -62,21 +44,6 @@ public class GreetNewMemberService {
 
       try {
         slackService.sendPrivateMessage(teamJoinPayload.getEvent().getUser().getRealName(),
-            "Welcome to the club buddy :dealwithit:");
-      } catch (IOException | SlackApiException e) {
-        throw new RuntimeException(e);
-      }
-    }
-  };
-  private MessageMeHandler messageMeHandler = new MessageMeHandler() {
-    @Override
-    public void handle(MessageMePayload messagePayload) {
-
-      try {
-        slackService.sendPrivateMessage("roman",
-            "Ladies and gentleman, we got them, username: " + messagePayload.getEvent()
-                .getUsername());
-        slackService.sendPrivateMessage(messagePayload.getEvent().getUsername(),
             "Welcome to the club buddy :dealwithit:");
       } catch (IOException | SlackApiException e) {
         throw new RuntimeException(e);
@@ -156,18 +123,6 @@ public class GreetNewMemberService {
     }
   };
 
-  private MessageBotHandler messageBotHandler = new MessageBotHandler() {
-    @Override
-    public void handle(MessageBotPayload teamJoinPayload) {
-      try {
-
-        slackService.sendPrivateMessage("roman",
-            "MessageBot + "+teamJoinPayload.getEvent().getText());
-      } catch (IOException | SlackApiException e) {
-        throw new RuntimeException(e);
-      }
-    }
-  };
 
   private MessageHandler messageHandler = new MessageHandler () {
     @Override
@@ -182,54 +137,7 @@ public class GreetNewMemberService {
     }
   };
 
-  private MessageEkmAccessDeniedHandler messageEkmHandler = new MessageEkmAccessDeniedHandler() {
-    @Override
-    public void handle(MessageEkmAccessDeniedPayload teamJoinPayload) {
-      try {
 
-        slackService.sendPrivateMessage("roman",
-            "MessageEkm + "+teamJoinPayload.getEvent().getText());
-      } catch (IOException | SlackApiException e) {
-        throw new RuntimeException(e);
-      }
-    }
-  };
-  private MessageChangedHandler messageChangedHandler = new MessageChangedHandler() {
-    @Override
-    public void handle(MessageChangedPayload teamJoinPayload) {
-      try {
-
-        slackService.sendPrivateMessage("roman",
-            "MessageChanged + "+teamJoinPayload.getEvent().toString());
-      } catch (IOException | SlackApiException e) {
-        throw new RuntimeException(e);
-      }
-    }
-  };
-  private MessageDeletedHandler messageDelHandler = new MessageDeletedHandler() {
-    @Override
-    public void handle(MessageDeletedPayload teamJoinPayload) {
-      try {
-
-        slackService.sendPrivateMessage("roman",
-            "MessageDel + "+teamJoinPayload.getEvent().toString());
-      } catch (IOException | SlackApiException e) {
-        throw new RuntimeException(e);
-      }
-    }
-  };
-  private MessageThreadBroadcastHandler messageThreadHandler = new MessageThreadBroadcastHandler() {
-    @Override
-    public void handle(MessageThreadBroadcastPayload teamJoinPayload) {
-      try {
-
-        slackService.sendPrivateMessage("roman",
-            "MessageThread + "+teamJoinPayload.getEvent().getText());
-      } catch (IOException | SlackApiException e) {
-        throw new RuntimeException(e);
-      }
-    }
-  };
 
   public class GreatNewMemberServlet extends SlackEventsApiServlet {
 
@@ -251,14 +159,7 @@ public class GreetNewMemberService {
       dispatcher.register(appMentionHandler);
       dispatcher.register(appHomeOpenedHandler);
 
-      dispatcher.register(messageBotHandler);
       dispatcher.register(messageHandler);
-
-      dispatcher.register(messageMeHandler);
-      dispatcher.register(messageEkmHandler);
-      dispatcher.register(messageChangedHandler);
-      dispatcher.register(messageDelHandler);
-      dispatcher.register(messageThreadHandler);
     }
   }
 
