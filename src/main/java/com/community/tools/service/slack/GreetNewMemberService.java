@@ -145,7 +145,7 @@ public class GreetNewMemberService {
 
         StateMachine<State, Event> machine = factory.getStateMachine();
         machine.start();
-        persister.persist(machine, "rr.zagorulko");
+        persister.restore(machine, "rr.zagorulko");
 
         if (machine.getState().getId() == AGREED_LICENSE) {
           String message = teamJoinPayload.getEvent().getText();
