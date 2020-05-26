@@ -1,6 +1,10 @@
 package com.community.tools.service.slack;
 
+import static com.community.tools.util.statemachie.State.AGREED_LICENSE;
+
 import com.community.tools.service.github.GitHubService;
+import com.community.tools.util.statemachie.Event;
+import com.community.tools.util.statemachie.State;
 import com.github.seratch.jslack.api.methods.SlackApiException;
 import com.github.seratch.jslack.app_backend.events.EventsDispatcher;
 import com.github.seratch.jslack.app_backend.events.handler.AppHomeOpenedHandler;
@@ -18,11 +22,15 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
+import org.springframework.statemachine.StateMachine;
+import org.springframework.statemachine.config.StateMachineFactory;
+import org.springframework.statemachine.persist.StateMachinePersister;
 import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
@@ -38,6 +46,12 @@ public class GreetNewMemberService {
 
   private final SlackService slackService;
   private final GitHubService gitHubService;
+  @Autowired
+  private StateMachineFactory<State, Event> factory;
+  @Autowired
+  private StateMachinePersister<State, Event, String> persister;
+
+
   private TeamJoinHandler teamJoinHandler = new TeamJoinHandler() {
     @Override
     public void handle(TeamJoinPayload teamJoinPayload) {
@@ -129,10 +143,49 @@ public class GreetNewMemberService {
     public void handle(MessagePayload teamJoinPayload) {
       try {
 
-        slackService.sendPrivateMessage("roman",
-            "Message + "+teamJoinPayload.getEvent().getText());
+        StateMachine<State, Event> machine = factory.getStateMachine();
+        machine.start();
+        persister.persist(machine, "rr.zagorulko");
+
+        if (machine.getState().getId() == AGREED_LICENSE) {
+          String message = teamJoinPayload.getEvent().getText();
+          slackService.sendPrivateMessage("roman",
+                "ok i'll check your nick " + message);
+
+          List<String> list = new LinkedList<>();
+          gitHubService.getGitHubAllUsers().stream().filter(user -> user.getLogin().equals(message))
+              .forEach(users -> {
+                list.add("workaround");
+              });
+          if (list.size() > 0) {
+            SingleConnectionDataSource connect = new SingleConnectionDataSource();
+            connect.setDriverClassName("org.postgresql.Driver");
+            connect.setUrl(dbUrl);
+            connect.setUsername(username);
+            connect.setPassword(password);
+            JdbcTemplate jdbcTemplate = new JdbcTemplate(connect);
+            jdbcTemplate.update("UPDATE public.state_entity SET  git_name= '" + message + "'"
+                + "\tWHERE userid='" + teamJoinPayload.getEvent().getUser() + "';");
+
+              slackService.sendPrivateMessage("roman",
+                  "congrats your nick available " + teamJoinPayload.getEvent().getUser());
+
+          } else {
+              slackService.sendPrivateMessage("roman",
+                  "Sry but looks like you are still not added to our team in Git :worried:");
+          }
+
+        } else {
+          String message =
+             "I do not understand what you want, please call the admin!";
+            slackService.sendPrivateMessage("roman",message);
+
+        }
+
       } catch (IOException | SlackApiException e) {
         throw new RuntimeException(e);
+      } catch (Exception e) {
+        e.printStackTrace();
       }
     }
   };
@@ -143,13 +196,13 @@ public class GreetNewMemberService {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-      try {
+      /*try {
         ;
         slackService.sendPrivateMessage("roman",
             "maybe, just maybe, some one press the button");
       } catch (SlackApiException e) {
         e.printStackTrace();
-      }
+      }*/
       super.doPost(req, resp);
     }
 
@@ -158,7 +211,6 @@ public class GreetNewMemberService {
       dispatcher.register(teamJoinHandler);
       dispatcher.register(appMentionHandler);
       dispatcher.register(appHomeOpenedHandler);
-
       dispatcher.register(messageHandler);
     }
   }
