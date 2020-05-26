@@ -161,8 +161,10 @@ public class GreetNewMemberService {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
       try {
+        ;
         slackService.sendPrivateMessage("roman",
-            "maybe, just maybe, some one press the button");
+            "maybe, just maybe, some one press the button + req: \n" +req.toString()+"\n\n "
+                + "resp:\n" + resp.toString());
       } catch (SlackApiException e) {
         e.printStackTrace();
       }
