@@ -8,6 +8,9 @@ import com.github.seratch.jslack.app_backend.events.handler.AppMentionHandler;
 import com.github.seratch.jslack.app_backend.events.payload.AppMentionPayload;
 import com.github.seratch.jslack.app_backend.events.handler.TeamJoinHandler;
 
+import com.github.seratch.jslack.app_backend.events.handler.MessageHandler;
+import com.github.seratch.jslack.app_backend.events.payload.MessagePayload;
+
 import com.github.seratch.jslack.app_backend.events.payload.TeamJoinPayload;
 import com.github.seratch.jslack.app_backend.events.handler.MessageBotHandler;
 import com.github.seratch.jslack.app_backend.events.payload.MessageBotPayload;
@@ -40,8 +43,21 @@ public class GreetNewMemberService {
   private TeamJoinHandler teamJoinHandler = new TeamJoinHandler() {
     @Override
     public void handle(TeamJoinPayload teamJoinPayload) {
+
       try {
         slackService.sendPrivateMessage(teamJoinPayload.getEvent().getUser().getRealName(),
+            "Welcome to the club buddy :dealwithit:");
+      } catch (IOException | SlackApiException e) {
+        throw new RuntimeException(e);
+      }
+    }
+  };
+  private MessageHandler messageHandler = new MessageHandler() {
+    @Override
+    public void handle(MessagePayload messagePayload) {
+
+      try {
+        slackService.sendPrivateMessage(messagePayload.getEvent().getUser(),
             "Welcome to the club buddy :dealwithit:");
       } catch (IOException | SlackApiException e) {
         throw new RuntimeException(e);
@@ -138,6 +154,7 @@ public class GreetNewMemberService {
       dispatcher.register(appMentionHandler);
 
       dispatcher.register(messageBotHandler);
+      dispatcher.register(messageHandler);
 
     }
   }
