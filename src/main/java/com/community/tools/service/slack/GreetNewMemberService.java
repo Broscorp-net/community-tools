@@ -79,7 +79,7 @@ public class GreetNewMemberService {
               + "\tWHERE userid='" +teamJoinPayload.getEvent().getUser()+ "';");
           try {
             slackService.sendPrivateMessage("roman",
-                "congrats your nick available ");
+                "congrats your nick available " + teamJoinPayload.getEvent().getUser());
           } catch (IOException | SlackApiException e) {
             e.printStackTrace();
           }
