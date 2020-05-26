@@ -13,6 +13,19 @@ import com.github.seratch.jslack.app_backend.events.payload.AppHomeOpenedPayload
 import com.github.seratch.jslack.app_backend.events.handler.MessageMeHandler;
 import com.github.seratch.jslack.app_backend.events.payload.MessageMePayload;
 
+import com.github.seratch.jslack.app_backend.events.handler.MessageHandler;
+import com.github.seratch.jslack.app_backend.events.handler.MessageEkmAccessDeniedHandler;
+import com.github.seratch.jslack.app_backend.events.handler.MessageChangedHandler;
+import com.github.seratch.jslack.app_backend.events.handler.MessageDeletedHandler;
+import com.github.seratch.jslack.app_backend.events.handler.MessageThreadBroadcastHandler;
+
+import com.github.seratch.jslack.app_backend.events.payload.MessagePayload;
+import com.github.seratch.jslack.app_backend.events.payload.MessageEkmAccessDeniedPayload;
+import com.github.seratch.jslack.app_backend.events.payload.MessageChangedPayload;
+import com.github.seratch.jslack.app_backend.events.payload.MessageDeletedPayload;
+import com.github.seratch.jslack.app_backend.events.payload.MessageThreadBroadcastPayload;
+
+
 import com.github.seratch.jslack.app_backend.events.payload.TeamJoinPayload;
 import com.github.seratch.jslack.app_backend.events.handler.MessageBotHandler;
 import com.github.seratch.jslack.app_backend.events.payload.MessageBotPayload;
@@ -55,7 +68,7 @@ public class GreetNewMemberService {
       }
     }
   };
-  private MessageMeHandler messageHandler = new MessageMeHandler() {
+  private MessageMeHandler messageMeHandler = new MessageMeHandler() {
     @Override
     public void handle(MessageMePayload messagePayload) {
 
@@ -149,7 +162,69 @@ public class GreetNewMemberService {
       try {
 
         slackService.sendPrivateMessage("roman",
-            teamJoinPayload.getEvent().getText());
+            "MessageBot + "+teamJoinPayload.getEvent().getText());
+      } catch (IOException | SlackApiException e) {
+        throw new RuntimeException(e);
+      }
+    }
+  };
+
+  private MessageHandler messageHandler = new MessageHandler () {
+    @Override
+    public void handle(MessagePayload teamJoinPayload) {
+      try {
+
+        slackService.sendPrivateMessage("roman",
+            "Message + "+teamJoinPayload.getEvent().getText());
+      } catch (IOException | SlackApiException e) {
+        throw new RuntimeException(e);
+      }
+    }
+  };
+
+  private MessageEkmAccessDeniedHandler messageEkmHandler = new MessageEkmAccessDeniedHandler() {
+    @Override
+    public void handle(MessageEkmAccessDeniedPayload teamJoinPayload) {
+      try {
+
+        slackService.sendPrivateMessage("roman",
+            "MessageEkm + "+teamJoinPayload.getEvent().getText());
+      } catch (IOException | SlackApiException e) {
+        throw new RuntimeException(e);
+      }
+    }
+  };
+  private MessageChangedHandler messageChangedHandler = new MessageChangedHandler() {
+    @Override
+    public void handle(MessageChangedPayload teamJoinPayload) {
+      try {
+
+        slackService.sendPrivateMessage("roman",
+            "MessageChanged + "+teamJoinPayload.getEvent().toString());
+      } catch (IOException | SlackApiException e) {
+        throw new RuntimeException(e);
+      }
+    }
+  };
+  private MessageDeletedHandler messageDelHandler = new MessageDeletedHandler() {
+    @Override
+    public void handle(MessageDeletedPayload teamJoinPayload) {
+      try {
+
+        slackService.sendPrivateMessage("roman",
+            "MessageDel + "+teamJoinPayload.getEvent().toString());
+      } catch (IOException | SlackApiException e) {
+        throw new RuntimeException(e);
+      }
+    }
+  };
+  private MessageThreadBroadcastHandler messageThreadHandler = new MessageThreadBroadcastHandler() {
+    @Override
+    public void handle(MessageThreadBroadcastPayload teamJoinPayload) {
+      try {
+
+        slackService.sendPrivateMessage("roman",
+            "MessageThread + "+teamJoinPayload.getEvent().getText());
       } catch (IOException | SlackApiException e) {
         throw new RuntimeException(e);
       }
@@ -163,8 +238,7 @@ public class GreetNewMemberService {
       try {
         ;
         slackService.sendPrivateMessage("roman",
-            "maybe, just maybe, some one press the button + req: \n" +req.toString()+"\n\n "
-                + "resp:\n" + resp.toString());
+            "maybe, just maybe, some one press the button");
       } catch (SlackApiException e) {
         e.printStackTrace();
       }
@@ -175,11 +249,16 @@ public class GreetNewMemberService {
     protected void setupDispatcher(EventsDispatcher dispatcher) {
       dispatcher.register(teamJoinHandler);
       dispatcher.register(appMentionHandler);
+      dispatcher.register(appHomeOpenedHandler);
 
       dispatcher.register(messageBotHandler);
       dispatcher.register(messageHandler);
-      dispatcher.register(appHomeOpenedHandler);
 
+      dispatcher.register(messageMeHandler);
+      dispatcher.register(messageEkmHandler);
+      dispatcher.register(messageChangedHandler);
+      dispatcher.register(messageDelHandler);
+      dispatcher.register(messageThreadHandler);
     }
   }
 
