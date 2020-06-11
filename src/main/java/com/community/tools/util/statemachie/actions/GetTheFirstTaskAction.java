@@ -10,7 +10,7 @@ public class GetTheFirstTaskAction implements Action<State, Event> {
 
   @Override
   public void execute(final StateContext<State, Event> context) {
-    // TODO: 22.04.2020 Добавить логику для получения юзером первого задания
-    System.out.println("Юзер получил первое задание");
+    // TODO: 22.04.2020 add logic to do smthng when user get the first task
+    System.out.println("User got the first task");
   }
 }

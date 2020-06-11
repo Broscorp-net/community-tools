@@ -11,7 +11,7 @@ public class AgreeLicenseAction implements Action<State, Event> {
 
   @Override
   public void execute(StateContext<State, Event> stateContext) {
-    // TODO: 22.04.2020 Добавить логику для пользоваельского соглашения
-    System.out.println("Юзер принял пльзовательское соглашение");
+    // TODO: 22.04.2020 add logic for agree license
+    System.out.println("user agreed with licence");
   }
 }

@@ -10,7 +10,7 @@ public class AddGitNameAction implements Action<State, Event> {
 
   @Override
   public void execute(final StateContext<State, Event> context) {
-    // TODO: 22.04.2020 добавиь логику для использования гит никнейма
-    System.out.println("Добавили гит ник нейм");
+    // TODO: 22.04.2020 add logic to add git name
+    System.out.println("Added git nick name");
   }
 }
