@@ -29,7 +29,10 @@ public class StateMachinePersister implements
   @Override
   public void write(StateMachineContext<State, Event> context, String userID) {
     byte[] data = serialize(context);
-    stateMachineRepository.save(new StateEntity(userID,data));
+    StateEntity stateEntity = new StateEntity();
+    stateEntity.setUserID(userID);
+    stateEntity.setStateMachine(data);
+    stateMachineRepository.save(stateEntity);
   }
 
   @Override
