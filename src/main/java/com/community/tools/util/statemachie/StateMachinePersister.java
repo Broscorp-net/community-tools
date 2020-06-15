@@ -32,7 +32,7 @@ public class StateMachinePersister implements
     StateEntity stateEntity = new StateEntity();
     stateEntity.setUserID(userID);
     stateEntity.setStateMachine(data);
-    stateMachineRepository.save(stateEntity);
+   // stateMachineRepository.save(stateEntity);
   }
 
   @Override
