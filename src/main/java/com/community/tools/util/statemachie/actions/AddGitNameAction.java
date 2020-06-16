@@ -16,5 +16,6 @@ public class AddGitNameAction implements Action<State, Event> {
     @Override
     public void execute(final StateContext<State, Event> context) {
         // TODO: 22.04.2020 add logic to add git name
+        logger.info("Added git nick name");
     }
 }

@@ -13,6 +13,6 @@ public class ErrorAction implements Action<State, Event> {
 
     @Override
     public void execute(final StateContext<State, Event> context) {
-
+        logger.info("Error with " + context.getTarget().getId());
     }
 }

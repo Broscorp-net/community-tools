@@ -16,7 +16,10 @@ public class StateMachineApplicationListeer implements
     @Override
     public void stateChanged(org.springframework.statemachine.state.State from,
                              org.springframework.statemachine.state.State to) {
+        if (from.getId() != null) {
+            logger.info("Machine change status from " + from.getId() + " to " + to.getId());
 
+        }
     }
 
     @Override
@@ -31,6 +34,7 @@ public class StateMachineApplicationListeer implements
 
     @Override
     public void eventNotAccepted(Message<Event> message) {
+        logger.info("event not accepted " + message);
     }
 
     @Override
@@ -50,7 +54,7 @@ public class StateMachineApplicationListeer implements
 
     @Override
     public void stateMachineStarted(StateMachine<State, Event> stateMachine) {
-
+        logger.info("State machine started");
     }
 
     @Override
