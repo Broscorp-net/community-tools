@@ -11,7 +11,7 @@ import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.action.Action;
 import org.springframework.stereotype.Component;
 
-@Component
+
 public class AddGitNameAction implements Action<State, Event> {
 
   @Value("${congratsAvailableNick}")
