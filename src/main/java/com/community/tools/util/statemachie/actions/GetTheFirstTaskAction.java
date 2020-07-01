@@ -23,7 +23,7 @@ public class GetTheFirstTaskAction implements Action<State, Event> {
   public void execute(final StateContext<State, Event> context) {
     String user = context.getExtendedState().getVariables().get("id").toString();
     try {
-      slackService.sendBlocksMessage(user, getFirstTask);
+      slackService.sendBlocksMessage(slackService.getUserById(user), getFirstTask);
     } catch (IOException | SlackApiException e) {
       throw new RuntimeException(e);
     }

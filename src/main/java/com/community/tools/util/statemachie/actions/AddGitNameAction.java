@@ -24,7 +24,7 @@ public class AddGitNameAction implements Action<State, Event> {
     String user = context.getExtendedState().getVariables().get("id").toString();
 
     try {
-      slackService.sendPrivateMessage(user, congratsAvailableNick);
+      slackService.sendPrivateMessage(slackService.getUserById(user), congratsAvailableNick);
     } catch (IOException | SlackApiException e) {
       throw new RuntimeException(e);
     }
