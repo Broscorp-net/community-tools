@@ -55,8 +55,7 @@ public class GitHubHookServlet extends HttpServlet {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(connect);
         boolean labeled = false;
         if (json.get("action").toString().equals("labeled")){
-          JSONObject labels =(JSONObject) json.getJSONObject("pull_request").getJSONArray("labels").get(0);
-          if(labels.getString("name").equals("ready for review")){
+          if(json.getJSONObject("pull_request").getJSONObject("labels").getString("name").equals("ready for review")){
             labeled = true;
           }
         }
