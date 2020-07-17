@@ -40,6 +40,7 @@ public class GitHubHookServlet extends HttpServlet {
   private GitHubGiveNewTask gitHubGiveNewTask;
 
 
+
   @Override
   protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
