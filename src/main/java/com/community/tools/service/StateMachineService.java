@@ -118,6 +118,16 @@ public class StateMachineService {
     persister.restore(machine, id);
     return machine;
   }
+  public StateMachine<State, Event> restoreMachineByNick(String nick) throws Exception {
+    StateEntity stateEntity = stateMachineRepository.findByGitName(nick).get();
+    StateMachine<State, Event> machine = factory.getStateMachine();
+    machine.start();
+    persister.restore(machine, stateEntity.getUserID());
+    return machine;
+  }
+  public String getIdByNick(String nick){
+    return stateMachineRepository.findByGitName(nick).get().getUserID();
+  }
 
   public void persistMachine(StateMachine<State, Event> machine, String id) throws Exception {
     persister.persist(machine, id);
@@ -126,6 +136,7 @@ public class StateMachineService {
   public void persistMachineForNewUser(String id) throws Exception {
     StateMachine<State, Event> machine = factory.getStateMachine();
     machine.getExtendedState().getVariables().put("id", id);
+    machine.getExtendedState().getVariables().put("taskNumber", 1);
     machine.start();
     persister.persist(machine, id);
   }
