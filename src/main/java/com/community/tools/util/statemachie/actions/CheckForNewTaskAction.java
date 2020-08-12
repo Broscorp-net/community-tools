@@ -29,14 +29,14 @@ public class CheckForNewTaskAction implements Action<State, Event> {
       tasks.add(8,"j_exceptions");
       tasks.add(9,"k_classpath");
       tasks.add(10,"l_inner_classes");
-      tasks.add(11,"m_override_overload");
-      tasks.add(12,"n_strings");
-      tasks.add(13,"o_git");
+      tasks.add(12,"m_override_overload");
+      tasks.add(13,"n_strings");
+      tasks.add(14,"o_git");
 
       int i = (Integer)context.getExtendedState().getVariables().get("taskNumber");
       String getFirstTask =
           "[{\"type\": \"section\",\"text\": {\"type\": \"mrkdwn\",\"text\": \"Here is your next <https://github.com/Broscorp-net/traineeship/tree/master/module1/src/main/java/net/broscorp/"
-              + tasks.get(i) + "|TASK>.\"}}]";
+              + tasks.get(i) + "|TASK>. gl :face_with_cowboy_hat:\"}}]";
       String user = context.getExtendedState().getVariables().get("id").toString();
      try {
         slackService.sendBlocksMessage(slackService.getUserById(user), getFirstTask);
