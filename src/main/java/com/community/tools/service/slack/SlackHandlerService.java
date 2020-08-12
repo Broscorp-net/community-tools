@@ -29,7 +29,7 @@ import java.io.IOException;
 
 @RequiredArgsConstructor
 @Component
-public class GreetNewMemberService {
+public class SlackHandlerService {
 
   @Value("${notThatMessage}")
   private String notThatMessage;
