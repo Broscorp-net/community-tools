@@ -1,4 +1,4 @@
-package com.community.tools.util;
+package com.community.tools.controller;
 
 import com.community.tools.service.github.GitHubHookServlet;
 import lombok.RequiredArgsConstructor;

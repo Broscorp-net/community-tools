@@ -100,6 +100,18 @@ public class SlackService {
       throw new RuntimeException(e);
     }
   }
+
+  public String getIdByUser(String id){
+    Slack slack = Slack.getInstance();
+    try {
+      User user = slack.methods(token).usersList(req -> req).getMembers().stream()
+          .filter(u -> u.getRealName().equals(id))
+          .findFirst().get();
+      return user.getId();
+    } catch (IOException | SlackApiException e) {
+      throw new RuntimeException(e);
+    }
+  }
   public Set<User> getAllUsers() {
     try {
       Slack slack = Slack.getInstance();

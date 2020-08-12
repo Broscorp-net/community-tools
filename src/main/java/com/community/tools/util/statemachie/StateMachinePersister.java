@@ -7,6 +7,7 @@ import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.util.NoSuchElementException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.statemachine.StateMachineContext;
 import org.springframework.statemachine.StateMachinePersist;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class StateMachinePersister implements
     StateMachinePersist<State, Event, String> {
+
   @Autowired
   private StateMachineRepository stateMachineRepository;
 
@@ -28,9 +30,15 @@ public class StateMachinePersister implements
 
   @Override
   public void write(StateMachineContext<State, Event> context, String userID) {
+    StateEntity stateEntity = null;
+    try {
+      stateEntity = stateMachineRepository.findByUserID(userID).get();
+    } catch (NoSuchElementException e) {
+      stateEntity = new StateEntity();
+      stateEntity.setUserID(userID);
+    }
+
     byte[] data = serialize(context);
-    StateEntity stateEntity = new StateEntity();
-    stateEntity.setUserID(userID);
     stateEntity.setStateMachine(data);
     stateMachineRepository.save(stateEntity);
   }
