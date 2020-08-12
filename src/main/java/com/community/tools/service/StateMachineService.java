@@ -1,6 +1,8 @@
 package com.community.tools.service;
 
-import static com.community.tools.util.statemachie.Event.*;
+import static com.community.tools.util.statemachie.Event.ADD_GIT_NAME;
+import static com.community.tools.util.statemachie.Event.AGREE_LICENSE;
+import static com.community.tools.util.statemachie.Event.GET_THE_FIRST_TASK;
 import static com.community.tools.util.statemachie.State.AGREED_LICENSE;
 import static com.community.tools.util.statemachie.State.GOT_THE_FIRST_TASK;
 import static com.community.tools.util.statemachie.State.NEW_USER;
@@ -36,6 +38,8 @@ public class StateMachineService {
   private String failedCheckNickName;
   @Value("${doNotUnderstandWhatTodo}")
   private String doNotUnderstandWhatTodo;
+  @Value("${agreeMessage}")
+  private String agreeMessage;
 
   @Value("${noOneCase}")
   private String noOneCase;
@@ -86,7 +90,7 @@ public class StateMachineService {
     switch (action) {
       case "AGREE_LICENSE":
         if (machine.getState().getId() == NEW_USER) {
-          machine.sendEvent(FIRST_AGREE_MESS);
+          machine.sendEvent(AGREE_LICENSE);
           persistMachine(machine, userId);
         } else {
           slackService.sendBlocksMessage(user, notThatMessage);
@@ -114,34 +118,14 @@ public class StateMachineService {
     persister.restore(machine, id);
     return machine;
   }
-  public StateMachine<State, Event> restoreMachineByNick(String nick) {
-    StateEntity stateEntity = stateMachineRepository.findByGitName(nick).get();
-    StateMachine<State, Event> machine = factory.getStateMachine();
-    machine.start();
-    try {
-      persister.restore(machine, stateEntity.getUserID());
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
-    return machine;
-  }
-  public String getIdByNick(String nick){
-    return stateMachineRepository.findByGitName(nick).get().getUserID();
-  }
 
-  public void persistMachine(StateMachine<State, Event> machine, String id){
-    try {
-      persister.persist(machine, id);
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
+  public void persistMachine(StateMachine<State, Event> machine, String id) throws Exception {
+    persister.persist(machine, id);
   }
 
   public void persistMachineForNewUser(String id) throws Exception {
     StateMachine<State, Event> machine = factory.getStateMachine();
     machine.getExtendedState().getVariables().put("id", id);
-    machine.getExtendedState().getVariables().put("taskNumber", 1);
-    machine.getExtendedState().getVariables().put("mentor", "NO_MENTOR");
     machine.start();
     persister.persist(machine, id);
   }

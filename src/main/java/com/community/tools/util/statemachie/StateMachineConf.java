@@ -2,32 +2,17 @@ package com.community.tools.util.statemachie;
 
 import static com.community.tools.util.statemachie.Event.ADD_GIT_NAME;
 import static com.community.tools.util.statemachie.Event.AGREE_LICENSE;
-import static com.community.tools.util.statemachie.Event.CHANGE_TASK;
-import static com.community.tools.util.statemachie.Event.FIRST_AGREE_MESS;
 import static com.community.tools.util.statemachie.Event.GET_THE_FIRST_TASK;
-import static com.community.tools.util.statemachie.Event.GET_THE_NEW_TASK;
-import static com.community.tools.util.statemachie.Event.LAST_TASK;
-import static com.community.tools.util.statemachie.Event.SECOND_AGREE_MESS;
 import static com.community.tools.util.statemachie.State.ADDED_GIT;
-import static com.community.tools.util.statemachie.State.CHECK_FOR_NEW_TASK;
-import static com.community.tools.util.statemachie.State.CONGRATS_LAST_TASK;
-import static com.community.tools.util.statemachie.State.FIRST_LICENSE_MESS;
 import static com.community.tools.util.statemachie.State.NEW_USER;
 import static com.community.tools.util.statemachie.State.GOT_THE_FIRST_TASK;
 import static com.community.tools.util.statemachie.State.AGREED_LICENSE;
-import static com.community.tools.util.statemachie.State.SECOND_LICENSE_MESS;
 
-import com.community.tools.util.statemachie.actions.ChangeTaskAction;
-import com.community.tools.util.statemachie.actions.FirstAgreeLicenseAction;
 import com.community.tools.util.statemachie.actions.GetTheFirstTaskAction;
 import com.community.tools.util.statemachie.actions.AddGitNameAction;
 import com.community.tools.util.statemachie.actions.ErrorAction;
-import com.community.tools.util.statemachie.actions.CheckForNewTaskAction;
 import com.community.tools.util.statemachie.actions.HideGuard;
 import com.community.tools.util.statemachie.actions.AgreeLicenseAction;
-import com.community.tools.util.statemachie.actions.LastTaskAction;
-import com.community.tools.util.statemachie.actions.LastTaskGuard;
-import com.community.tools.util.statemachie.actions.SecondAgreeLicenseAction;
 import java.util.EnumSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -70,20 +55,6 @@ public class StateMachineConf extends EnumStateMachineConfigurerAdapter<State, E
     transitions
         .withExternal()
         .source(NEW_USER)
-        .target(FIRST_LICENSE_MESS)
-        .event(FIRST_AGREE_MESS)
-        .action(firstAgreeLicenseAction(), errorAction())
-
-        .and()
-        .withExternal()
-        .source(FIRST_LICENSE_MESS)
-        .target(SECOND_LICENSE_MESS)
-        .event(SECOND_AGREE_MESS)
-        .action(secondAgreeLicenseAction(), errorAction())
-
-        .and()
-        .withExternal()
-        .source(SECOND_LICENSE_MESS)
         .target(AGREED_LICENSE)
         .event(AGREE_LICENSE)
         .action(agreeLicenseAction(), errorAction())
@@ -101,39 +72,8 @@ public class StateMachineConf extends EnumStateMachineConfigurerAdapter<State, E
         .source(ADDED_GIT)
         .target(GOT_THE_FIRST_TASK)
         .event(GET_THE_FIRST_TASK)
-        .action(getTheFirstTaskAction(), errorAction())
+        .action(getTheFirstTaskAction(), errorAction());
 
-        .and()
-        .withExternal()
-        .source(GOT_THE_FIRST_TASK)
-        .target(CHECK_FOR_NEW_TASK)
-        .event(GET_THE_NEW_TASK)
-        .action(checkForNewTaskAction(), errorAction())
-
-        .and()
-        .withExternal()
-        .source(CHECK_FOR_NEW_TASK)
-        .target(GOT_THE_FIRST_TASK)
-        .event(CHANGE_TASK)
-        .action(changeTaskAction(), errorAction())
-
-        .and()
-        .withExternal()
-        .source(CHECK_FOR_NEW_TASK)
-        .target(CONGRATS_LAST_TASK)
-        .event(LAST_TASK)
-        .guard(lastTaskGuard())
-        .action(lastTaskAction(), errorAction());
-  }
-
-  @Bean
-  public Action<State, Event> firstAgreeLicenseAction() {
-    return new FirstAgreeLicenseAction();
-  }
-
-  @Bean
-  public Action<State, Event> secondAgreeLicenseAction() {
-    return new SecondAgreeLicenseAction();
   }
 
   @Bean
@@ -152,21 +92,6 @@ public class StateMachineConf extends EnumStateMachineConfigurerAdapter<State, E
   }
 
   @Bean
-  public Action<State, Event> checkForNewTaskAction() {
-    return new CheckForNewTaskAction();
-  }
-
-  @Bean
-  public Action<State, Event> changeTaskAction() {
-    return new ChangeTaskAction();
-  }
-
-  @Bean
-  public Action<State, Event> lastTaskAction() {
-    return new LastTaskAction();
-  }
-
-  @Bean
   public Action<State, Event> errorAction() {
     return new ErrorAction();
   }
@@ -174,11 +99,6 @@ public class StateMachineConf extends EnumStateMachineConfigurerAdapter<State, E
   @Bean
   public Guard<State, Event> hideGuard() {
     return new HideGuard();
-  }
-
-  @Bean
-  public Guard<State, Event> lastTaskGuard() {
-    return new LastTaskGuard();
   }
 
   @Bean
