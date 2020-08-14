@@ -92,6 +92,7 @@ public class GitHubHookServlet extends HttpServlet {
         if (json.get("action").toString().equals(opened)) {
           gitHubGiveNewTask.gaveNewTask(json);
         }
+        
         boolean checkComment = false;
         try{
           json.getJSONObject("comment");
