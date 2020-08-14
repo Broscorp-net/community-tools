@@ -15,6 +15,8 @@ import java.util.Optional;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -90,7 +92,13 @@ public class GitHubHookServlet extends HttpServlet {
         if (json.get("action").toString().equals(opened)) {
           gitHubGiveNewTask.gaveNewTask(json);
         }
-        if (json.get("action").equals("submitted")) {
+        boolean checkComment = false;
+        try{
+          json.getJSONObject("comment");
+          checkComment = true;
+        }catch (JSONException ignored){}
+
+        if (json.get("action").equals("submitted")||checkComment) {
           addMentorService.addMentor(json);
         }
         jdbcTemplate.update(

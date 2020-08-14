@@ -7,6 +7,8 @@ import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
 import com.github.seratch.jslack.api.methods.SlackApiException;
 import java.io.IOException;
+
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.statemachine.StateMachine;
@@ -23,9 +25,13 @@ public class AddMentorService {
   private SlackService service;
 
   public void addMentor(JSONObject jsonObject) {
-    String mentor = jsonObject.getJSONObject("review").getJSONObject("user").getString("login");
-    String creator = jsonObject.getJSONObject("pull_request").getJSONObject("head")
-        .getJSONObject("repo").getJSONObject("owner").getString("login");
+    String mentor,creator;
+    try {
+      mentor = jsonObject.getJSONObject("comment").getJSONObject("user").getString("login");
+    }catch (JSONException e){
+      mentor = jsonObject.getJSONObject("review").getJSONObject("user").getString("login");
+    }
+    creator = jsonObject.getJSONObject("pull_request").getJSONObject("user").getString("login");
     if (mentorsRepository.findByGitNick(mentor).isPresent()) {
       StateMachine<State, Event> machine = stateMachineService.restoreMachineByNick(creator);
       machine.getExtendedState().getVariables().put("mentor", mentor);
