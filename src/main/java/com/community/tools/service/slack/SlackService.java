@@ -5,6 +5,7 @@ import com.github.seratch.jslack.api.methods.SlackApiException;
 import com.github.seratch.jslack.api.methods.request.users.UsersListRequest;
 import com.github.seratch.jslack.api.methods.response.chat.ChatPostMessageResponse;
 import com.github.seratch.jslack.api.model.Channel;
+import com.github.seratch.jslack.api.model.Conversation;
 import com.github.seratch.jslack.api.model.User;
 import com.github.seratch.jslack.api.webhook.Payload;
 import java.io.IOException;
@@ -70,7 +71,22 @@ public class SlackService {
 
     return postResponse.getTs();
   }
+  public String sendMessageToConversation(String channelName, String messageText)
+      throws IOException, SlackApiException {
 
+    Slack slack = Slack.getInstance();
+    Conversation channel = slack.methods(token)
+        .conversationsList(req -> req)
+        .getChannels()
+        .stream()
+        .filter(u -> u.getName().equals(channelName))
+        .findFirst().get();
+    ChatPostMessageResponse postResponse =
+        slack.methods(token).chatPostMessage(
+            req -> req.channel(channel.getId()).asUser(true).text(messageText));
+    return postResponse.getTs();
+  }
+  @Deprecated
   public String sendMessageToChat(String channelName, String messageText)
       throws IOException, SlackApiException {
     Slack slack = Slack.getInstance();

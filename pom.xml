@@ -40,6 +40,10 @@
       <scope>test</scope>
       <exclusions>
         <exclusion>
+          <groupId>com.vaadin.external.google</groupId>
+          <artifactId>android-json</artifactId>
+        </exclusion>
+        <exclusion>
           <groupId>org.junit.vintage</groupId>
           <artifactId>junit-vintage-engine</artifactId>
         </exclusion>
@@ -71,11 +75,13 @@
     </dependency>
 
     <!--JSlack-->
+    <!-- https://mvnrepository.com/artifact/com.github.seratch/jslack -->
     <dependency>
       <groupId>com.github.seratch</groupId>
       <artifactId>jslack</artifactId>
-      <version>3.2.1</version>
+      <version>3.4.2</version>
     </dependency>
+
 
     <!--JUnit-->
     <dependency>

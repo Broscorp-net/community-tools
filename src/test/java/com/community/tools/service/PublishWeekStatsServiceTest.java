@@ -31,7 +31,7 @@ class PublishWeekStatsServiceTest {
         slackService);
     assertDoesNotThrow(() -> {
       taskTestService.exportStat();
-      Mockito.verify(slackService).sendMessageToChat(eq("test"), anyString());
+      Mockito.verify(slackService).sendMessageToChat(eq("test_2"), anyString());
     });
   }
 

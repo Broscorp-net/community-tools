@@ -39,7 +39,7 @@ public class AddMentorService {
   public void sendNotifyWithMentor(String user, String url) {
     try {
       service
-          .sendMessageToChat("test", "User" + user + " create a pull request \n url: " + url
+          .sendMessageToChat("test_2", "User " + user + " create a pull request \n url: " + url
               + "\n Please check it : <@" + mentorsRepository
               .findByGitNick(stateMachineService.restoreMachineByNick(user)
                   .getExtendedState().getVariables().get("mentor").toString()).get().getSlackId()

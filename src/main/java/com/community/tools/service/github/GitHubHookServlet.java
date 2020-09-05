@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import javax.servlet.http.HttpServlet;
@@ -66,14 +67,20 @@ public class GitHubHookServlet extends HttpServlet {
         connect.setUsername(username);
         connect.setPassword(password);
         JdbcTemplate jdbcTemplate = new JdbcTemplate(connect);
-
-        sendNotificationMessageAboutPR(json);
-        giveNewTaskIfPrOpened(json);
-        addMentorIfEventIsReview(json);
-
         jdbcTemplate.update(
-                "INSERT INTO public.\"GitHookData\" (time, jsonb_data) VALUES ('" + new Date() + "','"
-                        + json + "'::jsonb);");
+            "INSERT INTO public.\"GitHookData\" (time, jsonb_data) VALUES ('" + new Date() + "','"
+                + json.toString().replace("'","''") + "'::jsonb);");
+        boolean actionExist = false;
+        try {
+          json.get("action");
+          actionExist = true;
+        }catch (JSONException ignored){}
+
+        if(actionExist) {
+          sendNotificationMessageAboutPR(json);
+          giveNewTaskIfPrOpened(json);
+          addMentorIfEventIsReview(json);
+        }
       }
     } catch (NoSuchAlgorithmException | InvalidKeyException | SlackApiException e) {
       throw new RuntimeException(e);
@@ -91,7 +98,7 @@ public class GitHubHookServlet extends HttpServlet {
         addMentorService.sendNotifyWithMentor(user, url);
       } else {
         service
-                .sendMessageToChat("test", "User" + user + " create a pull request \n url: " + url);
+                .sendMessageToChat("test_2", "User " + user + " create a pull request \n url: " + url);
 
       }
     }
@@ -99,9 +106,8 @@ public class GitHubHookServlet extends HttpServlet {
   private boolean checkForLabeled(JSONObject json){
     if (json.get("action").toString().equals(labeledStr)) {
       List<Object> list = json.getJSONObject("pull_request").getJSONArray("labels").toList();
-      Optional<JSONObject> label = list.stream().map(o -> (JSONObject) o)
-              .filter(e -> e.getString("name").equals("ready for review")).findFirst();
-      return label.isPresent();
+      return list.stream().map(o -> (HashMap) o)
+          .anyMatch(e -> e.get("name").equals("ready for review"));
     }
     return false;
   }
@@ -113,7 +119,13 @@ public class GitHubHookServlet extends HttpServlet {
       }catch (JSONException e){
         mentor = json.getJSONObject("review").getJSONObject("user").getString("login");
       }
-      creator = json.getJSONObject("pull_request").getJSONObject("user").getString("login");
+      try {
+        creator = json.getJSONObject("pull_request").getJSONObject("user").getString("login");
+      }catch (JSONException e){
+        creator = json.getJSONObject("issue").getJSONObject("user").getString("login");
+      }
+
+
       addMentorService.addMentor(mentor,creator);
     }
   }

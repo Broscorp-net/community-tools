@@ -16,10 +16,6 @@ public class StateMachineApplicationListeer implements
     @Override
     public void stateChanged(org.springframework.statemachine.state.State from,
                              org.springframework.statemachine.state.State to) {
-        if (from.getId() != null) {
-            logger.info("Machine change status from " + from.getId() + " to " + to.getId());
-
-        }
     }
 
     @Override
