@@ -1,4 +1,4 @@
-package com.community.tools.util.statemachie.actions.verifications;
+package com.community.tools.util.statemachie.actions.transitions.verifications;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
@@ -16,7 +16,6 @@ import com.community.tools.service.slack.SlackHandlerService;
 import com.community.tools.service.slack.SlackService;
 import com.community.tools.util.statemachie.Event;
 import com.community.tools.util.statemachie.State;
-import com.community.tools.util.statemachie.actions.transitions.verifications.AddGitNameActionTransition;
 import com.community.tools.util.statemachie.jpa.StateMachineRepository;
 
 import java.io.IOException;
@@ -42,7 +41,7 @@ import org.springframework.statemachine.StateMachine;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class AddGitNameActionTest {
+class AddGitNameActionTest {
 
   @InjectMocks
   private AddGitNameActionTransition addGitNameAction;
@@ -124,14 +123,14 @@ public class AddGitNameActionTest {
     when(slackSer.sendMessageToConversation(anyString(), anyString())).thenReturn("");
 
     addGitNameAction.execute(stateContext);
-    verify(stateContext, times(4)).getExtendedState();
-    verify(gitHubService, times(2)).getUserByLoginInGitHub("likeRewca");
-    verify(gitHubConnectService, times(2)).getGitHubRepository();
-    verify(slackSer, times(5)).getUserById("U0191K2V20K");
-    verify(slackSer, times(2))
+    verify(stateContext, times(2)).getExtendedState();
+    verify(gitHubService, times(1)).getUserByLoginInGitHub("likeRewca");
+    verify(gitHubConnectService, times(1)).getGitHubRepository();
+    verify(slackSer, times(2)).getUserById("U0191K2V20K");
+    verify(slackSer, times(1))
         .sendPrivateMessage("Горб Юра",
             "Hurray! Your nick is available. Nice to meet you :smile:");
-    verify(slackSer, times(2)).sendMessageToConversation(anyString(), anyString());
+    verify(slackSer, times(1)).sendMessageToConversation(anyString(), anyString());
   }
 
 
