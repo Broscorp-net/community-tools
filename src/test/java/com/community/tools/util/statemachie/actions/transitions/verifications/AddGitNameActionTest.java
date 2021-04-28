@@ -95,7 +95,7 @@ class AddGitNameActionTest {
   }
 
   @Test
-  public void executeTest() throws Exception {
+  void executeTest() throws Exception {
     Map<Object, Object> mockData = new HashMap<>();
 
     Payload payload = new VerificationPayload("U0191K2V20K", "likeRewca");
@@ -123,20 +123,20 @@ class AddGitNameActionTest {
     when(slackSer.sendMessageToConversation(anyString(), anyString())).thenReturn("");
 
     addGitNameAction.execute(stateContext);
-    verify(stateContext, times(2)).getExtendedState();
-    verify(gitHubService, times(1)).getUserByLoginInGitHub("likeRewca");
-    verify(gitHubConnectService, times(1)).getGitHubRepository();
-    verify(slackSer, times(2)).getUserById("U0191K2V20K");
-    verify(slackSer, times(1))
+    verify(stateContext, times(4)).getExtendedState();
+    verify(gitHubService, times(2)).getUserByLoginInGitHub("likeRewca");
+    verify(gitHubConnectService, times(2)).getGitHubRepository();
+    verify(slackSer, times(5)).getUserById("U0191K2V20K");
+    verify(slackSer, times(2))
         .sendPrivateMessage("Горб Юра",
             "Hurray! Your nick is available. Nice to meet you :smile:");
-    verify(slackSer, times(1)).sendMessageToConversation(anyString(), anyString());
+    verify(slackSer, times(2)).sendMessageToConversation(anyString(), anyString());
   }
 
 
   @SneakyThrows
   @Test
-  public void shouldGetExceptionWhenAddingToRole() throws IOException {
+  void shouldGetExceptionWhenAddingToRole() throws IOException {
     Map<Object, Object> mockData = new HashMap<>();
 
     Payload payload = new VerificationPayload("U0191K2V20K", "likeRewca");
