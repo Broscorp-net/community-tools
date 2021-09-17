@@ -246,7 +246,7 @@ public class SlackService implements MessageService<String> {
               .usersList(UsersListRequest.builder().token(token).build())
               .getMembers()
               .stream()
-              .map(ServiceUser::fromSlack)
+              .map(ServiceUser::from)
               .collect(Collectors.toSet());
 
       return users;

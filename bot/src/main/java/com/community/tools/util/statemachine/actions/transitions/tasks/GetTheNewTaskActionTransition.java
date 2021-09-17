@@ -47,6 +47,6 @@ public class GetTheNewTaskActionTransition implements Transition {
     int i = (Integer) stateContext.getExtendedState().getVariables().get("taskNumber");
     String user = stateContext.getExtendedState().getVariables().get("id").toString();
     messageService.sendBlocksMessage(messageService.getUserById(user),
-        messageConstructor.nextTaskMessage(tasksList, i));
+        messageConstructor.createNextTaskMessage(tasksList, i));
   }
 }

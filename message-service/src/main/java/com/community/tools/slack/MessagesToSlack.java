@@ -141,7 +141,7 @@ public class MessagesToSlack implements MessageConstructor<String> {
   }
 
   @Override
-  public String failedBuildMessage(String url, String task) {
+  public String createFailedBuildMessage(String url, String task) {
     return String.format(
       "[{\"type\": \"section\", \"text\": { \"type\": \"mrkdwn\", \"text\": "
         + "\"Oops, your build at the task <%s|%s> is down!\"}}]",
@@ -149,12 +149,12 @@ public class MessagesToSlack implements MessageConstructor<String> {
   }
 
   @Override
-  public String infoLinkMessage(String info, String url, String img) {
+  public String createInfoLinkMessage(String info, String url, String img) {
     return String.format(INFO_LINK_MESSAGE, info, url, img);
   }
 
   @Override
-  public String statisticMessage(List<EventData> events) {
+  public String createStatisticMessage(List<EventData> events) {
     StringBuilder messageBuilder = new StringBuilder();
 
     Map<String, List<EventData>> sortedMapGroupByActors = new HashMap<>();
@@ -205,7 +205,7 @@ public class MessagesToSlack implements MessageConstructor<String> {
   }
 
   @Override
-  public String nextTaskMessage(List<String> tasksList, int numberTask) {
+  public String createNextTaskMessage(List<String> tasksList, int numberTask) {
     return NEXT_TASK + tasksList.get(numberTask) + "|TASK>.\"}}]";
   }
 

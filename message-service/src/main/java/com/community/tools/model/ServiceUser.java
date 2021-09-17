@@ -5,9 +5,9 @@ import net.dv8tion.jda.api.entities.User;
 
 @Data
 public class ServiceUser {
+
   private String id;
   private String name;
-
 
   /**
    * Convert an DiscordUser object into an ServiceUser object.
@@ -15,7 +15,7 @@ public class ServiceUser {
    * @param discordUser - DiscordUser object.
    * @return a new ServiceUser object.
    */
-  public static ServiceUser fromDiscord(User discordUser) {
+  public static ServiceUser from(User discordUser) {
     ServiceUser user = new ServiceUser();
 
     user.setId(discordUser.getId());
@@ -29,7 +29,7 @@ public class ServiceUser {
    * @param slackUser - SlackUser object.
    * @return a new ServiceUser object.
    */
-  public static ServiceUser fromSlack(com.github.seratch.jslack.api.model.User slackUser) {
+  public static ServiceUser from(com.github.seratch.jslack.api.model.User slackUser) {
     ServiceUser user = new ServiceUser();
 
     user.setId(slackUser.getId());

@@ -6,7 +6,7 @@
 
   <packaging>pom</packaging>
   <modules>
-    <module>core</module>
+    <module>bot</module>
     <module>message-service</module>
   </modules>
 

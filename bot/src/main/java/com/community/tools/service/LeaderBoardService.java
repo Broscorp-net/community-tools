@@ -87,13 +87,13 @@ public class LeaderBoardService {
    */
   public List<User> addNameToUser() {
     List<User> list = stateMachineRepository.findAll();
-    Set<ServiceUser> slackUsers = messageService.getAllUsers();
-    Map<String, String> map = slackUsers.stream()
+    Set<ServiceUser> users = messageService.getAllUsers();
+    Map<String, String> map = users.stream()
             .filter(u -> u.getName() != null)
             .collect(Collectors.toMap(ServiceUser::getId, ServiceUser::getName));
     for (User user: list) {
-      String slackName = map.get(user.getUserID());
-      user.setPlatformName(slackName);
+      String name = map.get(user.getUserID());
+      user.setPlatformName(name);
     }
     return list;
   }

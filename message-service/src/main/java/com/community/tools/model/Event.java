@@ -1,6 +1,7 @@
 package com.community.tools.model;
 
 public enum Event {
+
   COMMIT("Commit"),
   COMMENT("Comment"),
   PULL_REQUEST_CREATED("Pull Request created"),

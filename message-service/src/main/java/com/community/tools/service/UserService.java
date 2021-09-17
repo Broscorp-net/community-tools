@@ -5,7 +5,7 @@ import com.community.tools.model.ServiceUser;
 import java.util.Map;
 import java.util.Set;
 
-public interface UserService<E> {
+public interface UserService {
 
   String getUserById(String id);
 

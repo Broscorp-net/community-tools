@@ -187,7 +187,7 @@ public class GitHubHookService {
         String userNick = json.getJSONObject("sender").getString("login");
         String userId = stateMachineService.getIdByNick(userNick);
         messageService.sendBlocksMessage(messageService.getUserById(userId),
-            messageConstructor.failedBuildMessage(url, task));
+            messageConstructor.createFailedBuildMessage(url, task));
       }
     }
   }

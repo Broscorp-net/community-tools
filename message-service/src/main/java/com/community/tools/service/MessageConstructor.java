@@ -31,12 +31,12 @@ public interface MessageConstructor<T> {
 
   T createMessageAboutSeveralInfoChannel(String[] infoChannelMessages);
 
-  T failedBuildMessage(String url, String task);
+  T createFailedBuildMessage(String url, String task);
 
-  T infoLinkMessage(String info, String url, String img);
+  T createInfoLinkMessage(String info, String url, String img);
 
-  T statisticMessage(List<EventData> events);
+  T createStatisticMessage(List<EventData> events);
 
-  T nextTaskMessage(List<String> tasksList, int numberTask);
+  T createNextTaskMessage(List<String> tasksList, int numberTask);
 
 }

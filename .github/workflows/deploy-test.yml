@@ -29,4 +29,4 @@ jobs:
         environment_name: BroscorpCommunity-test
         version_label: ${{ github.sha }}-test
         region: eu-west-1
-        deployment_package: core/target/core-1-SNAPSHOT.jar
+        deployment_package: target/bot-1-SNAPSHOT.jar

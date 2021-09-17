@@ -9,4 +9,5 @@ public class Message {
 
   private String userId;
   private String text;
+
 }

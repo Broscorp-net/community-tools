@@ -163,7 +163,7 @@ public class DiscordService implements MessageService<MessageEmbed> {
   @Override
   public Set<ServiceUser> getAllUsers() {
     Set<ServiceUser> users =
-        jda.getUsers().stream().map(ServiceUser::fromDiscord).collect(Collectors.toSet());
+        jda.getUsers().stream().map(ServiceUser::from).collect(Collectors.toSet());
     return users;
   }
 

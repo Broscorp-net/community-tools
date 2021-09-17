@@ -57,7 +57,7 @@ public class PublishWeekStatsService {
       System.out.println(events);
     } else {
       messageService.sendBlockMessageToConversation(channel,
-          messageConstructor.statisticMessage(
+          messageConstructor.createStatisticMessage(
                   events));
     }
   }
@@ -74,7 +74,7 @@ public class PublishWeekStatsService {
     String img = url + "img/" + date;
 
     messageService.sendBlockMessageToConversation(channel,
-        messageConstructor.infoLinkMessage(Messages.RATING_MESSAGE, url, img));
+        messageConstructor.createInfoLinkMessage(Messages.RATING_MESSAGE, url, img));
   }
 
   /**
@@ -87,6 +87,6 @@ public class PublishWeekStatsService {
     String img = url + "img/" + date;
 
     messageService.sendBlockMessageToConversation(channel,
-        messageConstructor.infoLinkMessage(Messages.TASKS_STATUS_MESSAGE, url, img));
+        messageConstructor.createInfoLinkMessage(Messages.TASKS_STATUS_MESSAGE, url, img));
   }
 }

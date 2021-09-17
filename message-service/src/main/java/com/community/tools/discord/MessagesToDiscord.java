@@ -123,19 +123,19 @@ public class MessagesToDiscord implements MessageConstructor<MessageEmbed> {
   }
 
   @Override
-  public MessageEmbed failedBuildMessage(String url, String task) {
+  public MessageEmbed createFailedBuildMessage(String url, String task) {
     return new EmbedBuilder()
       .addField("", "Oops, your build at the task [" + task + "](" + url + ") is down!", false)
       .build();
   }
 
   @Override
-  public MessageEmbed infoLinkMessage(String info, String url, String img) {
+  public MessageEmbed createInfoLinkMessage(String info, String url, String img) {
     return new EmbedBuilder().setTitle(info, url).setImage(img).build();
   }
 
   @Override
-  public MessageEmbed statisticMessage(List<EventData> events) {
+  public MessageEmbed createStatisticMessage(List<EventData> events) {
     EmbedBuilder embedBuilder = new EmbedBuilder();
 
     Map<String, List<EventData>> sortedMapGroupByActors = new HashMap<>();
@@ -176,7 +176,7 @@ public class MessagesToDiscord implements MessageConstructor<MessageEmbed> {
   }
 
   @Override
-  public MessageEmbed nextTaskMessage(List<String> tasksList, int numberTask) {
+  public MessageEmbed createNextTaskMessage(List<String> tasksList, int numberTask) {
     return new EmbedBuilder()
       .addField("", NEXT_TASK + tasksList.get(numberTask) + ") :link:", false)
       .build();
