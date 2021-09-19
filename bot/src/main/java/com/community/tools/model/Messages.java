@@ -119,6 +119,7 @@ public class Messages {
     ESTIMATE_QUESTION_FOURTH,
     ESTIMATE_QUESTION_FIFTH
   };
+
   public static final String[] TASKS_FOR_USERS = {
     "checkstyle",
     "primitives",
@@ -136,6 +137,7 @@ public class Messages {
     "strings",
     "gamelife"
   };
+
   public static final Map<String, String> POINTS_FOR_TASK =
       Splitter.on(", ")
           .withKeyValueSeparator(":")

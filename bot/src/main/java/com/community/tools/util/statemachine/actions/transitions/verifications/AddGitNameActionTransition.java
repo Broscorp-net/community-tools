@@ -99,14 +99,8 @@ public class AddGitNameActionTransition implements Transition {
   private String sendUserAnswersToChannel(
       String firstAnswer, String secondAnswer, String thirdAnswer) {
     return "Answer on questions : \n"
-        + "1. "
-        + firstAnswer
-        + ";\n"
-        + "2. "
-        + secondAnswer
-        + ";\n"
-        + "3. "
-        + thirdAnswer
-        + ".";
+        + "1. " + firstAnswer + ";\n"
+        + "2. " + secondAnswer + ";\n"
+        + "3. " + thirdAnswer + ".";
   }
 }

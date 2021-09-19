@@ -1,8 +1,4 @@
 package com.community.tools.util.statemachine.actions.verifications;
-/**
- * javadoc.
- * AddGitNameTest.
- */
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
@@ -86,7 +82,7 @@ public class AddGitNameActionTest {
   }
 
   /**
-   * refreshMocks.
+   * Used for refresh mocks.
    */
   @BeforeEach
   public void refreshMocks() {
