@@ -1,25 +1,35 @@
 table {
-    margin-top: 10px;
+  margin-top: 10px;
 }
 
 .vertical {
-    width: calc(5%);
-    height: auto;
-    writing-mode: vertical-lr;
+  width: calc(5%);
+  height: auto;
+  writing-mode: vertical-lr;
 }
 
 .ready_for_review {
-    background: #008672;
+  background: #008672;
 }
 
 .changes_requested {
-    background: #d73a4a;
+  background: #d73a4a;
 }
 
 .done {
-    background: #3bbf5a;
+  background: #3bbf5a;
 }
 
 .pull_request {
-    background: #9ea9b3;
+  background: #9ea9b3;
+}
+
+.loader{
+  margin: 0 auto;
+  width: 55px;
+}
+
+.loader img{
+  width: 50px;
+  height: 50px;
 }
