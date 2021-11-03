@@ -82,7 +82,7 @@ public class PublishWeekStatsService {
    */
   @Scheduled(cron = "0 20 0 * * ?")
   public void publishTasksStatus() {
-    String url = urlServer + "tasksstatus";
+    String url = urlServer + "task-status";
     String date = LocalDate.now().toString();
     String img = url + "img/" + date;
 
