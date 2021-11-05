@@ -14,7 +14,7 @@ public class TestController {
   PublishWeekStatsService service;
 
   @GetMapping
-  public void sendMessage(){
+  public void sendMessage() {
     service.publishTasksStatus();
   }
 
