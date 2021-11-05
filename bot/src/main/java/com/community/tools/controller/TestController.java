@@ -1,8 +1,6 @@
 package com.community.tools.controller;
 
 import com.community.tools.service.PublishWeekStatsService;
-import com.github.seratch.jslack.api.methods.SlackApiException;
-import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
