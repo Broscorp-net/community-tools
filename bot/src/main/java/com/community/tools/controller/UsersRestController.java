@@ -68,8 +68,9 @@ public class UsersRestController {
       newUsers = newUsers.subList(0, userLimit);
     }
 
-    SimpleDateFormat sdf = new SimpleDateFormat ("dd, MM, yyyy");
+    SimpleDateFormat sdf = new SimpleDateFormat("dd, MM, yyyy");
     String str = sdf.format(new Date());
+    
     for (User u : newUsers) {
       if (u.getDateOfRegistration() == null) {
         u.setDateOfRegistration(str);
