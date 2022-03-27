@@ -1,7 +1,6 @@
 package com.community.tools.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.util.Date;
 import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.Id;

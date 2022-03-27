@@ -3,10 +3,8 @@ package com.community.tools.controller;
 import com.community.tools.model.User;
 import com.community.tools.service.LeaderBoardService;
 import com.community.tools.service.TaskStatusService;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,15 +66,11 @@ public class UsersRestController {
       newUsers = newUsers.subList(0, userLimit);
     }
 
-    SimpleDateFormat sdf = new SimpleDateFormat("dd, MM, yyyy");
-    String str = sdf.format(new Date());
-    
-    for (User u : newUsers) {
-      if (u.getDateOfRegistration() == null) {
-        u.setDateOfRegistration(str);
-      }
+    if (userLimit != null) {
+      return newUsers.subList(0, userLimit);
+    } else {
+      return newUsers;
     }
-    return newUsers;
   }
 
 }

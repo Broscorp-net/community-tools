@@ -12,6 +12,8 @@ import com.community.tools.util.statemachine.State;
 import com.community.tools.util.statemachine.actions.Transition;
 import com.community.tools.util.statemachine.jpa.StateMachineRepository;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
@@ -62,6 +64,10 @@ public class AddGitNameActionTransition implements Transition {
 
     User stateEntity = stateMachineRepository.findByUserID(user).get();
     stateEntity.setGitName(nickname);
+
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    stateEntity.setDateOfRegistration(sdf.format(new Date()));
+
     stateMachineRepository.save(stateEntity);
     String firstAnswer = stateEntity.getFirstAnswerAboutRules();
     String secondAnswer = stateEntity.getSecondAnswerAboutRules();
