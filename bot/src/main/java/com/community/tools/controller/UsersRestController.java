@@ -3,12 +3,11 @@ package com.community.tools.controller;
 import com.community.tools.model.User;
 import com.community.tools.service.LeaderBoardService;
 import com.community.tools.service.TaskStatusService;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
@@ -65,17 +64,11 @@ public class UsersRestController {
     newUsers.sort(comparator);
 
     if (userLimit != null) {
-      newUsers = newUsers.subList(0, userLimit);
+      return newUsers.subList(0, userLimit);
+    } else {
+      return newUsers;
     }
-
-    SimpleDateFormat sdf = new SimpleDateFormat ("dd, MM, yyyy");
-    String str = sdf.format(new Date());
-    for (User u : newUsers) {
-      if (u.getDateOfRegistration() == null) {
-        u.setDateOfRegistration(str);
-      }
-    }
-    return newUsers;
   }
+
 
 }
