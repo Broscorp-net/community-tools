@@ -4,12 +4,6 @@ import com.community.tools.model.ServiceUser;
 import com.community.tools.model.User;
 import com.community.tools.service.github.GitHubService;
 import com.community.tools.util.statemachine.jpa.StateMachineRepository;
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.time.Duration;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 
