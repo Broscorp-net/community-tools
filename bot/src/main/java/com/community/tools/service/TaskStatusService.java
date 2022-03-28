@@ -5,6 +5,7 @@ import com.community.tools.model.User;
 import com.community.tools.repository.TaskStatusRepository;
 import com.community.tools.util.statemachine.jpa.StateMachineRepository;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -144,6 +145,7 @@ public class TaskStatusService {
 
   /**
    * Set task status for task's user.
+   * Set date of last activity.
    *
    * @param gitName user gitName
    * @param title   title pull request
@@ -166,6 +168,10 @@ public class TaskStatusService {
         }
       });
       user.setCompletedTasks(countCompletedTasksByUser(user));
+
+      SimpleDateFormat sdf = new SimpleDateFormat("dd MM yyyy");
+      user.setDateOfLastActivity(sdf.format(new Date()));
+
       stateMachineRepository.save(user);
     }
   }

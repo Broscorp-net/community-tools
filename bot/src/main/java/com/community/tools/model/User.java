@@ -20,6 +20,7 @@ public class User {
   private String userID;
   private String gitName;
   private String dateOfRegistration;
+  private String dateOfLastActivity;
   @JsonIgnore
   private byte[] stateMachine;
   private Integer karma = 0;
