@@ -2,6 +2,8 @@ package com.community.tools.controller;
 
 import com.community.tools.model.User;
 import com.community.tools.service.LeaderBoardService;
+import com.community.tools.service.MessageService;
+import com.community.tools.service.PublishWeekStatsService;
 import com.community.tools.service.TaskStatusService;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -22,9 +24,6 @@ public class UsersRestController {
 
   @Autowired
   private TaskStatusService taskStatusService;
-
-  @Value("${tasksForUsers}")
-  private String[] tasksForUsers;
 
   @Autowired
   LeaderBoardService leaderBoardService;
@@ -67,6 +66,7 @@ public class UsersRestController {
       return newUsers.subList(0, userLimit);
     } else {
       return newUsers;
+    }
     }
   }
 }
