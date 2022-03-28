@@ -65,7 +65,7 @@ public class AddGitNameActionTransition implements Transition {
     User stateEntity = stateMachineRepository.findByUserID(user).get();
     stateEntity.setGitName(nickname);
 
-    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    SimpleDateFormat sdf = new SimpleDateFormat("dd MM yyyy");
     stateEntity.setDateOfRegistration(sdf.format(new Date()));
 
     stateMachineRepository.save(stateEntity);
