@@ -1,6 +1,8 @@
 <table class="table table-bordered">
     <thead>
         <tr>
+            <th scope="col">Date of registration</th>
+            <th scope="col">Date of last activity</th>
             <th scope="col">SlackName or DiscordName</th>
             <th scope="col">GitName</th>
             <th scope="col">Tasks done</th>
@@ -9,6 +11,8 @@
     </thead>
     <tbody>
         <tr *ngFor="let user of users;">
+            <td>{{user.dateRegistrationForFront}}</td>
+            <td>{{user.dateLastActivityForFront}}</td>
             <td>{{user.platformName}}</td>
             <td>{{user.gitName}}</td>
             <td>{{user.completedTasks}}</td>

@@ -3,6 +3,7 @@ import {User} from 'src/app/models/user.model';
 import {UsersService} from 'src/app/services/users.service';
 import {TasksService} from 'src/app/services/tasks.service';
 import {ActivatedRoute} from "@angular/router";
+import {UserTaskStatus} from "../../models/user-task-status.model";
 
 @Component({
   selector: 'app-task-status',
@@ -47,8 +48,14 @@ export class TaskStatusComponent implements OnInit {
 
   }
 
+  isTaskStatusEquals(element: UserTaskStatus, task: string): boolean {
+    return element.taskName === task ||
+      element.taskName.replace('/', '.') === task;
+  }
+
   getClass(user: User, task: string): any {
-    const status = user?.taskStatuses?.find(element => element.taskName === task)?.taskStatus;
+    const status =
+      user?.taskStatuses?.find(element => this.isTaskStatusEquals(element, task))?.taskStatus;
     return {
       'pull_request': status === 'pull request',
       'done': status === 'done',

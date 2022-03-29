@@ -10,6 +10,7 @@ import com.community.tools.service.payload.VerificationPayload;
 import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
 import com.community.tools.util.statemachine.jpa.StateMachineRepository;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.statemachine.StateMachine;
@@ -71,9 +72,9 @@ public class TrackingService {
         event = Event.LOGIN_CONFIRMATION;
         break;
       case CHECK_LOGIN:
-        if (messageFromUser.equalsIgnoreCase("yes")) {
+        if (messageFromUser.equalsIgnoreCase(Messages.YES)) {
           event = Event.ADD_GIT_NAME_AND_FIRST_TASK;
-        } else if (messageFromUser.equalsIgnoreCase("no")) {
+        } else if (messageFromUser.equalsIgnoreCase(Messages.NO)) {
           event = Event.DID_NOT_PASS_VERIFICATION_GIT_LOGIN;
         } else {
           message = Messages.NOT_THAT_MESSAGE;
@@ -91,10 +92,10 @@ public class TrackingService {
         }
         break;
       case GOT_THE_TASK:
-        if (messageFromUser.equals("yes")) {
+        if (messageFromUser.equalsIgnoreCase(Messages.YES)) {
           estimateTaskService.estimate(userId);
           return;
-        } else if (messageFromUser.equals("no")) {
+        } else if (messageFromUser.equalsIgnoreCase(Messages.NO)) {
           event = Event.RESENDING_ESTIMATE_TASK;
           payload = new SimplePayload(userId);
         }
@@ -120,6 +121,7 @@ public class TrackingService {
 
     User stateEntity = new User();
     stateEntity.setUserID(userId);
+    stateEntity.setDateRegistration(LocalDateTime.now());
     String userName = messageService.getUserById(userId);
     stateMachineRepository.save(stateEntity);
     stateMachineService.persistMachineForNewUser(userId);

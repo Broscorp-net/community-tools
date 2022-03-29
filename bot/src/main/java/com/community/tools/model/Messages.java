@@ -5,6 +5,9 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 public class Messages {
+  // messages from user
+  public static final String YES = "yes";
+  public static final String NO = "no";
 
   // messages for bot
   public static final String ANSWERED_NO_DURING_VERIFICATION =
