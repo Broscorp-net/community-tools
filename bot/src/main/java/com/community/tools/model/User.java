@@ -1,6 +1,7 @@
 package com.community.tools.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.time.LocalDateTime;
 import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -19,7 +20,9 @@ public class User {
   @Id
   private String userID;
   private String gitName;
-  private String dateOfRegistration;
+  private LocalDateTime dateOfRegistration;
+  @Transient
+  private String dateOfRegistrationForFront;
   private String dateOfLastActivity;
   @JsonIgnore
   private byte[] stateMachine;
