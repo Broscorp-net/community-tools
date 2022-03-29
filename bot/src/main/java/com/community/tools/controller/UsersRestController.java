@@ -61,7 +61,12 @@ public class UsersRestController {
 
     DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd MM yyyy");
     for (User u : users) {
-      u.setDateOfRegistrationForFront(dtf.format(u.getDateOfRegistration()));
+      if ((u.getDateRegistration() != null)) {
+        u.setDateRegistrationForFront(dtf.format(u.getDateRegistration()));
+      }
+      if (u.getDateLastActivity() != null) {
+        u.setDateLastActivityForFront(dtf.format(u.getDateLastActivity()));
+      }
     }
 
     if (userLimit != null) {

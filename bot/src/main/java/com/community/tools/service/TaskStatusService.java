@@ -5,7 +5,7 @@ import com.community.tools.model.User;
 import com.community.tools.repository.TaskStatusRepository;
 import com.community.tools.util.statemachine.jpa.StateMachineRepository;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -168,10 +168,7 @@ public class TaskStatusService {
         }
       });
       user.setCompletedTasks(countCompletedTasksByUser(user));
-
-      SimpleDateFormat sdf = new SimpleDateFormat("dd MM yyyy");
-      user.setDateOfLastActivity(sdf.format(new Date()));
-
+      user.setDateLastActivity(LocalDateTime.now());
       stateMachineRepository.save(user);
     }
   }
