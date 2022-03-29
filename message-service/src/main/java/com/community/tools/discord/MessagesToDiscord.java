@@ -178,7 +178,7 @@ public class MessagesToDiscord implements MessageConstructor<MessageEmbed> {
   @Override
   public MessageEmbed createNextTaskMessage(List<String> tasksList, int numberTask) {
     return new EmbedBuilder()
-      .addField("", NEXT_TASK + tasksList.get(numberTask).replace('.','/') + ") :link:", false)
+      .addField("", NEXT_TASK + tasksList.get(numberTask) + ") :link:", false)
       .build();
   }
 
