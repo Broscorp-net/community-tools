@@ -41,7 +41,7 @@ public class PointsTaskService {
 
   /**
    * This method adds points to the trainee, when mentor labeled pull as "done".
-   If pull has wrong name, add 0 points
+   If pull has wrong name, add 0 points. Else send message - task completed successfully!
    * @param mentor GitNick of person, who add label "done" to  pull request
    * @param creator GitNick of person, who pull request
    * @param pullName Pull request title
@@ -65,6 +65,8 @@ public class PointsTaskService {
               .map(Map.Entry::getValue).findFirst().orElse(0);
       if (points == 0) {
         sendMessageWhichDescribesZeroPoints(stateEntity.getUserID(), pullName);
+      } else {
+        messageService.sendPrivateMessage(stateEntity.getUserID(), finalPullName + Messages.MESSAGE_TASK_DONE);
       }
       int newUserPoints = stateEntity.getPointByTask() + points;
       if (taskDone == numberPullsAbilityReview) {

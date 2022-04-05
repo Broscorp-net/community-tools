@@ -5,6 +5,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.community.tools.model.Mentors;
+import com.community.tools.model.Messages;
 import com.community.tools.model.User;
 import com.community.tools.service.github.jpa.MentorsRepository;
 import com.community.tools.util.statemachine.Event;
@@ -24,6 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import org.springframework.expression.EvaluationContext;
@@ -53,6 +55,8 @@ class PointsTaskServiceTest {
   StateMachine<State, Event> machine;
   @Mock
   private ExtendedState extendedState;
+
+  @Mock private MessageService messageService;
 
   @BeforeAll
   public void initMocks() {
@@ -88,6 +92,10 @@ class PointsTaskServiceTest {
 
     pointsTaskService.addPointForCompletedTask("test", "marvintik", " valueref_test ");
     pointsTaskService.addPointForCompletedTask("rest", "marvintik", " valueref_test ");
+
+
+    Mockito.verify(messageService).sendPrivateMessage(stateEntity.getUserID()," valueref_test " + Messages.MESSAGE_TASK_DONE);
+
     assertEquals(8, stateEntity.getPointByTask());
   }
 

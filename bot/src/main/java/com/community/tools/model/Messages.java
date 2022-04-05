@@ -82,6 +82,8 @@ public class Messages {
   public static final String RATING_MESSAGE = ":point_right: Рейтинг этой недели :point_left:";
   public static final String TASKS_STATUS_MESSAGE =
       ":point_right: Прогресс выполнения заданий :point_left:";
+  public static final String MESSAGE_TASK_DONE =
+          " - task completed successfully!";
 
   // Information channels message
   public static final String MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL_1 =
@@ -101,6 +103,7 @@ public class Messages {
       "Stories" + " of those who have completed an internship and found a job :sunglasses: ";
   public static final String MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL_7 =
       "`Please use the trades to" + " respond to messages.`";
+
 
   public static final String[] INFO_CHANNEL_MESSAGES = {
     MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL_1,
