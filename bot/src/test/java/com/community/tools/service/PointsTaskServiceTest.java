@@ -94,7 +94,8 @@ class PointsTaskServiceTest {
     pointsTaskService.addPointForCompletedTask("rest", "marvintik", " valueref_test ");
 
 
-    Mockito.verify(messageService).sendPrivateMessage(stateEntity.getUserID()," valueref_test " + Messages.MESSAGE_TASK_DONE);
+    Mockito.verify(messageService).sendPrivateMessage(stateEntity.getUserID(),
+            " valueref_test " + Messages.MESSAGE_TASK_DONE);
 
     assertEquals(8, stateEntity.getPointByTask());
   }
