@@ -1,12 +1,12 @@
 package com.community.tools.config;
 
+import java.util.Properties;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
-import java.util.Properties;
 
 @Configuration
 public class EmailConfig {
@@ -15,6 +15,10 @@ public class EmailConfig {
   @Value("${email.password}")
   private String password;
 
+  /**
+   * Config Gmail for send email.
+   * @return JavaMailSender.
+   **/
   @Bean
   public JavaMailSender getJavaMailSender() {
     JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
