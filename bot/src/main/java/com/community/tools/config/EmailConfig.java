@@ -8,6 +8,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 
+
 @Configuration
 public class EmailConfig {
   @Value("${email.login}")
@@ -36,4 +37,6 @@ public class EmailConfig {
 
     return mailSender;
   }
+
+
 }

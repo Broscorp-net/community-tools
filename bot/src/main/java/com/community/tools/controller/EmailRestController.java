@@ -41,4 +41,14 @@ public class EmailRestController {
                   + " <input  type = \"submit\" value = \"OK\">"
                   + "</form>";
   }
+
+  /**
+   * Metod received email.
+   * @return String html to success.
+   **/
+  @GetMapping("/receive")
+  public String reciveMail() {
+    email.getEmail();
+    return "Mail received";
+  }
 }
