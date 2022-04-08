@@ -26,6 +26,7 @@ public class User {
   private String firstAnswerAboutRules;
   private String secondAnswerAboutRules;
   private String thirdAnswerAboutRules;
+  private boolean messageWelcome;
 
   @Transient
   private String platformName;

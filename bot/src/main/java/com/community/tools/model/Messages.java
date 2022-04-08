@@ -30,6 +30,8 @@ public class Messages {
           + "\nAlso you can help your colleagues on their journey :hugging_face:";
   public static final String USERS_AGREE_MESSAGE = "I agree";
   public static final String WELCOME = "Welcome to the club buddy :handshake:";
+  public static final String MESSAGE_WELCOME = "Write about yourself in channel"
+      + " #welcome :ghost: \n" + Messages.MESSAGE_ABOUT_RULES_4;
   public static final String ADD_GIT_NAME =
       "So, that's it. You've read through all our rules."
           + " \n If you're ready to accept this challenge enter your GitHub nickname.";
@@ -56,7 +58,8 @@ public class Messages {
   public static final String THIRD_QUESTION =
       "3. Your task labelled as 'changes requested'." + " What is your next step?";
   public static final String MESSAGE_ABOUT_RULES_1 =
-      "Before you start, be sure to familiarize "
+      "Before you start, must write about yourself in channel '#welcome',"
+          + " be sure to familiarize "
           + "yourself with the rules. You can read the rules by clicking on this link.:point_down:";
   public static final String MESSAGE_ABOUT_RULES_2 =
       "https://github.com/Broscorp-net/traineeship/blob/master/README.md";

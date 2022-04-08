@@ -7,4 +7,6 @@ public interface EventListener {
   void memberJoin(Message message);
 
   void messageReceived(Message message);
+
+  void messageWelcome(Message message);
 }

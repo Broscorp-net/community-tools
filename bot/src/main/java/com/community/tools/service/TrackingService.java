@@ -1,5 +1,6 @@
 package com.community.tools.service;
 
+import com.community.tools.discord.DiscordService;
 import com.community.tools.model.Messages;
 import com.community.tools.model.User;
 import com.community.tools.service.payload.EstimatePayload;
@@ -11,6 +12,7 @@ import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
 import com.community.tools.util.statemachine.jpa.StateMachineRepository;
 import lombok.RequiredArgsConstructor;
+import net.dv8tion.jda.api.JDA;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.stereotype.Service;
@@ -47,11 +49,16 @@ public class TrackingService {
 
     switch (machine.getState().getId()) {
       case NEW_USER:
-        if (messageFromUser.equalsIgnoreCase("ready")) {
-          payload = new SimplePayload(userId);
-          event = Event.QUESTION_FIRST;
+        User user = stateMachineRepository.findByUserID(userId).get();
+        if (user.isMessageWelcome()) {
+          if (messageFromUser.equalsIgnoreCase("ready")) {
+            payload = new SimplePayload(userId);
+            event = Event.QUESTION_FIRST;
+          } else {
+            message = Messages.NOT_THAT_MESSAGE;
+          }
         } else {
-          message = Messages.NOT_THAT_MESSAGE;
+          message = Messages.MESSAGE_WELCOME;
         }
         break;
       case FIRST_QUESTION:
