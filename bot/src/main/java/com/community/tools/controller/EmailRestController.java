@@ -22,9 +22,10 @@ public class EmailRestController {
    **/
   @GetMapping
   public String adressMail() {
-    return "<form action = \"/email\" method = \"post\">"
-            + " <input name = \"email\" type=\"text\" placeholder = \"input mail\">"
-            + " <input  type = \"submit\" value = \"Send\">"
+    return "<form  action = \"/email\" method = \"post\">"
+            + " <input style = \"font-size:26px\" name = \"email\" type=\"text\" "
+            + "placeholder = \"input mail\">"
+            + " <input style = \"font-size:26px\" type = \"submit\" value = \"Send\">"
             + "</form>";
   }
 
@@ -37,8 +38,8 @@ public class EmailRestController {
   public String sendMail(@RequestParam(name = "email") String emailSend) {
     return
           "<form action = \"/email\" method = \"get\">"
-                  + " <label>" + email.sendEmail(emailSend) + " </label>"
-                  + " <input  type = \"submit\" value = \"OK\">"
+                  + " <label style = \"font-size:26px\">" + email.sendEmail(emailSend) + " </label>"
+                  + " <input style = \"font-size:26px\" type = \"submit\" value = \"OK\">"
                   + "</form>";
   }
 
@@ -47,8 +48,8 @@ public class EmailRestController {
    * @return String html to success.
    **/
   @GetMapping("/receive")
-  public String reciveMail() {
+  public String receiveMail() {
     email.getEmail();
-    return "Mail received";
+    return "<h1>Mail received</h1>";
   }
 }

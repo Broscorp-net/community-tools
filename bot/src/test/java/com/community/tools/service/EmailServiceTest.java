@@ -1,16 +1,12 @@
 package com.community.tools.service;
 
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.junit.jupiter.api.Test;
 
 
-public class EmailServiceTest {
-
-  @Autowired
-  EmailService email;
+class EmailServiceTest {
 
   @Test
-  public void sendMail() {
-   // Assert.assertEquals(email.sendEmail("Shurick2211@gmail.com"),"Email Sent!");
+  void sendEmail() {
+
   }
 }
