@@ -55,8 +55,11 @@ public class Messages {
   public static final String SECOND_QUESTION = "2. Which library should be used for unit testing?";
   public static final String THIRD_QUESTION =
       "3. Your task labelled as 'changes requested'." + " What is your next step?";
-  public static final String MESSAGE_ABOUT_RULES_1 =
-      "Before you start, be sure to familiarize "
+  public static final String MESSAGE_ABOUT_RULES_0 =
+      "If you need the registration instructions in Discord — just "
+          + "write you email here!\n\n";
+  public static final String MESSAGE_ABOUT_RULES_1 = Messages.MESSAGE_ABOUT_RULES_0
+      + "Before you start, be sure to familiarize "
           + "yourself with the rules. You can read the rules by clicking on this link.:point_down:";
   public static final String MESSAGE_ABOUT_RULES_2 =
       "https://github.com/Broscorp-net/traineeship/blob/master/README.md";

@@ -44,25 +44,4 @@ public class EmailService {
 
     return "Email Sent!";
   }
-
-  /**
-  * Method get email.
-  */
-  public void getEmail() {
-    try {
-      Folder inbox = store.getFolder("INBOX");
-      inbox.open(Folder.READ_WRITE);
-
-      Message message = inbox.getMessage(inbox.getMessageCount());
-      System.out.println(message.getSubject());
-      message.setFlag(Flag.SEEN, true);
-
-    } catch (NoSuchProviderException e) {
-      System.err.println(e.getMessage());
-    } catch (MessagingException e) {
-      System.err.println(e.getMessage());
-    }
-  }
-
-
 }

@@ -29,6 +29,8 @@ public class TrackingService {
 
   @Autowired private MessageConstructor messageConstructor;
 
+  @Autowired private EmailService emailService;
+
   /**
    * Method to start the event by state.
    *
@@ -104,7 +106,11 @@ public class TrackingService {
         payload = null;
     }
     if (event == null) {
-      messageService.sendPrivateMessage(messageService.getUserById(userId), message);
+      if (messageFromUser.indexOf("@") != -1) {
+        emailService.sendEmail(messageFromUser.trim());
+      } else {
+        messageService.sendPrivateMessage(messageService.getUserById(userId), message);
+      }
     } else {
       stateMachineService.doAction(machine, payload, event);
     }
