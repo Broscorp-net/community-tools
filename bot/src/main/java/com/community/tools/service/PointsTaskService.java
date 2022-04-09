@@ -67,7 +67,7 @@ public class PointsTaskService {
         sendMessageWhichDescribesZeroPoints(stateEntity.getUserID(), pullName);
       } else {
         messageService.sendPrivateMessage(stateEntity.getUserID(),
-            finalPullName + Messages.MESSAGE_TASK_DONE);
+            pullName + Messages.MESSAGE_TASK_DONE);
       }
       int newUserPoints = stateEntity.getPointByTask() + points;
       if (taskDone == numberPullsAbilityReview) {

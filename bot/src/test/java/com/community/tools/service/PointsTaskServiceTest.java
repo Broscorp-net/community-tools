@@ -2,9 +2,13 @@ package com.community.tools.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.community.tools.discord.DiscordService;
 import com.community.tools.model.Mentors;
+import com.community.tools.model.Messages;
 import com.community.tools.model.User;
 import com.community.tools.service.github.jpa.MentorsRepository;
 import com.community.tools.util.statemachine.Event;
@@ -24,8 +28,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import org.mockito.stubbing.Answer;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
@@ -53,6 +60,9 @@ class PointsTaskServiceTest {
   StateMachine<State, Event> machine;
   @Mock
   private ExtendedState extendedState;
+
+  @Mock
+  private MessageService messageService;
 
   @BeforeAll
   public void initMocks() {
@@ -85,9 +95,15 @@ class PointsTaskServiceTest {
     when(mentorsRepository.findByGitNick("test")).thenReturn(Optional.of(mentors));
     when(stateMachineRepository.findByGitName("marvintik")).thenReturn(Optional.of(stateEntity));
 
+    String message = " valueref_test " + Messages.MESSAGE_TASK_DONE;
 
     pointsTaskService.addPointForCompletedTask("test", "marvintik", " valueref_test ");
+    verify(messageService, times(1))
+        .sendPrivateMessage(stateEntity.getUserID(), message);
+
     pointsTaskService.addPointForCompletedTask("rest", "marvintik", " valueref_test ");
+    verify(messageService, times(1))
+        .sendPrivateMessage(stateEntity.getUserID(), message);
     assertEquals(8, stateEntity.getPointByTask());
   }
 
