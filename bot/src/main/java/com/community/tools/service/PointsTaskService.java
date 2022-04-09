@@ -65,6 +65,9 @@ public class PointsTaskService {
               .map(Map.Entry::getValue).findFirst().orElse(0);
       if (points == 0) {
         sendMessageWhichDescribesZeroPoints(stateEntity.getUserID(), pullName);
+      } else {
+        messageService.sendPrivateMessage(stateEntity.getUserID(),
+            finalPullName + Messages.MESSAGE_TASK_DONE);
       }
       int newUserPoints = stateEntity.getPointByTask() + points;
       if (taskDone == numberPullsAbilityReview) {
