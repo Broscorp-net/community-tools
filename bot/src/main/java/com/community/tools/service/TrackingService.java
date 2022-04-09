@@ -106,7 +106,7 @@ public class TrackingService {
         payload = null;
     }
     if (event == null) {
-      if (messageFromUser.indexOf("@") != -1) {
+      if (messageFromUser.indexOf("@") != -1 && messageFromUser.indexOf(".") != -1) {
         emailService.sendEmail(messageFromUser.trim());
       } else {
         messageService.sendPrivateMessage(messageService.getUserById(userId), message);
