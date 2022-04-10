@@ -46,10 +46,5 @@ public class MessageListener implements EventListener {
     }
   }
 
-  @Override
-  public void messageWelcome(Message message) {
-    User user = stateMachineRepository.findByUserID(message.getUserId()).get();
-    user.setMessageWelcome(true);
-    stateMachineRepository.save(user);
-  }
+
 }

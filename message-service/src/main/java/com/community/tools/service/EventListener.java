@@ -8,5 +8,4 @@ public interface EventListener {
 
   void messageReceived(Message message);
 
-  void messageWelcome(Message message);
 }

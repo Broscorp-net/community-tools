@@ -1,6 +1,5 @@
 package com.community.tools.service;
 
-import com.community.tools.discord.DiscordService;
 import com.community.tools.model.Messages;
 import com.community.tools.model.User;
 import com.community.tools.service.payload.EstimatePayload;
@@ -12,7 +11,6 @@ import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
 import com.community.tools.util.statemachine.jpa.StateMachineRepository;
 import lombok.RequiredArgsConstructor;
-import net.dv8tion.jda.api.JDA;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.stereotype.Service;
@@ -49,18 +47,23 @@ public class TrackingService {
 
     switch (machine.getState().getId()) {
       case NEW_USER:
-        User user = stateMachineRepository.findByUserID(userId).get();
-        if (user.isMessageWelcome()) {
-          if (messageFromUser.equalsIgnoreCase("ready")) {
-            payload = new SimplePayload(userId);
-            event = Event.QUESTION_FIRST;
-          } else {
-            message = Messages.NOT_THAT_MESSAGE;
-          }
+        if (messageFromUser.equals(Messages.WELCOME_CHANNEL)) {
+          payload = new SimplePayload(userId);
+          event = Event.GET_RULES;
         } else {
-          message = Messages.MESSAGE_WELCOME;
+          message = Messages.MESSAGE_NOT_WELCOME;
         }
         break;
+
+      case RULES:
+        if (messageFromUser.equalsIgnoreCase("ready")) {
+          payload = new SimplePayload(userId);
+          event = Event.QUESTION_FIRST;
+        } else {
+          message = Messages.NOT_THAT_MESSAGE;
+        }
+        break;
+
       case FIRST_QUESTION:
         payload = new QuestionPayload(userId, messageFromUser, userForQuestion);
         event = Event.QUESTION_SECOND;
@@ -132,12 +135,7 @@ public class TrackingService {
     stateMachineService.persistMachineForNewUser(userId);
 
     messageService.sendPrivateMessage(userName, Messages.WELCOME);
-    messageService.sendBlocksMessage(
-        userName,
-        messageConstructor.createMessageAboutRules(
-            Messages.MESSAGE_ABOUT_RULES_1,
-            Messages.MESSAGE_ABOUT_RULES_2,
-            Messages.MESSAGE_ABOUT_RULES_3,
-            Messages.MESSAGE_ABOUT_RULES_4));
+
+
   }
 }
