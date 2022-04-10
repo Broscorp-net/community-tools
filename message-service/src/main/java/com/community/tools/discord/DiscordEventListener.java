@@ -45,7 +45,7 @@ public class DiscordEventListener extends ListenerAdapter {
 
   @Override
   public void onGuildMessageReceived(@NotNull GuildMessageReceivedEvent event) {
-    if (event.getMessage().getChannel().toString().equalsIgnoreCase("welcome")) {
+    if (event.getMessage().getChannel().toString().indexOf("welcome") != -1) {
       String userId = event.getAuthor().getId();
       Message message = new Message(userId, "welcome channel");
       listener.messageReceived(message);
