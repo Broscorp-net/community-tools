@@ -1,5 +1,6 @@
 package com.community.tools.service.github;
 
+import com.community.tools.model.Messages;
 import com.community.tools.service.MessageConstructor;
 import com.community.tools.service.MessageService;
 import com.community.tools.service.PointsTaskService;
@@ -10,6 +11,7 @@ import com.community.tools.util.statemachine.Event;
 import com.github.seratch.jslack.api.methods.SlackApiException;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -28,6 +30,10 @@ public class GitHubHookService {
   private String opened;
   @Value("${generalInformationChannel}")
   private String channel;
+
+  @Value("${tasksForUsers}")
+  private String[] tasksForUsers;
+
 
   @Autowired
   private MessageConstructor messageConstructor;
@@ -52,6 +58,7 @@ public class GitHubHookService {
   public void doActionsAfterReceiveHook(JSONObject json) {
     sendNotificationMessageAboutPR(json);
     sendMessageAboutFailedBuild(json);
+    sendMessageAboutWrongNamePullRequest(json);
     giveNewTaskIfPrOpened(json);
     addMentorIfEventIsReview(json);
     addPointIfPullLabeledDone(json);
@@ -191,4 +198,17 @@ public class GitHubHookService {
       }
     }
   }
+
+  private void sendMessageAboutWrongNamePullRequest(JSONObject json) {
+    JSONObject checkRun = json.getJSONObject("check_run");
+    String task = checkRun.getJSONObject("check_suite").getString("head_branch");
+    String userNick = json.getJSONObject("sender").getString("login");
+    String userId = stateMachineService.getIdByNick(userNick);
+    boolean taskIs = Arrays.stream(tasksForUsers).filter(t -> t.equals(task)).toArray().length == 1;
+    if (taskIs) {
+      messageService.sendPrivateMessage(messageService.getUserById(userId),
+              Messages.PULL_REQUEST_WRONG_NAME);
+    }
+  }
+
 }
