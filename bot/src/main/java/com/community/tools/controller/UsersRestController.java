@@ -66,6 +66,11 @@ public class UsersRestController {
     }
     users.forEach(user -> {
       String email = "User has not email";
+      try {
+        email = gitHubService.getUserByLoginInGitHub(user.getGitName()).getEmail();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
       user.setEmail(email);
     });
 
