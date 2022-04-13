@@ -29,6 +29,8 @@ public class User {
 
   @Transient
   private String platformName;
+  @Transient
+  private String email;
 
   private Integer completedTasks;
 

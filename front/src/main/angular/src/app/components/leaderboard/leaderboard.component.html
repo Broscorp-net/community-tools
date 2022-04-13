@@ -12,7 +12,7 @@
     <tbody>
         <tr *ngFor="let user of users;">
             <td>{{user.platformName}}</td>
-            <td>{{user.gitName}}</td>
+            <td><span title="{{user.email}}">{{user.gitName}}</span></td>
             <td>{{user.completedTasks}}</td>
             <td>{{user.pointByTask}}</td>
             <td>{{user.karma}}</td>

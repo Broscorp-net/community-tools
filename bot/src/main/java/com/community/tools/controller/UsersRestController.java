@@ -3,6 +3,8 @@ package com.community.tools.controller;
 import com.community.tools.model.User;
 import com.community.tools.service.LeaderBoardService;
 import com.community.tools.service.TaskStatusService;
+import com.community.tools.service.github.GitHubService;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -28,6 +30,9 @@ public class UsersRestController {
 
   @Autowired
   LeaderBoardService leaderBoardService;
+
+  @Autowired
+  private GitHubService gitHubService;
 
   /**
    * Request controller for handing api requests.
@@ -59,6 +64,10 @@ public class UsersRestController {
     } else {
       users = taskStatusService.addPlatformNameToUser(1, "gitName", "asc");
     }
+    users.forEach(user -> {
+      String email = "User has not email";
+      user.setEmail(email);
+    });
 
     List<User> newUsers = new ArrayList<>(users);
     newUsers.sort(comparator);
