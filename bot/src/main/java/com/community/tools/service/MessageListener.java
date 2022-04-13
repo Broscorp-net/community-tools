@@ -1,7 +1,6 @@
 package com.community.tools.service;
 
 import com.community.tools.model.Message;
-import com.community.tools.model.User;
 import com.community.tools.util.statemachine.jpa.StateMachineRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
