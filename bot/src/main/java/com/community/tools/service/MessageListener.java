@@ -1,7 +1,6 @@
 package com.community.tools.service;
 
 import com.community.tools.model.Message;
-import com.community.tools.util.statemachine.jpa.StateMachineRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -11,8 +10,6 @@ public class MessageListener implements EventListener {
 
   @Autowired
   private TrackingService trackingService;
-
-  @Autowired private StateMachineRepository stateMachineRepository;
 
   @Value("${testModeSwitcher}")
   private Boolean testModeSwitcher;
@@ -41,9 +38,7 @@ public class MessageListener implements EventListener {
       }
     } catch (Exception exception) {
       throw new RuntimeException("Impossible to answer request with id = "
-        + userId, exception);
+          + userId, exception);
     }
   }
-
-
 }
