@@ -54,6 +54,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
+
+
+
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @TestPropertySource(locations = "/application-test.properties")
@@ -435,7 +438,4 @@ class IntegrationTest {
     assertEquals(USER_NAME, firstArg.getValue());
     assertEquals(lastTask, secondArg.getValue());
   }
-
-
-
 }
