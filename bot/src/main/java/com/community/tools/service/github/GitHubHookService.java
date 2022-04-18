@@ -1,21 +1,27 @@
 package com.community.tools.service.github;
 
 import com.community.tools.model.Messages;
-import com.community.tools.service.*;
+import com.community.tools.service.MessageConstructor;
+import com.community.tools.service.MessageService;
+import com.community.tools.service.PointsTaskService;
+import com.community.tools.service.StateMachineService;
+import com.community.tools.service.TaskStatusService;
 import com.community.tools.service.payload.SimplePayload;
 import com.community.tools.util.statemachine.Event;
 import com.github.seratch.jslack.api.methods.SlackApiException;
-import org.apache.commons.text.similarity.LevenshteinDistance;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import org.apache.commons.text.similarity.LevenshteinDistance;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+
 
 @Service
 public class GitHubHookService {
@@ -195,6 +201,11 @@ public class GitHubHookService {
     }
   }
 
+  /**
+   * Method chek name branch of pull_request.
+   * and send message if wrong.
+   * @param json Get of controller.
+   */
   public void sendMessageAboutWrongNamePullRequest(JSONObject json) {
     JSONObject checkRun = json.getJSONObject("check_run");
     String task = checkRun.getJSONObject("check_suite").getString("head_branch")

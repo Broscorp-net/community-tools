@@ -4,6 +4,7 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
 import com.community.tools.model.Messages;
 import com.community.tools.service.MessageService;
 import com.community.tools.service.StateMachineService;
@@ -51,8 +52,8 @@ class GitHubHookServiceTest {
   }
 
   private JSONObject myJson(String namePullBranch) {
-    String jsonStr = "{\"check_run\":{\"check_suite\":{\"head_branch\":\"" + namePullBranch + "\"}},\"sender\":{\"login\":\""
-            + USER_NAME + "\"} }";
+    String jsonStr = "{\"check_run\":{\"check_suite\":{\"head_branch\":\""
+        + namePullBranch + "\"}},\"sender\":{\"login\":\"" + USER_NAME + "\"} }";
     return (JSONObject) JSONParser.parseJSON(jsonStr);
   }
 }

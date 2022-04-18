@@ -1,18 +1,40 @@
 package com.community.tools.util.statemachine;
 
+import static com.community.tools.util.statemachine.State.ADDED_GIT;
+import static com.community.tools.util.statemachine.State.AGREED_LICENSE;
+import static com.community.tools.util.statemachine.State.CHECK_FOR_NEW_TASK;
+import static com.community.tools.util.statemachine.State.CHECK_LOGIN;
+import static com.community.tools.util.statemachine.State.ESTIMATE_THE_TASK;
+import static com.community.tools.util.statemachine.State.FIRST_QUESTION;
+import static com.community.tools.util.statemachine.State.GETTING_PULL_REQUEST;
+import static com.community.tools.util.statemachine.State.GOT_THE_TASK;
+import static com.community.tools.util.statemachine.State.NEW_USER;
+import static com.community.tools.util.statemachine.State.SECOND_QUESTION;
+import static com.community.tools.util.statemachine.State.THIRD_QUESTION;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.community.tools.discord.DiscordConfig;
 import com.community.tools.model.Messages;
 import com.community.tools.model.User;
 import com.community.tools.service.MessageService;
 import com.community.tools.service.StateMachineService;
 import com.community.tools.service.github.GitHubConnectService;
-import com.community.tools.service.github.GitHubHookService;
 import com.community.tools.service.github.GitHubService;
-import com.community.tools.service.payload.*;
+import com.community.tools.service.payload.EstimatePayload;
+import com.community.tools.service.payload.Payload;
+import com.community.tools.service.payload.QuestionPayload;
+import com.community.tools.service.payload.SimplePayload;
+import com.community.tools.service.payload.VerificationPayload;
 import com.community.tools.util.statemachine.jpa.StateMachineRepository;
+import java.net.URL;
+import java.util.HashSet;
+import java.util.Set;
 import lombok.SneakyThrows;
-
-import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -22,7 +44,6 @@ import org.kohsuke.github.GHUser;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.skyscreamer.jsonassert.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -32,16 +53,6 @@ import org.springframework.statemachine.support.DefaultStateMachineContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import java.net.URL;
-import java.util.HashSet;
-import java.util.Set;
-
-import static com.community.tools.util.statemachine.State.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
-
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
