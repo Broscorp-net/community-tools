@@ -1,27 +1,21 @@
 package com.community.tools.service.github;
 
 import com.community.tools.model.Messages;
-import com.community.tools.service.MessageConstructor;
-import com.community.tools.service.MessageService;
-import com.community.tools.service.PointsTaskService;
-import com.community.tools.service.StateMachineService;
-import com.community.tools.service.TaskStatusService;
+import com.community.tools.service.*;
 import com.community.tools.service.payload.SimplePayload;
 import com.community.tools.util.statemachine.Event;
 import com.github.seratch.jslack.api.methods.SlackApiException;
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-
-import jdk.internal.org.jline.utils.Levenshtein;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 @Service
 public class GitHubHookService {
@@ -201,15 +195,16 @@ public class GitHubHookService {
     }
   }
 
-  private void sendMessageAboutWrongNamePullRequest(JSONObject json) {
+  public void sendMessageAboutWrongNamePullRequest(JSONObject json) {
     JSONObject checkRun = json.getJSONObject("check_run");
     String task = checkRun.getJSONObject("check_suite").getString("head_branch")
         .toLowerCase();
     String userNick = json.getJSONObject("sender").getString("login");
     String userId = stateMachineService.getIdByNick(userNick);
     LevenshteinDistance distance = new LevenshteinDistance();
-    boolean taskIs = Arrays.stream(tasksForUsers).filter(t -> distance.apply(t,task) > 2)
-        .toArray().length == 1;
+    //boolean taskIs = Arrays.stream(tasksForUsers).filter(t -> distance.apply(t,task) > 2).toArray().length == 1;
+    boolean taskIs = Arrays.stream(tasksForUsers).filter(t -> t.equalsIgnoreCase(task))
+            .toArray().length == 1;
     if (taskIs) {
       messageService.sendPrivateMessage(messageService.getUserById(userId),
               Messages.PULL_REQUEST_WRONG_NAME);
