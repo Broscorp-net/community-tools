@@ -1,20 +1,21 @@
 package com.community.tools.service.github;
 
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import com.community.tools.model.Messages;
 import com.community.tools.service.MessageService;
 import com.community.tools.service.StateMachineService;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.skyscreamer.jsonassert.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -25,7 +26,7 @@ class GitHubHookServiceTest {
   StateMachineService stateMachineService;
   @Autowired
   GitHubHookService gitHubHookService;
-  @Mock
+  @MockBean
   MessageService messageService;
 
 
@@ -37,12 +38,13 @@ class GitHubHookServiceTest {
   public void sendMessageAboutWrongNamePullRequestTest() {
 
     when(stateMachineService.getIdByNick(USER_NAME)).thenReturn(USER_NAME);
+    when(messageService.getUserById(any())).thenReturn(USER_NAME);
 
-    gitHubHookService.sendMessageAboutWrongNamePullRequest(myJson("boxing"));
+    gitHubHookService.sendMessageAboutWrongNamePullRequest(myJson("BoXing"));
 
     verify(messageService,times(0)).sendPrivateMessage(USER_NAME, Messages.PULL_REQUEST_WRONG_NAME);
 
-    gitHubHookService.sendMessageAboutWrongNamePullRequest(myJson("brtyng"));
+    gitHubHookService.sendMessageAboutWrongNamePullRequest(myJson("bogryng"));
 
     verify(messageService,times(1)).sendPrivateMessage(USER_NAME, Messages.PULL_REQUEST_WRONG_NAME);
 

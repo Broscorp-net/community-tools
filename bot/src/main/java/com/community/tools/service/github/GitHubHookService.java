@@ -202,10 +202,9 @@ public class GitHubHookService {
     String userNick = json.getJSONObject("sender").getString("login");
     String userId = stateMachineService.getIdByNick(userNick);
     LevenshteinDistance distance = new LevenshteinDistance();
-    //boolean taskIs = Arrays.stream(tasksForUsers).filter(t -> distance.apply(t,task) > 2).toArray().length == 1;
-    boolean taskIs = Arrays.stream(tasksForUsers).filter(t -> t.equalsIgnoreCase(task))
-            .toArray().length == 1;
-    if (taskIs) {
+    boolean taskIs = Arrays.stream(tasksForUsers).filter(t -> distance.apply(t,task) < 3)
+        .toArray().length == 1;
+    if (!taskIs) {
       messageService.sendPrivateMessage(messageService.getUserById(userId),
               Messages.PULL_REQUEST_WRONG_NAME);
     }
