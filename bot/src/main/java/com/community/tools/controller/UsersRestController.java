@@ -67,13 +67,16 @@ public class UsersRestController {
     } else {
       users = taskStatusService.addPlatformNameToUser(1, "gitName", "asc");
     }
-    users.stream().filter(u -> u.getEmail() == null || u.getEmail().equals(""))
+    users.stream().filter(u -> u.getEmail() == null || u.getEmail().equals("Not email"))
             .forEach(user -> {
-              String email = "User has not email";
+              String email = null;
               try {
                 email = gitHubService.getUserByLoginInGitHub(user.getGitName()).getEmail();
-              } catch (IOException e) {
+              } catch (Exception e) {
                 log.debug("Not connection to GitHub: ", e.getMessage());
+              }
+              if (email == null) {
+                email = "Not email";
               }
               user.setEmail(email);
             });
