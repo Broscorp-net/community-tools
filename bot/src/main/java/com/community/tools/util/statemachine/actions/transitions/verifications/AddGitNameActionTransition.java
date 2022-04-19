@@ -62,7 +62,6 @@ public class AddGitNameActionTransition implements Transition {
 
     User stateEntity = stateMachineRepository.findByUserID(user).get();
     stateEntity.setGitName(nickname);
-    stateMachineRepository.save(stateEntity);
     String firstAnswer = stateEntity.getFirstAnswerAboutRules();
     String secondAnswer = stateEntity.getSecondAnswerAboutRules();
     String thirdAnswer = stateEntity.getThirdAnswerAboutRules();
@@ -74,12 +73,14 @@ public class AddGitNameActionTransition implements Transition {
           .findFirst()
           .get()
           .add(userGitLogin);
+      stateEntity.setEmail(userGitLogin.getEmail());
     } catch (IOException e) {
       messageService.sendBlocksMessage(
           messageService.getUserById(user),
           messageConstructor.createErrorWithAddingGitNameMessage(
               Messages.ERROR_WITH_ADDING_GIT_NAME));
     }
+    stateMachineRepository.save(stateEntity);
     messageService.sendMessageToConversation(
         channel,
         generalInformationAboutUserToChannel(user, userGitLogin)

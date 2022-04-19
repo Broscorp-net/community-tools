@@ -10,6 +10,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/users")
 public class UsersRestController {
@@ -64,15 +67,16 @@ public class UsersRestController {
     } else {
       users = taskStatusService.addPlatformNameToUser(1, "gitName", "asc");
     }
-    users.forEach(user -> {
-      String email = "User has not email";
-      try {
-        email = gitHubService.getUserByLoginInGitHub(user.getGitName()).getEmail();
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
-      user.setEmail(email);
-    });
+    users.stream().filter(u -> u.getEmail() == null || u.getEmail().equals(""))
+            .forEach(user -> {
+              String email = "User has not email";
+              try {
+                email = gitHubService.getUserByLoginInGitHub(user.getGitName()).getEmail();
+              } catch (IOException e) {
+                log.debug("Not connection to GitHub: ", e.getMessage());
+              }
+              user.setEmail(email);
+            });
 
     List<User> newUsers = new ArrayList<>(users);
     newUsers.sort(comparator);
