@@ -10,7 +10,7 @@
     <tbody>
         <tr *ngFor="let user of users;">
             <td>{{user.platformName}}</td>
-            <td><span title="{{user.email}}">{{user.gitName}}</span></td>
+            <td><span (dblclick)="copyBuff($event)"  title="{{user.email}}">{{user.gitName}}</span></td>
             <td>{{user.completedTasks}}</td>
             <td *ngFor="let item of [].constructor(tasks.length); let i = index;" [ngClass]="getClass(user, tasks[i])"></td>
         </tr>
