@@ -19,7 +19,6 @@ export class TaskStatusComponent implements OnInit {
   daysFetch: number;
   sort: string;
 
-
   constructor(private tasksService: TasksService, private usersService: UsersService,
   private activatedRoute: ActivatedRoute, private clipboardService:ClipboardService) {
   }
@@ -65,12 +64,9 @@ export class TaskStatusComponent implements OnInit {
       'ready_for_review': status === 'ready for review'
     }
   }
-  copyBuff($event : any) : void {
 
+  copyBuff($event : any) : void {
       let text : string = $event.target.getAttribute("title");
       this.clipboardService.copyFromContent(text);
-
   }
-
-
 }
