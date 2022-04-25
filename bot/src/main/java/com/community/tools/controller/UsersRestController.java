@@ -4,6 +4,7 @@ import com.community.tools.model.User;
 import com.community.tools.service.LeaderBoardService;
 import com.community.tools.service.TaskStatusService;
 import com.community.tools.service.github.GitHubService;
+import com.community.tools.util.statemachine.jpa.StateMachineRepository;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -37,6 +38,9 @@ public class UsersRestController {
   @Autowired
   private GitHubService gitHubService;
 
+  @Autowired
+  private StateMachineRepository stateMachineRepository;
+
   /**
    * Request controller for handing api requests.
    *
@@ -67,7 +71,7 @@ public class UsersRestController {
     } else {
       users = taskStatusService.addPlatformNameToUser(1, "gitName", "asc");
     }
-    users.stream().filter(u -> u.getEmail() == null || u.getEmail().equals("No email"))
+    users.stream().filter(u -> u.getEmail() == null)
             .forEach(user -> {
               String email = null;
               try {
@@ -75,10 +79,8 @@ public class UsersRestController {
               } catch (Exception e) {
                 log.debug("No connection to GitHub: ", e.getMessage());
               }
-              if (email == null) {
-                email = "No email";
-              }
               user.setEmail(email);
+              stateMachineRepository.save(user);
             });
 
     List<User> newUsers = new ArrayList<>(users);
