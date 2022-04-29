@@ -4,21 +4,13 @@ import com.community.tools.model.ServiceUser;
 import com.community.tools.model.User;
 import com.community.tools.service.github.GitHubService;
 import com.community.tools.util.statemachine.jpa.StateMachineRepository;
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.time.Duration;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -67,6 +59,21 @@ public class LeaderBoardService {
     return list.stream()
         .filter(user -> userNames
             .contains(user.getGitName())).collect(Collectors.toList());
+  }
+
+  /**
+   * This method checks whether the user is active from period.
+   *
+   * @param u User.
+   * @param dateInPast Period in days.
+   * @return User is active from period.
+   */
+  public boolean isActiveFromPeriod(User u, LocalDate dateInPast) {
+    if (u.getDateLastActivity() == null) {
+      return false;
+    } else {
+      return dateInPast.isBefore(u.getDateLastActivity());
+    }
   }
 
 }

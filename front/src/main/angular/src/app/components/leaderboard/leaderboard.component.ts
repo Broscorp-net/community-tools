@@ -12,7 +12,6 @@ export class LeaderboardComponent implements OnInit {
 
   users: User[];
   userLimit: number;
-  daysFetch: number;
   sort: string;
 
   constructor(private usersService: UsersService, private activatedRoute:ActivatedRoute) { }
@@ -23,16 +22,14 @@ export class LeaderboardComponent implements OnInit {
       // @ts-ignore
       this.userLimit = +params.get('userLimit')||null;
       // @ts-ignore
-      this.daysFetch = +params.get('daysFetch')||null;
-      // @ts-ignore
       this.sort = +params.get('sort')||null;
     });
 
-    this.getUsers(this.userLimit, this.daysFetch, this.sort);
+    this.getUsers(this.userLimit, this.sort);
   }
 
-  getUsers(userLimit: number, daysFetch: number, sort: string): void {
-    this.usersService.getRestUsers(userLimit, daysFetch, sort).subscribe(
+  getUsers(userLimit: number, sort: string): void {
+    this.usersService.getRestUsers(userLimit, sort).subscribe(
       data => {
         this.users = data;
       });

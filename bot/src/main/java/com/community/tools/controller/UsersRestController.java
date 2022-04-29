@@ -3,7 +3,7 @@ package com.community.tools.controller;
 import com.community.tools.model.User;
 import com.community.tools.service.LeaderBoardService;
 import com.community.tools.service.TaskStatusService;
-import java.util.ArrayList;
+import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -28,18 +28,18 @@ public class UsersRestController {
   @Autowired
   LeaderBoardService leaderBoardService;
 
+  private static final int daysFetch = 30;
+
   /**
    * Request controller for handing api requests.
    *
    * @param userLimit query param to limit showed users
-   * @param daysFetch query param to limit users by recent activity
    * @param sort      query param to sort by field
    * @return returns json with users from db according to query params
    */
   @GetMapping
   @Transactional
   public List<User> getUsers(@RequestParam(required = false) Integer userLimit,
-      @RequestParam(required = false) Integer daysFetch,
       @RequestParam(required = false) String sort) {
 
     Comparator<User> comparator;
@@ -50,17 +50,15 @@ public class UsersRestController {
       comparator = Comparator.comparing(User::getCompletedTasks).reversed();
     }
 
-    List<User> users;
+    List<User> users = taskStatusService.addPlatformNameToUser(
+        1, "gitName", "asc");
 
-    if (daysFetch != null) {
-      users = leaderBoardService.getActiveUsersFromPeriod(daysFetch);
-      users = taskStatusService.addPlatformNameToSelectedUsers(users);
-    } else {
-      users = taskStatusService.addPlatformNameToUser(1, "gitName", "asc");
-    }
+    LocalDate dateInPast = LocalDate.now().minusDays(daysFetch);
 
-    List<User> newUsers = new ArrayList<>(users);
-    newUsers.sort(comparator);
+    List<User> newUsers = users.stream()
+        .filter(u -> leaderBoardService.isActiveFromPeriod(u, dateInPast))
+        .sorted(comparator)
+        .collect(Collectors.toList());
 
     if (userLimit != null) {
       return newUsers.subList(0, userLimit);
@@ -68,6 +66,5 @@ public class UsersRestController {
       return newUsers;
     }
   }
-
 
 }
