@@ -4,6 +4,7 @@
             <th scope="col">SlackName or DiscordName</th>
             <th scope="col">GitName</th>
             <th scope="col">Date registration</th>
+            <th scope="col">Date last activity</th>
             <th scope="col">Tasks done</th>
             <th scope="col">Points for tasks</th>
             <th scope="col">Karma</th>
@@ -16,6 +17,7 @@
             <td><span title="{{user.email}}">{{user.gitName}}</span></td>
             <td>{{user.gitName}}</td>
             <td>{{user.dateRegistration | date: 'dd/MM/yyyy'}}</td>
+            <td>{{user.dateLastActivity | date: 'dd/MM/yyyy'}}</td>
             <td>{{user.completedTasks}}</td>
             <td>{{user.pointByTask}}</td>
             <td>{{user.karma}}</td>

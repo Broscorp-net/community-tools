@@ -10,6 +10,7 @@ import com.community.tools.service.payload.VerificationPayload;
 import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
 import com.community.tools.util.statemachine.jpa.StateMachineRepository;
+import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.statemachine.StateMachine;
@@ -47,6 +48,15 @@ public class TrackingService {
 
     switch (machine.getState().getId()) {
       case NEW_USER:
+        if (messageFromUser.equals(Messages.WELCOME_CHANNEL)) {
+          payload = new SimplePayload(userId);
+          event = Event.GET_RULES;
+        } else {
+          message = Messages.MESSAGE_NOT_WELCOME;
+        }
+        break;
+
+      case RULES:
         if (messageFromUser.equalsIgnoreCase("ready")) {
           payload = new SimplePayload(userId);
           event = Event.QUESTION_FIRST;
@@ -54,6 +64,7 @@ public class TrackingService {
           message = Messages.NOT_THAT_MESSAGE;
         }
         break;
+
       case FIRST_QUESTION:
         payload = new QuestionPayload(userId, messageFromUser, userForQuestion);
         event = Event.QUESTION_SECOND;
@@ -120,17 +131,13 @@ public class TrackingService {
 
     User stateEntity = new User();
     stateEntity.setUserID(userId);
+    stateEntity.setDateRegistration(LocalDate.now());
     String userName = messageService.getUserById(userId);
     stateMachineRepository.save(stateEntity);
     stateMachineService.persistMachineForNewUser(userId);
 
     messageService.sendPrivateMessage(userName, Messages.WELCOME);
-    messageService.sendBlocksMessage(
-        userName,
-        messageConstructor.createMessageAboutRules(
-            Messages.MESSAGE_ABOUT_RULES_1,
-            Messages.MESSAGE_ABOUT_RULES_2,
-            Messages.MESSAGE_ABOUT_RULES_3,
-            Messages.MESSAGE_ABOUT_RULES_4));
+
+
   }
 }

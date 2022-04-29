@@ -9,6 +9,7 @@ import static com.community.tools.util.statemachine.State.FIRST_QUESTION;
 import static com.community.tools.util.statemachine.State.GETTING_PULL_REQUEST;
 import static com.community.tools.util.statemachine.State.GOT_THE_TASK;
 import static com.community.tools.util.statemachine.State.NEW_USER;
+import static com.community.tools.util.statemachine.State.RULES;
 import static com.community.tools.util.statemachine.State.SECOND_QUESTION;
 import static com.community.tools.util.statemachine.State.THIRD_QUESTION;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -66,6 +67,9 @@ class IntegrationTest {
   private static final String USER_ID = "U01QY6GRZ0X";
   private static final String USER_NAME = "Some User";
   private static final Integer VALUE_FOR_ESTIMATE = 1;
+
+  @Value("${welcomeChannelMessage}")
+  private String welcomeChanelMessage;
 
   @Value("${firstQuestion}")
   private String firstQuestion;
@@ -155,12 +159,31 @@ class IntegrationTest {
     }
   }
 
+  @SneakyThrows
+  @Test
+  void welcomeActionTest() {
+    machine.getStateMachineAccessor().doWithAllRegions(access -> access
+        .resetStateMachine(new DefaultStateMachineContext<>(NEW_USER,
+            null, null, null)));
+    Payload payload = new SimplePayload(USER_ID);
+
+    when(messageService.getUserById(USER_ID)).thenReturn(USER_NAME);
+
+    stateMachineService.doAction(machine, payload, Event.GET_RULES);
+
+    verify(messageService, times(1)).getUserById(firstArg.capture());
+    assertEquals(USER_ID, firstArg.getValue());
+    verify(messageService, times(1)).sendBlocksMessage(firstArg.capture(), secondArg.capture());
+    assertEquals(USER_NAME, firstArg.getValue());
+    assertEquals(welcomeChanelMessage, secondArg.getValue());
+  }
+
 
   @SneakyThrows
   @Test
   void firstQuestionActionTest() {
     machine.getStateMachineAccessor().doWithAllRegions(access -> access
-        .resetStateMachine(new DefaultStateMachineContext<>(NEW_USER,
+        .resetStateMachine(new DefaultStateMachineContext<>(RULES,
             null, null, null)));
     Payload payload = new SimplePayload(USER_ID);
 
