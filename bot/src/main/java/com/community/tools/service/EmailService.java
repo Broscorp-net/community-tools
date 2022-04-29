@@ -1,31 +1,25 @@
 package com.community.tools.service;
 
 import com.community.tools.model.Messages;
-import javax.mail.Flags.Flag;
-import javax.mail.Folder;
-import javax.mail.Message;
 import javax.mail.MessagingException;
-import javax.mail.NoSuchProviderException;
-import javax.mail.Store;
 import javax.mail.internet.MimeMessage;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 public class EmailService {
   @Autowired
   public JavaMailSender emailSender;
-  @Autowired
-  public Store store;
 
   /**
    * This method send email.
    * @param userEmail email recipient.
-   * @return String of successfully sent.
   */
-  public String sendEmail(String userEmail) {
+  public void sendEmail(String userEmail) {
     MimeMessage message = emailSender.createMimeMessage();
     MimeMessageHelper helper = null;
     try {
@@ -36,12 +30,10 @@ public class EmailService {
       helper.setText(Messages.EMAIL, true);
 
     } catch (MessagingException e) {
-      e.printStackTrace();
+      log.info("Can't send Email. " + e.getMessage());
     }
 
     // Send Email!
     this.emailSender.send(message);
-
-    return "Email Sent!";
   }
 }
