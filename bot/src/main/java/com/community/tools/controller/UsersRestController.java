@@ -4,9 +4,7 @@ import com.community.tools.model.User;
 import com.community.tools.service.LeaderBoardService;
 import com.community.tools.service.TaskStatusService;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,22 +31,12 @@ public class UsersRestController {
    *
    * @param userLimit query param to limit showed users
    * @param daysFetch query param to limit users by recent activity
-   * @param sort      query param to sort by field
    * @return returns json with users from db according to query params
    */
   @GetMapping
   @Transactional
   public List<User> getUsers(@RequestParam(required = false) Integer userLimit,
-      @RequestParam(required = false) Integer daysFetch,
-      @RequestParam(required = false) String sort) {
-
-    Comparator<User> comparator;
-
-    if (Objects.equals(sort, "points")) {
-      comparator = Comparator.comparing(User::getTotalPoints).reversed();
-    } else {
-      comparator = Comparator.comparing(User::getCompletedTasks).reversed();
-    }
+      @RequestParam(required = false) Integer daysFetch) {
 
     List<User> users;
 
@@ -60,7 +48,6 @@ public class UsersRestController {
     }
 
     List<User> newUsers = new ArrayList<>(users);
-    newUsers.sort(comparator);
 
     if (userLimit != null) {
       return newUsers.subList(0, userLimit);

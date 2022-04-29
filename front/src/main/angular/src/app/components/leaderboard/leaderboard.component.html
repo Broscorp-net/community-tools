@@ -1,14 +1,14 @@
-<table class="table table-bordered">
+<table class="table table-bordered" matSort (matSortChange)="sortData($event)">
     <thead>
         <tr>
-            <th scope="col">SlackName or DiscordName</th>
-            <th scope="col">GitName</th>
+            <th scope="col" mat-sort-header="platformName">SlackName or DiscordName</th>
+            <th scope="col" mat-sort-header="GitName">GitName</th>
             <th scope="col">Date registration</th>
             <th scope="col">Date last activity</th>
-            <th scope="col">Tasks done</th>
-            <th scope="col">Points for tasks</th>
-            <th scope="col">Karma</th>
-            <th scope="col">TotalPoints</th>
+            <th scope="col" mat-sort-header="Tasks">Tasks done</th>
+            <th scope="col" mat-sort-header="Points">Points for tasks</th>
+            <th scope="col" mat-sort-header="Karma">Karma</th>
+            <th scope="col" mat-sort-header="TotalPoints">TotalPoints</th>
         </tr>
     </thead>
     <tbody>

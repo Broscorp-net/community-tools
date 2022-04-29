@@ -11,6 +11,8 @@ import { RouterModule, Routes } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { TasksService } from './services/tasks.service';
 import { UsersService } from './services/users.service';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import {MatSortModule} from "@angular/material/sort";
 
 const appRoutes: Routes = [
   {path: 'task-status', component: TaskStatusComponent},
@@ -24,12 +26,14 @@ const appRoutes: Routes = [
     TaskStatusComponent,
     LeaderboardComponent,
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    HttpClientModule,
-    RouterModule.forRoot(appRoutes)
-  ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        HttpClientModule,
+        RouterModule.forRoot(appRoutes),
+        BrowserAnimationsModule,
+        MatSortModule
+    ],
   providers: [TasksService, UsersService],
   bootstrap: [AppComponent]
 })

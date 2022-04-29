@@ -4,6 +4,7 @@ import {UsersService} from 'src/app/services/users.service';
 import {TasksService} from 'src/app/services/tasks.service';
 import {ActivatedRoute} from "@angular/router";
 import {UserTaskStatus} from "../../models/user-task-status.model";
+import {MatSortModule, Sort} from '@angular/material/sort';
 import {ClipboardService} from "ngx-clipboard";
 
 @Component({
@@ -17,10 +18,9 @@ export class TaskStatusComponent implements OnInit {
   users: User[];
   userLimit: number;
   daysFetch: number;
-  sort: string;
 
-  constructor(private tasksService: TasksService, private usersService: UsersService,
-  private activatedRoute: ActivatedRoute, private clipboardService:ClipboardService) {
+
+  constructor(private tasksService: TasksService, private usersService: UsersService, private activatedRoute: ActivatedRoute, private clipboardService:ClipboardService) {
   }
 
   ngOnInit(): void {
@@ -28,10 +28,9 @@ export class TaskStatusComponent implements OnInit {
     .subscribe(params => {
       this.userLimit = params.userLimit;
       this.daysFetch = params.daysFetch;
-      this.sort = params.sort;
     });
     this.getTasks();
-    this.getUsers(this.userLimit, this.daysFetch, this.sort);
+    this.getUsers(this.userLimit, this.daysFetch);
   }
 
   getTasks(): void {
@@ -41,13 +40,39 @@ export class TaskStatusComponent implements OnInit {
       });
   }
 
-  getUsers(userLimit: number, daysFetch: number, sort: string): void {
-    this.usersService.getRestUsers(userLimit, daysFetch, sort).subscribe(
+  getUsers(userLimit: number, daysFetch: number): void {
+    this.usersService.getRestUsers(userLimit, daysFetch).subscribe(
       data => {
         this.users = data;
       });
 
   }
+
+   sortData(sort: Sort) {
+        const data = this.users.slice();
+        if (!sort.active || sort.direction === '') {
+          this.users = data;
+          return;
+        }
+
+        function compare(a: number | string | Date, b: number | string | Date, isAsc: boolean) {
+          return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+        }
+
+        this.users = data.sort((a, b) => {
+          const isAsc = sort.direction === 'asc';
+          switch (sort.active) {
+            case 'platformName':
+              return compare(a.platformName, b.platformName, isAsc);
+            case 'GitName':
+              return compare(a.gitName, b.gitName, isAsc);
+            case 'Tasks':
+              return compare(a.completedTasks, b.completedTasks, isAsc);
+            default:
+              return 0;
+          }
+        });
+      }
 
   isTaskStatusEquals(element: UserTaskStatus, task: string): boolean {
     return element.taskName === task ||
@@ -66,7 +91,7 @@ export class TaskStatusComponent implements OnInit {
   }
 
   copyBuff($event : any) : void {
-      let text : string = $event.target.getAttribute("title");
-      this.clipboardService.copyFromContent(text);
-  }
+        let text : string = $event.target.getAttribute("title");
+        this.clipboardService.copyFromContent(text);
+    }
 }
