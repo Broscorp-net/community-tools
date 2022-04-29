@@ -3,16 +3,11 @@ package com.community.tools.controller;
 import com.community.tools.model.User;
 import com.community.tools.service.LeaderBoardService;
 import com.community.tools.service.TaskStatusService;
-import com.community.tools.service.github.GitHubService;
-import com.community.tools.util.statemachine.jpa.StateMachineRepository;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@Slf4j
+
 @RestController
 @RequestMapping("/api/users")
 public class UsersRestController {
@@ -34,12 +29,6 @@ public class UsersRestController {
 
   @Autowired
   LeaderBoardService leaderBoardService;
-
-  @Autowired
-  private GitHubService gitHubService;
-
-  @Autowired
-  private StateMachineRepository stateMachineRepository;
 
   /**
    * Request controller for handing api requests.
@@ -71,17 +60,6 @@ public class UsersRestController {
     } else {
       users = taskStatusService.addPlatformNameToUser(1, "gitName", "asc");
     }
-    users.stream().filter(u -> u.getEmail() == null)
-            .forEach(user -> {
-              String email = null;
-              try {
-                email = gitHubService.getUserByLoginInGitHub(user.getGitName()).getEmail();
-              } catch (Exception e) {
-                log.debug("No connection to GitHub: ", e.getMessage());
-              }
-              user.setEmail(email);
-              stateMachineRepository.save(user);
-            });
 
     List<User> newUsers = new ArrayList<>(users);
     newUsers.sort(comparator);
@@ -92,6 +70,4 @@ public class UsersRestController {
       return newUsers;
     }
   }
-
-
 }
