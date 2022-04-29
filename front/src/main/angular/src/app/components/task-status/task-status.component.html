@@ -3,6 +3,7 @@
         <tr>
             <th scope="col">SlackName or DiscordName</th>
             <th scope="col">GitName</th>
+            <th scope="col">Date registration</th>
             <th scope="col">Tasks done</th>
             <th *ngFor="let task of tasks" scope="col" class="vertical">{{task}}</th>
         </tr>
@@ -11,6 +12,8 @@
         <tr *ngFor="let user of users;">
             <td>{{user.platformName}}</td>
             <td><span (dblclick)="copyBuff($event)"  title="{{user.email}}">{{user.gitName}}</span></td>
+            <td>{{user.gitName}}</td>
+            <td>{{user.dateRegistration | date: 'dd/MM/yyyy'}}</td>
             <td>{{user.completedTasks}}</td>
             <td *ngFor="let item of [].constructor(tasks.length); let i = index;" [ngClass]="getClass(user, tasks[i])"></td>
         </tr>
