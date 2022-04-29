@@ -33,6 +33,8 @@ public class User {
   @Transient
   private String platformName;
 
+  private String email;
+
   private Integer completedTasks;
 
   @OneToMany(mappedBy = "user")
