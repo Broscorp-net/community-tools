@@ -55,10 +55,6 @@ export class LeaderboardComponent implements OnInit {
           return compare(a.platformName, b.platformName, isAsc);
         case 'GitName':
           return compare(a.gitName, b.gitName, isAsc);
-        case 'Date registration':
-          return compare(a.dateRegistration, b.dateRegistration, isAsc);
-        case 'Date last activity':
-          return compare(a.dateLastActivity, b.dateLastActivity, isAsc);
         case 'Tasks':
           return compare(a.completedTasks, b.completedTasks, isAsc);
         case 'Points':

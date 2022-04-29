@@ -28,7 +28,6 @@ export class TaskStatusComponent implements OnInit {
     .subscribe(params => {
       this.userLimit = params.userLimit;
       this.daysFetch = params.daysFetch;
-      this.sort = params.sort;
     });
     this.getTasks();
     this.getUsers(this.userLimit, this.daysFetch);
@@ -67,10 +66,6 @@ export class TaskStatusComponent implements OnInit {
               return compare(a.platformName, b.platformName, isAsc);
             case 'GitName':
               return compare(a.gitName, b.gitName, isAsc);
-            case 'Date registration':
-              return compare(a.dateRegistration, b.dateRegistration, isAsc);
-            case 'Date last activity':
-              return compare(a.dateLastActivity, b.dateLastActivity, isAsc);
             case 'Tasks':
               return compare(a.completedTasks, b.completedTasks, isAsc);
             default:
