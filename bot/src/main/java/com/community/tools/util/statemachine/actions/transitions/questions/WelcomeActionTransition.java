@@ -14,7 +14,7 @@ import org.springframework.statemachine.annotation.WithStateMachine;
 import org.springframework.statemachine.config.builders.StateMachineTransitionConfigurer;
 
 @WithStateMachine
-public class FirstQuestionActionTransition implements Transition {
+public class WelcomeActionTransition implements Transition {
 
   @Autowired
   private MessageService messageService;
@@ -32,7 +32,11 @@ public class FirstQuestionActionTransition implements Transition {
     String id = payload.getId();
     messageService.sendBlocksMessage(
         messageService.getUserById(id),
-        messageConstructor.createFirstQuestion(Messages.FIRST_QUESTION));
+        messageConstructor.createMessageAboutRules(
+            Messages.MESSAGE_ABOUT_RULES_1,
+            Messages.MESSAGE_ABOUT_RULES_2,
+            Messages.MESSAGE_ABOUT_RULES_3,
+            Messages.MESSAGE_ABOUT_RULES_4));
   }
 
   @Override
@@ -40,9 +44,9 @@ public class FirstQuestionActionTransition implements Transition {
       StateMachineTransitionConfigurer<State, Event> transitions) throws Exception {
     transitions
         .withExternal()
-        .source(State.RULES)
-        .target(State.FIRST_QUESTION)
-        .event(Event.QUESTION_FIRST)
+        .source(State.NEW_USER)
+        .target(State.RULES)
+        .event(Event.GET_RULES)
         .action(this, errorAction);
   }
 }

@@ -178,4 +178,5 @@ public class DiscordService implements MessageService<MessageEmbed> {
         .filter(u -> u.getName() != null)
         .collect(Collectors.toMap(user -> user.getId(), user -> user.getName()));
   }
+
 }

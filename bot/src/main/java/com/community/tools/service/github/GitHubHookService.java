@@ -8,11 +8,9 @@ import com.community.tools.service.TaskStatusService;
 import com.community.tools.service.payload.SimplePayload;
 import com.community.tools.util.statemachine.Event;
 import com.github.seratch.jslack.api.methods.SlackApiException;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;

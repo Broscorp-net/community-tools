@@ -38,7 +38,7 @@ public class MessageListener implements EventListener {
       }
     } catch (Exception exception) {
       throw new RuntimeException("Impossible to answer request with id = "
-        + userId, exception);
+          + userId, exception);
     }
   }
 }
