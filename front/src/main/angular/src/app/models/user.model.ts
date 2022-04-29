@@ -10,8 +10,10 @@ export class User {
   completedTasks: number;
   taskStatuses: UserTaskStatus[];
   totalPoints: number;
+  email: string;
 
-  constructor(gitName: string, dateRegistration: Date, dateLastActivity: Date, karma: number, pointByTask:number, platformName: string, completedTasks: number, taskStatuses: UserTaskStatus[], totalPoints: number) {
+
+  constructor(gitName: string, dateRegistration: Date, dateLastActivity: Date, karma: number, pointByTask:number, platformName: string, completedTasks: number, taskStatuses: UserTaskStatus[], totalPoints: number, email:string) {
     this.gitName = gitName;
     this.dateRegistration = dateRegistration;
     this.dateLastActivity = dateLastActivity;
@@ -20,6 +22,7 @@ export class User {
     this.completedTasks = completedTasks;
     this.karma = karma;
     this.totalPoints = totalPoints;
+    this.email = email;
   }
 
 }

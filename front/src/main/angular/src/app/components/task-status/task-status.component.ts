@@ -4,6 +4,7 @@ import {UsersService} from 'src/app/services/users.service';
 import {TasksService} from 'src/app/services/tasks.service';
 import {ActivatedRoute} from "@angular/router";
 import {UserTaskStatus} from "../../models/user-task-status.model";
+import {ClipboardService} from "ngx-clipboard";
 
 @Component({
   selector: 'app-task-status',
@@ -18,8 +19,8 @@ export class TaskStatusComponent implements OnInit {
   daysFetch: number;
   sort: string;
 
-
-  constructor(private tasksService: TasksService, private usersService: UsersService, private activatedRoute: ActivatedRoute) {
+  constructor(private tasksService: TasksService, private usersService: UsersService,
+  private activatedRoute: ActivatedRoute, private clipboardService:ClipboardService) {
   }
 
   ngOnInit(): void {
@@ -62,5 +63,10 @@ export class TaskStatusComponent implements OnInit {
       'changes_requested': status === 'changes requested',
       'ready_for_review': status === 'ready for review'
     }
+  }
+
+  copyBuff($event : any) : void {
+      let text : string = $event.target.getAttribute("title");
+      this.clipboardService.copyFromContent(text);
   }
 }
