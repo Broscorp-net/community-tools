@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { User } from 'src/app/models/user.model';
 import { UsersService } from 'src/app/services/users.service';
 import {ActivatedRoute} from "@angular/router";
+import {FormControl} from '@angular/forms';
 
 @Component({
   selector: 'app-leaderboard',
@@ -15,6 +16,9 @@ export class LeaderboardComponent implements OnInit {
   sort: string;
 
   constructor(private usersService: UsersService, private activatedRoute:ActivatedRoute) { }
+
+  myControl = new FormControl();
+  options: number[] = [15, 30, 45, 60];
 
   ngOnInit(): void {
     this.activatedRoute.queryParamMap
