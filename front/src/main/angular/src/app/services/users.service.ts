@@ -23,4 +23,10 @@ export class UsersService {
     return this.http.get<User[]>(this.defaultApi + this.paramFormedString);
   }
 
+  getRestUsersWithDaysFetch(daysFetch: number): Observable<User[]> {
+    this.paramFormedString = "?" +
+      (daysFetch != undefined ? "daysFetch=" + daysFetch + "&" : "");
+    return this.http.get<User[]>(this.defaultApi + this.paramFormedString);
+  }
+
 }

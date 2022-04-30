@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { User } from 'src/app/models/user.model';
 import { UsersService } from 'src/app/services/users.service';
 import {ActivatedRoute} from "@angular/router";
-import {FormControl} from '@angular/forms';
 
 @Component({
   selector: 'app-leaderboard',
@@ -17,8 +16,12 @@ export class LeaderboardComponent implements OnInit {
 
   constructor(private usersService: UsersService, private activatedRoute:ActivatedRoute) { }
 
-  myControl = new FormControl();
-  options: number[] = [15, 30, 45, 60];
+  setValue(option: number): void {
+    this.usersService.getRestUsersWithDaysFetch(option).subscribe(
+      data => {
+        this.users = data;
+      });
+  }
 
   ngOnInit(): void {
     this.activatedRoute.queryParamMap

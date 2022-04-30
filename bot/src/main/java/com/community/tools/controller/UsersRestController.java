@@ -29,8 +29,6 @@ public class UsersRestController {
   @Autowired
   LeaderBoardService leaderBoardService;
 
-  private static final int daysFetch = 30;
-
   /**
    * Request controller for handing api requests.
    *
@@ -41,7 +39,8 @@ public class UsersRestController {
   @GetMapping
   @Transactional
   public List<User> getUsers(@RequestParam(required = false) Integer userLimit,
-      @RequestParam(required = false) String sort) {
+      @RequestParam(required = false) String sort,
+      @RequestParam(required = false, defaultValue = "30") Integer daysFetch) {
 
     Comparator<User> comparator;
 
