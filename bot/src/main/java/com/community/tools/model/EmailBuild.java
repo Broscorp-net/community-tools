@@ -1,13 +1,9 @@
 package com.community.tools.model;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import lombok.*;
 
-@Data
-@NoArgsConstructor
-@Builder
+@Getter
+@Builder(toBuilder = true)
 public class EmailBuild {
   @NonNull
   private String userEmail;
