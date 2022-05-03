@@ -121,7 +121,7 @@ public class TrackingService {
     }
 
     if (event == null) {
-      Pattern pattern = Pattern.compile("^(.+)@([^@]+[^.]\\.(.+)$)");
+      Pattern pattern = Pattern.compile("^(.+)@([^@]+[^.])\\.(.+)$");
       Matcher matcher = pattern.matcher(messageFromUser);
       if (matcher.matches()) {
         emailService.sendEmail(EmailBuild.builder()
