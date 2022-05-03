@@ -1,6 +1,8 @@
 package com.community.tools.model;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NonNull;
 
 @Getter
 @Builder(toBuilder = true)
