@@ -1,5 +1,6 @@
 package com.community.tools.service;
 
+import com.community.tools.model.EmailBuild;
 import com.community.tools.model.Messages;
 import com.community.tools.model.User;
 import com.community.tools.service.payload.EstimatePayload;
@@ -11,6 +12,8 @@ import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
 import com.community.tools.util.statemachine.jpa.StateMachineRepository;
 import java.time.LocalDate;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.statemachine.StateMachine;
@@ -29,6 +32,8 @@ public class TrackingService {
   @Autowired private EstimateTaskService estimateTaskService;
 
   @Autowired private MessageConstructor messageConstructor;
+
+  @Autowired private EmailService emailService;
 
   /**
    * Method to start the event by state.
@@ -114,8 +119,19 @@ public class TrackingService {
         event = null;
         payload = null;
     }
+
     if (event == null) {
-      messageService.sendPrivateMessage(messageService.getUserById(userId), message);
+      Pattern pattern = Pattern.compile("^(.+)@([^@]+[^.])\\.(.+)$");
+      Matcher matcher = pattern.matcher(messageFromUser);
+      if (matcher.matches()) {
+        emailService.sendEmail(EmailBuild.builder()
+                .userEmail(messageFromUser.trim())
+                .subject("Bro_Bot Email")
+                .text(Messages.EMAIL)
+                .build());
+      } else {
+        messageService.sendPrivateMessage(messageService.getUserById(userId), message);
+      }
     } else {
       stateMachineService.doAction(machine, payload, event);
     }
