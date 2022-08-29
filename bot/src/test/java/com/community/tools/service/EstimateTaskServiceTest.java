@@ -1,5 +1,6 @@
 package com.community.tools.service;
 
+import com.community.tools.model.Estimate;
 import com.community.tools.model.Task;
 import com.community.tools.repository.EstimateRepository;
 import com.community.tools.repository.TaskRepository;
@@ -9,9 +10,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+@TestPropertySource(locations = "classpath:application-test.properties")
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class EstimateTaskServiceTest {
@@ -37,6 +40,8 @@ public class EstimateTaskServiceTest {
     userId = "U01RE5SFMFV";
     taskNumber = 1;
     estimateId = 3;
+
+    estimateRepository.save(new Estimate(estimateId, "test estimate"));
   }
 
   @Test
