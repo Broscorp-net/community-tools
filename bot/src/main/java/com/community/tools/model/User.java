@@ -40,6 +40,7 @@ public class User {
   @OneToMany(mappedBy = "user")
   private List<TaskStatus> taskStatuses;
 
+  //TODO move this method to repository
   /**
    * This method summ karma and pointsBy task. If fields null, return 0.
    *

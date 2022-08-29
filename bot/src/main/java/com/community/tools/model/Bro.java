@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
+@Deprecated
 @Data
 @NoArgsConstructor
 @RequiredArgsConstructor
