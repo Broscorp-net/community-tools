@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,26 +18,26 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/users")
 public class UsersRestController {
 
-  @Autowired
-  private TaskStatusService taskStatusService;
+  private final TaskStatusService taskStatusService;
+  private final LeaderBoardService leaderBoardService;
 
-  @Value("${tasksForUsers}")
-  private String[] tasksForUsers;
+  public UsersRestController(TaskStatusService taskStatusService,
+      LeaderBoardService leaderBoardService) {
+    this.taskStatusService = taskStatusService;
+    this.leaderBoardService = leaderBoardService;
+  }
 
-  @Autowired
-  LeaderBoardService leaderBoardService;
+  //TODO add CRUD method or at least getAll method
 
   /**
-   * Request controller for handing api requests.
-   *
-   * @param userLimit query param to limit showed users
-   * @param daysFetch query param to limit users by recent activity
-   * @param sort      query param to sort by field
-   * @return returns json with users from db according to query params
+   *@deprecated
+   *  Unnecessary method.
    */
+  @Deprecated
   @GetMapping
   @Transactional
-  public List<User> getUsers(@RequestParam(required = false) Integer userLimit,
+  public List<User> getUsers(
+      @RequestParam(required = false) Integer userLimit,
       @RequestParam(required = false) Integer daysFetch,
       @RequestParam(required = false) String sort) {
 
@@ -68,6 +67,5 @@ public class UsersRestController {
       return newUsers;
     }
   }
-
 
 }

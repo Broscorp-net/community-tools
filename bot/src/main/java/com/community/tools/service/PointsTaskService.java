@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.stereotype.Service;
 
+//TODO rework it
 @Service
 public class PointsTaskService {
 
@@ -94,4 +95,5 @@ public class PointsTaskService {
     messageService.sendPrivateMessage(messageService.getUserById(id),
         messageDescribesZero);
   }
+
 }

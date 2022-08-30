@@ -4,27 +4,21 @@ import com.community.tools.model.ServiceUser;
 import com.community.tools.model.User;
 import com.community.tools.service.github.GitHubService;
 import com.community.tools.util.statemachine.jpa.StateMachineRepository;
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.time.Duration;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+
+//TODO пожалуй главный сервис
 @Service
 public class LeaderBoardService {
-
+  //todo rework this class
   @Autowired
   StateMachineRepository stateMachineRepository;
 
@@ -59,6 +53,7 @@ public class LeaderBoardService {
    * @param days Period in days.
    * @return List of Users.
    */
+  //TODO rework this method
   public List<User> getActiveUsersFromPeriod(int days) {
     LocalDate tempDate = LocalDate.now().minusDays(days);
     Date date = Date.from(tempDate.atStartOfDay(ZoneId.systemDefault()).toInstant());

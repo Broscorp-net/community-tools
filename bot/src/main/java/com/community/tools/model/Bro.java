@@ -12,6 +12,10 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * @deprecated
+ * unnecessary entity.
+ */
 @Deprecated
 @Data
 @NoArgsConstructor
