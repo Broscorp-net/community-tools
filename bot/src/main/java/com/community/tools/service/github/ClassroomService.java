@@ -1,4 +1,4 @@
-package com.community.tools.service;
+package com.community.tools.service.github;
 
 import com.community.tools.dto.UserDto;
 import java.time.Period;
