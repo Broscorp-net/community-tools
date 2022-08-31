@@ -22,9 +22,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@Deprecated
 @RequiredArgsConstructor
-@RestController
-public class GitHubController {
+public class DeprecatedGitHubController {
 
   private final GitHubService gitHubService;
 
