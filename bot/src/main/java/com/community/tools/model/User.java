@@ -2,13 +2,10 @@ package com.community.tools.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDate;
-import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-
 import lombok.Data;
 
 
@@ -36,9 +33,6 @@ public class User {
   private String email;
 
   private Integer completedTasks;
-
-  @OneToMany(mappedBy = "user")
-  private List<TaskStatus> taskStatuses;
 
   //TODO move this method to repository
   /**

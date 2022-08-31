@@ -23,6 +23,7 @@ public class TaskStatus {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long taskStatusID;
   private String taskName;
+  //TODO task status to string
   private String taskStatus;
 
   @ManyToOne

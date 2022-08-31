@@ -12,8 +12,7 @@ public class Mentors {
   private String gitNick;
   private String slackId;
 
-  public Mentors() {
-  }
+  public Mentors() {}
 
   public Mentors(String gitNick, String slackId) {
     this.gitNick = gitNick;
