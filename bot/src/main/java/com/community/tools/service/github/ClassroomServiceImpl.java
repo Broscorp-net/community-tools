@@ -16,15 +16,18 @@ import org.springframework.stereotype.Service;
 public class ClassroomServiceImpl implements ClassroomService {
 
   private final GitHub gitHub;
-  private final String organizationName;
+  private final String mainOrganizationName;
+  private final String traineeshipOrganizationName;
   private final String traineesTeamName;
 
   @Autowired
   public ClassroomServiceImpl(GitHub gitHub,
-      @Value("${github.organization}") String organizationName,
+      @Value("${github.organization.main}") String mainOrganizationName,
+      @Value("${github.organization.traineeship}") String traineeshipOrganizationName,
       @Value("${github.team.trainees}") String traineesTeamName) {
     this.gitHub = gitHub;
-    this.organizationName = organizationName;
+    this.mainOrganizationName = mainOrganizationName;
+    this.traineeshipOrganizationName = traineeshipOrganizationName;
     this.traineesTeamName = traineesTeamName;
   }
 
@@ -34,7 +37,7 @@ public class ClassroomServiceImpl implements ClassroomService {
     String gitName = userDto.getGitName();
     GHUser user = gitHub.getUser(gitName);
 
-    GHOrganization organization = gitHub.getMyOrganizations().get(organizationName);
+    GHOrganization organization = gitHub.getMyOrganizations().get(mainOrganizationName);
     GHTeam traineesTeam = organization.getTeamByName(traineesTeamName);
 
     traineesTeam.add(user);
