@@ -6,7 +6,7 @@ import org.kohsuke.github.GitHub;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-@Service
+@Deprecated()
 public class GitHubConnectService {
 
   @Value("${github.token}")
