@@ -1,5 +1,8 @@
 package com.community.tools.dto;
 
+import lombok.Getter;
+
+@Getter
 public class UserDto {
 
   private final String userID;
