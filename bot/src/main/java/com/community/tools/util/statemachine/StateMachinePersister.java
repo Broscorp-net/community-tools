@@ -1,7 +1,7 @@
 package com.community.tools.util.statemachine;
 
 import com.community.tools.model.User;
-import com.community.tools.util.statemachine.jpa.StateMachineRepository;
+import com.community.tools.repository.UserRepository;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
@@ -19,7 +19,7 @@ public class StateMachinePersister implements
     StateMachinePersist<State, Event, String> {
 
   @Autowired
-  private StateMachineRepository stateMachineRepository;
+  private UserRepository userRepository;
 
   private static final ThreadLocal<Kryo> kryoThreadLocal = ThreadLocal.withInitial(() -> {
     Kryo kryo = new Kryo();
@@ -32,7 +32,7 @@ public class StateMachinePersister implements
   public void write(StateMachineContext<State, Event> context, String userID) {
     User user = null;
     try {
-      user = stateMachineRepository.findByUserID(userID).get();
+      user = userRepository.findByUserID(userID).get();
     } catch (NoSuchElementException e) {
       user = new User();
       user.setUserID(userID);
@@ -40,13 +40,13 @@ public class StateMachinePersister implements
 
     byte[] data = serialize(context);
     user.setStateMachine(data);
-    stateMachineRepository.save(user);
+    userRepository.save(user);
   }
 
   @Override
   public StateMachineContext<State, Event> read(String s) {
 
-    User user = stateMachineRepository.findByUserID(s).get();
+    User user = userRepository.findByUserID(s).get();
     byte[] arr = user.getStateMachine();
 
     return deserialize(arr);

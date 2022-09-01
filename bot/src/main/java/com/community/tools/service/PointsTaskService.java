@@ -5,7 +5,7 @@ import com.community.tools.model.User;
 import com.community.tools.service.github.jpa.MentorsRepository;
 import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
-import com.community.tools.util.statemachine.jpa.StateMachineRepository;
+import com.community.tools.repository.UserRepository;
 
 import java.util.Map;
 
@@ -32,7 +32,7 @@ public class PointsTaskService {
   MentorsRepository mentorsRepository;
 
   @Autowired
-  StateMachineRepository stateMachineRepository;
+  UserRepository userRepository;
 
   @Autowired
   private MessageService messageService;
@@ -49,7 +49,7 @@ public class PointsTaskService {
    */
   public void addPointForCompletedTask(String mentor, String creator, String pullName) {
     if (mentorsRepository.findByGitNick(mentor).isPresent()) {
-      User stateEntity = stateMachineRepository.findByGitName(creator)
+      User stateEntity = userRepository.findByGitName(creator)
               .orElseThrow(EntityNotFoundException::new);
 
       StateMachine<State, Event> machine = stateMachineService
@@ -73,7 +73,7 @@ public class PointsTaskService {
       }
 
       stateEntity.setPointByTask(newUserPoints);
-      stateMachineRepository.save(stateEntity);
+      userRepository.save(stateEntity);
     }
   }
 
