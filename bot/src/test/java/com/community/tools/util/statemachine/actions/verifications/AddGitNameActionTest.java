@@ -18,7 +18,7 @@ import com.community.tools.slack.SlackHandlerService;
 import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
 import com.community.tools.util.statemachine.actions.transitions.verifications.AddGitNameActionTransition;
-import com.community.tools.util.statemachine.jpa.StateMachineRepository;
+import com.community.tools.repository.UserRepository;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -46,7 +46,7 @@ public class AddGitNameActionTest {
 
   private AddGitNameActionTransition addGitNameAction;
 
-  private StateMachineRepository repository;
+  private UserRepository repository;
 
   private StateContext<State, Event> stateContext;
 
@@ -86,7 +86,7 @@ public class AddGitNameActionTest {
    */
   @BeforeEach
   public void refreshMocks() {
-    this.repository = Mockito.mock(StateMachineRepository.class);
+    this.repository = Mockito.mock(UserRepository.class);
     this.stateContext = Mockito.mock(StateContext.class);
     this.gitHubConnectService = Mockito.mock(GitHubConnectService.class);
     this.gitHubService = Mockito.mock(GitHubService.class);

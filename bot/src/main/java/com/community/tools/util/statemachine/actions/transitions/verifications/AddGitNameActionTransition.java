@@ -10,7 +10,7 @@ import com.community.tools.service.payload.VerificationPayload;
 import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
 import com.community.tools.util.statemachine.actions.Transition;
-import com.community.tools.util.statemachine.jpa.StateMachineRepository;
+import com.community.tools.repository.UserRepository;
 import java.io.IOException;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -33,7 +33,7 @@ public class AddGitNameActionTransition implements Transition {
   @Value("${generalInformationChannel}")
   private String channel;
 
-  @Autowired private StateMachineRepository stateMachineRepository;
+  @Autowired private UserRepository userRepository;
   @Autowired private GitHubConnectService gitHubConnectService;
   @Autowired private GitHubService gitHubService;
 
@@ -60,7 +60,7 @@ public class AddGitNameActionTransition implements Transition {
     String user = payload.getId();
     String nickname = payload.getGitNick();
 
-    User stateEntity = stateMachineRepository.findByUserID(user).get();
+    User stateEntity = userRepository.findByUserID(user).get();
     stateEntity.setGitName(nickname);
     String firstAnswer = stateEntity.getFirstAnswerAboutRules();
     String secondAnswer = stateEntity.getSecondAnswerAboutRules();
@@ -80,7 +80,7 @@ public class AddGitNameActionTransition implements Transition {
           messageConstructor.createErrorWithAddingGitNameMessage(
               Messages.ERROR_WITH_ADDING_GIT_NAME));
     }
-    stateMachineRepository.save(stateEntity);
+    userRepository.save(stateEntity);
     messageService.sendMessageToConversation(
         channel,
         generalInformationAboutUserToChannel(user, userGitLogin)

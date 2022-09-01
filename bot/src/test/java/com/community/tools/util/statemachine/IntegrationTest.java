@@ -31,7 +31,7 @@ import com.community.tools.service.payload.Payload;
 import com.community.tools.service.payload.QuestionPayload;
 import com.community.tools.service.payload.SimplePayload;
 import com.community.tools.service.payload.VerificationPayload;
-import com.community.tools.util.statemachine.jpa.StateMachineRepository;
+import com.community.tools.repository.UserRepository;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
@@ -108,7 +108,7 @@ class IntegrationTest {
   private StateMachineService stateMachineService;
 
   @Autowired
-  private StateMachineRepository stateMachineRepository;
+  private UserRepository userRepository;
 
   @MockBean
   private MessageService messageService;
@@ -148,7 +148,7 @@ class IntegrationTest {
     if (machine == null) {
       User stateEntity = new User();
       stateEntity.setUserID(USER_ID);
-      stateMachineRepository.save(stateEntity);
+      userRepository.save(stateEntity);
       machine = stateMachineService.restoreMachine(USER_ID);
       machine.getExtendedState().getVariables()
           .put("gitNick", USER_NAME);
