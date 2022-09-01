@@ -1,7 +1,5 @@
 package com.community.tools.model;
 
 public enum TaskStatus {
-
-  Done, OnReview, InProgress
-
-  }
+  DONE, ON_REVIEW, IN_PROGRESS
+}
