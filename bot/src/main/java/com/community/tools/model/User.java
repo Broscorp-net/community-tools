@@ -2,6 +2,7 @@ package com.community.tools.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -34,7 +35,7 @@ public class User {
   private String thirdAnswerAboutRules;
 
   @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
-  private List<Repository> repository;
+  private List<Repository> repositories = new ArrayList<>();
 
   @Transient
   private String platformName;
@@ -45,4 +46,8 @@ public class User {
 
   private Date lastCommit;
 
+  public void addRepository(Repository repository) {
+    repositories.add(repository);
+    repository.setUser(this);
+  }
 }
