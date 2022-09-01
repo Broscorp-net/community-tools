@@ -1,13 +1,13 @@
 package com.community.tools.service.github;
 
-import com.community.tools.dto.UserDto;
+import com.community.tools.dto.GithubUserDto;
 import java.time.Period;
 import java.util.List;
 
 public interface ClassroomService {
 
-  void addUserToOrganization(UserDto userDto);
+  void addUserToOrganization(String gitName);
 
-  List<UserDto> getAllActiveUsers(Period period);
+  List<GithubUserDto> getAllActiveUsers(Period period);
 
 }

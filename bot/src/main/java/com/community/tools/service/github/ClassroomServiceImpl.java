@@ -1,11 +1,16 @@
 package com.community.tools.service.github;
 
-import com.community.tools.dto.UserDto;
+import static java.util.Comparator.comparing;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.maxBy;
+
+import com.community.tools.dto.GithubUserDto;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneId;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -46,8 +51,7 @@ public class ClassroomServiceImpl implements ClassroomService {
 
   @SneakyThrows
   @Override
-  public void addUserToOrganization(UserDto userDto) {
-    String gitName = userDto.getGitName();
+  public void addUserToOrganization(String gitName) {
     GHUser user = gitHub.getUser(gitName);
 
     GHOrganization organization = gitHub.getMyOrganizations().get(mainOrganizationName);
@@ -58,14 +62,23 @@ public class ClassroomServiceImpl implements ClassroomService {
 
   @SneakyThrows
   @Override
-  public List<UserDto> getAllActiveUsers(Period period) {
+  public List<GithubUserDto> getAllActiveUsers(Period period) {
     Date startDate = Date.from(LocalDate
         .now()
         .minus(period)
         .atStartOfDay(ZoneId.systemDefault()).toInstant());
 
+    Comparator<GHRepository> repositoriesComparator = comparing(repository -> {
+      try {
+        return repository.getUpdatedAt();
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    });
+
     GHOrganization organization = gitHub.getMyOrganizations().get(traineeshipOrganizationName);
-    List<GHRepository> activeRepositories = organization
+
+    return organization
         .getRepositories()
         .entrySet()
         .stream()
@@ -83,14 +96,25 @@ public class ClassroomServiceImpl implements ClassroomService {
             throw new RuntimeException(e);
           }
         })
-        .collect(Collectors.toList());
-
-    return activeRepositories
+        .collect(groupingBy(GHRepository::getOwnerName, maxBy(repositoriesComparator)))
+        .entrySet()
         .stream()
-        .map(GHRepository::getOwnerName)
-        .collect(Collectors.toSet())
-        .stream()
-        .map(ownerName -> new UserDto(null, ownerName))
+        .map(entry -> buildGithubUserDto(entry.getKey(), entry.getValue().get()))
         .collect(Collectors.toList());
   }
+
+  private GithubUserDto buildGithubUserDto(String ownerName, GHRepository repository) {
+    try {
+      LocalDate lastCommit = repository
+          .getUpdatedAt()
+          .toInstant()
+          .atZone(ZoneId.systemDefault())
+          .toLocalDate();
+
+      return new GithubUserDto(ownerName, lastCommit);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
 }
+

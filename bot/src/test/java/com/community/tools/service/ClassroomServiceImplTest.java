@@ -6,8 +6,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.community.tools.dto.UserDto;
+import com.community.tools.dto.GithubUserDto;
 import com.community.tools.service.github.ClassroomService;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
 import java.time.ZoneId;
@@ -56,10 +57,10 @@ public class ClassroomServiceImplTest {
   @SneakyThrows
   @Test
   public void testAddUserToOrganization() {
-    UserDto userDto = new UserDto("123", "test");
+    String userGitName = "test";
 
     GHUser ghUserMock = mock(GHUser.class);
-    when(gitHub.getUser(userDto.getGitName())).thenReturn(ghUserMock);
+    when(gitHub.getUser(userGitName)).thenReturn(ghUserMock);
 
     GHOrganization ghOrganizationMock = mock(GHOrganization.class);
     GHTeam ghTeamMock = mock(GHTeam.class);
@@ -68,7 +69,7 @@ public class ClassroomServiceImplTest {
     organizations.put(mainOrganizationName, ghOrganizationMock);
     when(gitHub.getMyOrganizations()).thenReturn(organizations);
 
-    classroomService.addUserToOrganization(userDto);
+    classroomService.addUserToOrganization(userGitName);
 
     verify(ghTeamMock).add(ghUserMock);
   }
@@ -115,12 +116,12 @@ public class ClassroomServiceImplTest {
     organizations.put(traineeshipOrganizationName, ghOrganizationMock);
     when(gitHub.getMyOrganizations()).thenReturn(organizations);
 
-    List<UserDto> expectedUsers = Arrays.asList(
-        new UserDto(null, "TestUser1"),
-        new UserDto(null, "TestUser2")
+    List<GithubUserDto> expectedUsers = Arrays.asList(
+        new GithubUserDto("TestUser1", LocalDate.now().minusDays(22)),
+        new GithubUserDto("TestUser2", LocalDate.now().minusDays(1))
     );
 
-    List<UserDto> actualUsers = classroomService.getAllActiveUsers(Period.ofDays(35));
+    List<GithubUserDto> actualUsers = classroomService.getAllActiveUsers(Period.ofDays(35));
 
     assertEquals(2, actualUsers.size());
     assertTrue(actualUsers.contains(expectedUsers.get(0)));
