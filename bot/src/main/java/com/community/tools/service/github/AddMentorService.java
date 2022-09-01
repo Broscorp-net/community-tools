@@ -15,6 +15,7 @@ import org.springframework.statemachine.StateMachine;
 import org.springframework.stereotype.Service;
 
 @Deprecated
+@Service
 public class AddMentorService {
   @Value("${generalInformationChannel}")
   private String channel;

@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Deprecated
+@Service
 @Slf4j
 public class KarmaService {
 
