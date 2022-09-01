@@ -1,7 +1,9 @@
 package com.community.tools.dto;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
+@EqualsAndHashCode
 @Getter
 public class UserDto {
 
