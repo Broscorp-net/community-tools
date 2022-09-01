@@ -10,7 +10,7 @@ import com.community.tools.service.payload.SimplePayload;
 import com.community.tools.service.payload.VerificationPayload;
 import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
-import com.community.tools.util.statemachine.jpa.StateMachineRepository;
+import com.community.tools.repository.UserRepository;
 import java.time.LocalDate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -27,7 +27,7 @@ public class TrackingService {
 
   @Autowired private StateMachineService stateMachineService;
 
-  @Autowired private StateMachineRepository stateMachineRepository;
+  @Autowired private UserRepository userRepository;
 
   @Autowired private EstimateTaskService estimateTaskService;
 
@@ -149,7 +149,7 @@ public class TrackingService {
     stateEntity.setUserID(userId);
     stateEntity.setDateRegistration(LocalDate.now());
     String userName = messageService.getUserById(userId);
-    stateMachineRepository.save(stateEntity);
+    userRepository.save(stateEntity);
     stateMachineService.persistMachineForNewUser(userId);
 
     messageService.sendPrivateMessage(userName, Messages.WELCOME);

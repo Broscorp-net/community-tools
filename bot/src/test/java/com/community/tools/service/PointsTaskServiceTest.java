@@ -9,7 +9,7 @@ import com.community.tools.model.User;
 import com.community.tools.service.github.jpa.MentorsRepository;
 import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
-import com.community.tools.util.statemachine.jpa.StateMachineRepository;
+import com.community.tools.repository.UserRepository;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -47,7 +47,7 @@ class PointsTaskServiceTest {
   MentorsRepository mentorsRepository;
 
   @Mock
-  StateMachineRepository stateMachineRepository;
+  UserRepository userRepository;
 
   @Mock
   StateMachine<State, Event> machine;
@@ -83,7 +83,7 @@ class PointsTaskServiceTest {
     when(machine.getExtendedState()).thenReturn(extendedState);
     when(extendedState.getVariables()).thenReturn(mockData);
     when(mentorsRepository.findByGitNick("test")).thenReturn(Optional.of(mentors));
-    when(stateMachineRepository.findByGitName("marvintik")).thenReturn(Optional.of(stateEntity));
+    when(userRepository.findByGitName("marvintik")).thenReturn(Optional.of(stateEntity));
 
 
     pointsTaskService.addPointForCompletedTask("test", "marvintik", " valueref_test ");

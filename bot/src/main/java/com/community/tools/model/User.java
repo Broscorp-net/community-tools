@@ -2,16 +2,22 @@ package com.community.tools.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDate;
+import java.util.Date;
+import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 
-@Data
+@Getter
+@Setter
 @Entity
-@Table(name = "state_entity")
+@Table(name = "users")
 public class User {
 
   @Id
@@ -27,6 +33,9 @@ public class User {
   private String secondAnswerAboutRules;
   private String thirdAnswerAboutRules;
 
+  @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
+  private List<Repository> repository;
+
   @Transient
   private String platformName;
 
@@ -34,14 +43,6 @@ public class User {
 
   private Integer completedTasks;
 
-  //TODO move this method to repository
-  /**
-   * This method summ karma and pointsBy task. If fields null, return 0.
-   *
-   * @return Total points
-   */
-  public Integer getTotalPoints() {
-    return this.karma + this.pointByTask;
-  }
+  private Date lastCommit;
 
 }
