@@ -29,8 +29,9 @@ import org.kohsuke.github.PagedIterable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-@RequiredArgsConstructor
+@Deprecated
 @Service
+@RequiredArgsConstructor
 public class GitHubService {
   @Autowired
   private final GitHubConnectService service;

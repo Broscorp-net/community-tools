@@ -4,7 +4,7 @@ import com.community.tools.service.MessageConstructor;
 import com.community.tools.service.MessageService;
 import com.community.tools.service.PointsTaskService;
 import com.community.tools.service.StateMachineService;
-import com.community.tools.service.TaskStatusService;
+//import com.community.tools.service.TaskStatusService;
 import com.community.tools.service.payload.SimplePayload;
 import com.community.tools.util.statemachine.Event;
 import com.github.seratch.jslack.api.methods.SlackApiException;
@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+@Deprecated
 @Service
 public class GitHubHookService {
 
@@ -39,8 +40,8 @@ public class GitHubHookService {
   private PointsTaskService pointsTaskService;
   @Autowired
   private MessageService messageService;
-  @Autowired
-  private TaskStatusService taskStatusService;
+//  @Autowired
+//  private TaskStatusService taskStatusService;
 
   /**
    * Methid receive data from Github and check it.
@@ -54,7 +55,7 @@ public class GitHubHookService {
     addMentorIfEventIsReview(json);
     addPointIfPullLabeledDone(json);
     checkReactionToChangeKarma(json);
-    taskStatusService.updateTasksStatus(json);
+//    taskStatusService.updateTasksStatus(json);
   }
 
 

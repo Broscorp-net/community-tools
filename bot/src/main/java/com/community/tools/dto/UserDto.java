@@ -1,8 +1,10 @@
 package com.community.tools.dto;
 
 import java.util.Date;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
+@EqualsAndHashCode
 @Getter
 public class UserDto {
 

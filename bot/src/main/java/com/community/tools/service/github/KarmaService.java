@@ -22,8 +22,9 @@ import org.kohsuke.github.PagedIterable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-@Slf4j
+@Deprecated
 @Service
+@Slf4j
 public class KarmaService {
 
   @Autowired

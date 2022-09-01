@@ -3,7 +3,6 @@ package com.community.tools.util.statemachine.actions.transitions.tasks;
 import com.community.tools.model.Messages;
 import com.community.tools.service.MessageConstructor;
 import com.community.tools.service.MessageService;
-import com.community.tools.service.StateMachineService;
 import com.community.tools.service.payload.SimplePayload;
 import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
@@ -20,8 +19,6 @@ public class SendEstimateTaskActionTransition implements Transition {
   @Autowired ErrorAction errorAction;
 
   @Autowired MessageService messageService;
-
-  @Autowired StateMachineService stateMachineService;
 
   @Autowired MessageConstructor messageConstructor;
 
