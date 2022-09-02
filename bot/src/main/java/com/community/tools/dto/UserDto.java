@@ -10,7 +10,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public class UserDto {
 
-  private final Long userID;
+  private final String userID;
   private final String gitName;
   private final Integer points;
   private final Integer karma;
