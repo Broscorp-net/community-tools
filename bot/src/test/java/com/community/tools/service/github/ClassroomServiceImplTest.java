@@ -1,4 +1,4 @@
-package com.community.tools.service;
+package com.community.tools.service.github;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -7,7 +7,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.community.tools.dto.GithubUserDto;
-import com.community.tools.service.github.ClassroomService;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
