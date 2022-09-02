@@ -5,6 +5,7 @@ import com.community.tools.model.TaskStatus;
 import com.community.tools.model.User;
 import com.community.tools.repository.UserRepository;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -31,23 +32,19 @@ public class RepositoryGithubEventHandler implements GithubEventHandler {
   @Override
   public void handleEvent(JSONObject eventJson) {
     if (eventJson.has("action") && eventJson.getString("action").equals("created")) {
-      String repositoryName = eventJson.getString("name");
+      JSONObject repositoryJson = eventJson.getJSONObject("repository");
+      String repositoryName = repositoryJson.getString("name");
 
-      String matchingPrefix = null;
-      for (String prefix : repositoryNamePrefixes) {
-        if (repositoryName.startsWith(prefix)) {
-          matchingPrefix = prefix;
-        }
-      }
-
-      if (matchingPrefix == null) {
+      String taskName = parseTaskName(repositoryName);
+      if (taskName == null) {
         return;
       }
 
-      String taskName = repositoryName.replace(matchingPrefix + "-", "");
-      String ownerLogin = eventJson.getJSONObject("owner").getString("login");
-      LocalDate createdAt = LocalDate.parse(eventJson.getString("created_at"));
-      LocalDate updatedAt = LocalDate.parse(eventJson.getString("updated_at"));
+      String ownerLogin = repositoryJson.getJSONObject("owner").getString("login");
+      LocalDate createdAt = LocalDate.parse(repositoryJson.getString("created_at"),
+          DateTimeFormatter.ISO_DATE_TIME);
+      LocalDate updatedAt = LocalDate.parse(repositoryJson.getString("updated_at"),
+          DateTimeFormatter.ISO_DATE_TIME);
 
       Repository repository = new Repository(taskName,
           TaskStatus.IN_PROGRESS,
@@ -62,5 +59,17 @@ public class RepositoryGithubEventHandler implements GithubEventHandler {
 
       user.addRepository(repository);
     }
+  }
+
+  private String parseTaskName(String repositoryName) {
+    String taskName = null;
+    for (String prefix : repositoryNamePrefixes) {
+      if (repositoryName.startsWith(prefix)) {
+        taskName = prefix;
+        break;
+      }
+    }
+
+    return taskName;
   }
 }
