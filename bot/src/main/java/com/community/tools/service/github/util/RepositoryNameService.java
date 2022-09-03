@@ -28,8 +28,8 @@ public class RepositoryNameService {
   public ParsedRepositoryName parseRepositoryName(String repositoryName) {
     for (String prefix : taskRepositoryNamesPrefixes) {
       if (repositoryName.startsWith(prefix)) {
-        String creatorGitName = repositoryName.replace(prefix, "");
-        return new ParsedRepositoryName(prefix, creatorGitName);
+        String creatorGitName = repositoryName.replace(prefix + "-", "");
+        return new ParsedRepositoryName(creatorGitName, prefix);
       }
     }
 
