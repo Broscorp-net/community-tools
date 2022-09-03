@@ -1,6 +1,7 @@
 package com.community.tools.dto;
 
 import com.community.tools.model.TaskStatus;
+import java.time.LocalDate;
 import java.util.Date;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -14,8 +15,8 @@ public class RepositoryDto {
   private final String owner;
   private final String repositoryName;
   private final TaskStatus taskStatus;
-  private final Date updated;
-  private final Date created;
+  private final LocalDate updated;
+  private final LocalDate created;
 
 
 }

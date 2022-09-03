@@ -8,14 +8,16 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@NoArgsConstructor
 @Getter
 @Setter
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
 public class Repository {
 
   @Id
@@ -38,15 +40,4 @@ public class Repository {
   @Column(name = "updated")
   private LocalDate updated;
 
-  public Repository(String taskName,
-      TaskStatus taskStatus,
-      String repositoryName,
-      LocalDate created,
-      LocalDate updated) {
-    this.taskName = taskName;
-    this.taskStatus = taskStatus;
-    this.repositoryName = repositoryName;
-    this.created = created;
-    this.updated = updated;
-  }
 }
