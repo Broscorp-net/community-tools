@@ -5,29 +5,21 @@ import com.community.tools.model.Repository;
 import com.community.tools.model.TaskStatus;
 import com.community.tools.model.User;
 import com.community.tools.repository.UserRepository;
+import com.community.tools.service.github.util.RepositoryNameService;
+import com.community.tools.service.github.util.dto.ParsedRepositoryName;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import lombok.AllArgsConstructor;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+@AllArgsConstructor
 @Component
 public class RepositoryGithubEventHandler implements GithubEventHandler {
 
   private final UserRepository userRepository;
-  private final Set<String> repositoryNamePrefixes;
-
-  @Autowired
-  public RepositoryGithubEventHandler(UserRepository userRepository,
-      @Value("${github.task-repository-names.prefixes}") String[] repositoryNamePrefixes) {
-    this.userRepository = userRepository;
-    this.repositoryNamePrefixes = new HashSet<>(Arrays.asList(repositoryNamePrefixes));
-  }
+  private final RepositoryNameService repositoryNameService;
 
   @Transactional
   @Override
@@ -36,12 +28,15 @@ public class RepositoryGithubEventHandler implements GithubEventHandler {
       JSONObject repositoryJson = eventJson.getJSONObject("repository");
       String repositoryName = repositoryJson.getString("name");
 
-      String taskName = parseTaskName(repositoryName);
-      if (taskName == null) {
+      if (!repositoryNameService.isPrefixedWithTaskName(repositoryName)) {
         return;
       }
 
-      String ownerLogin = repositoryJson.getJSONObject("owner").getString("login");
+      ParsedRepositoryName parsedRepositoryName = repositoryNameService.parseRepositoryName(
+          repositoryName);
+
+      String taskName = parsedRepositoryName.getTaskName();
+      String creatorGitName = parsedRepositoryName.getCreatorGitName();
       LocalDate createdAt = LocalDate.parse(repositoryJson.getString("created_at"),
           DateTimeFormatter.ISO_DATE_TIME);
       LocalDate updatedAt = LocalDate.parse(repositoryJson.getString("updated_at"),
@@ -54,22 +49,10 @@ public class RepositoryGithubEventHandler implements GithubEventHandler {
           updatedAt);
 
       User user = userRepository
-          .findByGitName(ownerLogin)
-          .orElseThrow(() -> new UserNotFoundException(ownerLogin));
+          .findByGitName(creatorGitName)
+          .orElseThrow(() -> new UserNotFoundException(creatorGitName));
 
       user.addRepository(repository);
     }
-  }
-
-  private String parseTaskName(String repositoryName) {
-    String taskName = null;
-    for (String prefix : repositoryNamePrefixes) {
-      if (repositoryName.startsWith(prefix)) {
-        taskName = prefix;
-        break;
-      }
-    }
-
-    return taskName;
   }
 }
