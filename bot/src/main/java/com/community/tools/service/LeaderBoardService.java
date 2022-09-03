@@ -38,8 +38,11 @@ public class LeaderBoardService {
     List<UserDto> activeUsers = new ArrayList<>();
     classroomService.getAllActiveUsers(period).forEach(githubUserDto -> {
       Optional<User> user = userRepository.findByGitName(githubUserDto.getGitName());
-      user.ifPresentOrElse(user1 -> activeUsers.add(mapper.entityToDto(user1)),
-          () -> log.error(new UserNotFoundException(githubUserDto.getGitName()).getMessage()));
+      if (user.isPresent()) {
+        activeUsers.add(mapper.entityToDto(user.get()));
+      } else {
+        log.error(new UserNotFoundException(githubUserDto.getGitName()).getMessage());
+      }
     });
     return activeUsers;
   }
