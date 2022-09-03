@@ -77,27 +77,27 @@ public class ClassroomServiceImplTest {
   @Test
   public void testGetAllActiveUsers() {
     GHRepository firstRepositoryMock = mock(GHRepository.class);
-    when(firstRepositoryMock.getOwnerName()).thenReturn("TestUser1");
+    when(firstRepositoryMock.getName()).thenReturn("intro-TestUser1");
     when(firstRepositoryMock.getUpdatedAt()).thenReturn(
         Date.from(LocalDateTime.now().minusDays(30).atZone(ZoneId.systemDefault()).toInstant()));
 
     GHRepository secondRepositoryMock = mock(GHRepository.class);
-    when(secondRepositoryMock.getOwnerName()).thenReturn("TestUser1");
+    when(secondRepositoryMock.getName()).thenReturn("generics-TestUser1");
     when(secondRepositoryMock.getUpdatedAt()).thenReturn(
         Date.from(LocalDateTime.now().minusDays(22).atZone(ZoneId.systemDefault()).toInstant()));
 
     GHRepository thirdRepositoryMock = mock(GHRepository.class);
-    when(thirdRepositoryMock.getOwnerName()).thenReturn("TestUser2");
+    when(thirdRepositoryMock.getName()).thenReturn("game-of-life-TestUser2");
     when(thirdRepositoryMock.getUpdatedAt()).thenReturn(
         Date.from(LocalDateTime.now().minusDays(1).atZone(ZoneId.systemDefault()).toInstant()));
 
     GHRepository fourthRepositoryMock = mock(GHRepository.class);
-    when(fourthRepositoryMock.getOwnerName()).thenReturn("TestUser2");
+    when(fourthRepositoryMock.getName()).thenReturn("gc-implementation-TestUser2");
     when(fourthRepositoryMock.getUpdatedAt()).thenReturn(
         Date.from(LocalDateTime.now().minusDays(45).atZone(ZoneId.systemDefault()).toInstant()));
 
     GHRepository fifthRepositoryMock = mock(GHRepository.class);
-    when(fifthRepositoryMock.getOwnerName()).thenReturn("TestUser3");
+    when(fifthRepositoryMock.getName()).thenReturn("some-random-repo");
     when(fifthRepositoryMock.getUpdatedAt()).thenReturn(
         Date.from(LocalDateTime.now().minusDays(5).atZone(ZoneId.systemDefault()).toInstant()));
 
