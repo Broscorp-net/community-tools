@@ -40,4 +40,14 @@ public class Repository {
   @Column(name = "updated")
   private LocalDate updated;
 
+  public Repository(String taskName, TaskStatus taskStatus, String repositoryName,
+      LocalDate created,
+      LocalDate updated) {
+    this.taskName = taskName;
+    this.taskStatus = taskStatus;
+    this.repositoryName = repositoryName;
+    this.created = created;
+    this.updated = updated;
+  }
+
 }
