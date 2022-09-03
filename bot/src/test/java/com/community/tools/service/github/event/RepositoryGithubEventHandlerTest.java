@@ -74,10 +74,6 @@ public class RepositoryGithubEventHandlerTest {
     repository.put("created_at", createdAt);
     repository.put("updated_at", updatedAt);
 
-    JSONObject owner = new JSONObject();
-    repository.put("owner", owner);
-    owner.put("login", gitLogin);
-
     repositoryGithubEventHandler.handleEvent(eventJson);
 
     assertEquals(1, user.getRepositories().size());
