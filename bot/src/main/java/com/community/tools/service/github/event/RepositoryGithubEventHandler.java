@@ -1,5 +1,6 @@
 package com.community.tools.service.github.event;
 
+import com.community.tools.exception.UserNotFoundException;
 import com.community.tools.model.Repository;
 import com.community.tools.model.TaskStatus;
 import com.community.tools.model.User;
@@ -54,8 +55,7 @@ public class RepositoryGithubEventHandler implements GithubEventHandler {
 
       User user = userRepository
           .findByGitName(ownerLogin)
-          .orElseThrow(() -> new RuntimeException(
-              String.format("user with git username '%s' not found.", ownerLogin)));
+          .orElseThrow(() -> new UserNotFoundException(ownerLogin));
 
       user.addRepository(repository);
     }
