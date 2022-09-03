@@ -4,18 +4,14 @@ import com.community.tools.model.EventData;
 import com.community.tools.model.Messages;
 import com.community.tools.service.github.GitHubService;
 import com.github.seratch.jslack.api.methods.SlackApiException;
-
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -43,7 +39,9 @@ public class PublishWeekStatsService {
    * @throws SlackApiException SlackApiException
    * @throws IOException       IOException
    */
-  @Scheduled(cron = "0 0 0 * * MON")
+  // This scheduled task is temporarily deactivated,
+  // while services for working with github are being refactored
+  //@Scheduled(cron = "0 0 0 * * MON")
   public void exportStat()
           throws SlackApiException, IOException {
     Date endDate = new Date();
@@ -67,7 +65,9 @@ public class PublishWeekStatsService {
    * @throws IOException IOException
    * @throws SlackApiException SlackApiException
    */
-  @Scheduled(cron = "0 10 0 * * MON")
+  // This scheduled task is temporarily deactivated,
+  // while services for working with github are being refactored
+//  @Scheduled(cron = "0 10 0 * * MON")
   public void publishLeaderboard() throws IOException, SlackApiException {
     String url = urlServer + "leaderboard/";
     String date = LocalDate.now().toString();
@@ -80,7 +80,9 @@ public class PublishWeekStatsService {
   /**
    * Publish message with link to trainee`s tasks status and image (first 5 record of rating).
    */
-  @Scheduled(cron = "0 20 0 * * ?")
+  // This scheduled task is temporarily deactivated,
+  // while services for working with github are being refactored
+//  @Scheduled(cron = "0 20 0 * * ?")
   public void publishTasksStatus() {
     String url = urlServer + "task-status";
     String date = LocalDate.now().toString();
