@@ -5,17 +5,16 @@ import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.maxBy;
 
 import com.community.tools.dto.GithubUserDto;
+import com.community.tools.service.github.util.RepositoryNameService;
+import com.community.tools.service.github.util.dto.ParsedRepositoryName;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneId;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.SneakyThrows;
 import org.kohsuke.github.GHOrganization;
@@ -34,19 +33,19 @@ public class ClassroomServiceImpl implements ClassroomService {
   private final String mainOrganizationName;
   private final String traineeshipOrganizationName;
   private final String traineesTeamName;
-  private final Set<String> taskRepositoryNamesPrefixes;
+  private final RepositoryNameService repositoryNameService;
 
   @Autowired
   public ClassroomServiceImpl(GitHub gitHub,
       @Value("${github.organization.main}") String mainOrganizationName,
       @Value("${github.organization.traineeship}") String traineeshipOrganizationName,
       @Value("${github.team.trainees}") String traineesTeamName,
-      @Value("${github.task-repository-names.prefixes}") String[] taskRepositoryNamesPrefixes) {
+      RepositoryNameService repositoryNameService) {
     this.gitHub = gitHub;
     this.mainOrganizationName = mainOrganizationName;
     this.traineeshipOrganizationName = traineeshipOrganizationName;
     this.traineesTeamName = traineesTeamName;
-    this.taskRepositoryNamesPrefixes = new HashSet<>(Arrays.asList(taskRepositoryNamesPrefixes));
+    this.repositoryNameService = repositoryNameService;
   }
 
   @SneakyThrows
@@ -82,12 +81,7 @@ public class ClassroomServiceImpl implements ClassroomService {
         .getRepositories()
         .entrySet()
         .stream()
-        .filter(entry -> {
-          String repositoryName = entry.getKey();
-          return taskRepositoryNamesPrefixes
-              .stream()
-              .anyMatch(repositoryName::startsWith);
-        })
+        .filter(entry -> repositoryNameService.isPrefixedWithTaskName(entry.getKey()))
         .map(Entry::getValue)
         .filter(repository -> {
           try {
@@ -96,7 +90,11 @@ public class ClassroomServiceImpl implements ClassroomService {
             throw new RuntimeException(e);
           }
         })
-        .collect(groupingBy(GHRepository::getOwnerName, maxBy(repositoriesComparator)))
+        .collect(groupingBy(repository -> {
+          ParsedRepositoryName parsedName = repositoryNameService.parseRepositoryName(
+              repository.getName());
+          return parsedName.getCreatorGitName();
+        }, maxBy(repositoriesComparator)))
         .entrySet()
         .stream()
         .map(entry -> buildGithubUserDto(entry.getKey(), entry.getValue().get()))
