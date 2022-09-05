@@ -114,7 +114,7 @@ public class ClassroomServiceImpl implements ClassroomService {
 
     return GithubUserDto.builder()
         .gitName(creatorGitName)
-        .lastCommit(getUpdatedAt(repositories.get(0)))
+        .lastCommit(getUpdatedAt(repositories.get(repositories.size() - 1)))
         .repositories(repositories
             .stream()
             .map(this::buildGithubRepositoryDto)
