@@ -70,26 +70,33 @@ public class ClassroomServiceImpl implements ClassroomService {
         .atStartOfDay(ZoneId.systemDefault()).toInstant());
 
     GHOrganization organization = gitHub.getMyOrganizations().get(traineeshipOrganizationName);
-    Map<String, List<GHRepository>> activeUserRepositories = organization
+
+    Map<String, List<GHRepository>> allUsersRepositories = organization
         .getRepositories()
         .entrySet()
         .stream()
         .filter(entry -> repositoryNameService.isPrefixedWithTaskName(entry.getKey()))
         .map(Entry::getValue)
-        .filter(repository -> {
-          try {
-            return repository.getUpdatedAt().after(startDate);
-          } catch (IOException e) {
-            throw new RuntimeException(e);
-          }
-        })
         .collect(groupingBy(repository -> {
           ParsedRepositoryName parsedName = repositoryNameService.parseRepositoryName(
               repository.getName());
           return parsedName.getCreatorGitName();
         }));
 
-    return activeUserRepositories
+    allUsersRepositories
+        .entrySet()
+        .removeIf(entry -> {
+          List<GHRepository> userRepositories = entry.getValue();
+          return userRepositories.stream().noneMatch(repository -> {
+            try {
+              return repository.getUpdatedAt().after(startDate);
+            } catch (IOException exception) {
+              throw new RuntimeException(exception);
+            }
+          });
+        });
+
+    return allUsersRepositories
         .entrySet()
         .stream()
         .map(entry -> buildGithubUserDto(entry.getKey(), entry.getValue()))
