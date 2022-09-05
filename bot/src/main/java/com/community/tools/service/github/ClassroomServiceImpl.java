@@ -134,7 +134,7 @@ public class ClassroomServiceImpl implements ClassroomService {
   @SneakyThrows
   private String getLastBuildStatus(GHRepository repository) {
     return repository
-        .getWorkflow("classroom.yaml")
+        .getWorkflow("classroom.yml")
         .listRuns()
         .toList()
         .get(0)
