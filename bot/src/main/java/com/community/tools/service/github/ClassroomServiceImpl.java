@@ -145,7 +145,7 @@ public class ClassroomServiceImpl implements ClassroomService {
   @SneakyThrows
   private Set<String> getLabels(GHRepository repository) {
     return repository
-        .getPullRequest(0)
+        .getPullRequest(1)
         .getLabels()
         .stream()
         .map(GHLabel::getName)
