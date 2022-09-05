@@ -1,26 +1,16 @@
 package com.community.tools.service.github;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.community.tools.dto.GithubUserDto;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.Period;
-import java.time.ZoneId;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import lombok.SneakyThrows;
 import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.runner.RunWith;
 import org.kohsuke.github.GHOrganization;
-import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GHTeam;
 import org.kohsuke.github.GHUser;
 import org.kohsuke.github.GitHub;
@@ -53,6 +43,11 @@ public class ClassroomServiceImplTest {
   @Value("${github.team.trainees}")
   private String traineesTeamName;
 
+  @BeforeEach
+  public void setup() {
+
+  }
+
   @SneakyThrows
   @Test
   public void testAddUserToOrganization() {
@@ -71,59 +66,5 @@ public class ClassroomServiceImplTest {
     classroomService.addUserToOrganization(userGitName);
 
     verify(ghTeamMock).add(ghUserMock);
-  }
-
-  @SneakyThrows
-  @Test
-  public void testGetAllActiveUsers() {
-    GHRepository firstRepositoryMock = mock(GHRepository.class);
-    when(firstRepositoryMock.getName()).thenReturn("intro-TestUser1");
-    when(firstRepositoryMock.getUpdatedAt()).thenReturn(
-        Date.from(LocalDateTime.now().minusDays(30).atZone(ZoneId.systemDefault()).toInstant()));
-
-    GHRepository secondRepositoryMock = mock(GHRepository.class);
-    when(secondRepositoryMock.getName()).thenReturn("generics-TestUser1");
-    when(secondRepositoryMock.getUpdatedAt()).thenReturn(
-        Date.from(LocalDateTime.now().minusDays(22).atZone(ZoneId.systemDefault()).toInstant()));
-
-    GHRepository thirdRepositoryMock = mock(GHRepository.class);
-    when(thirdRepositoryMock.getName()).thenReturn("game-of-life-TestUser2");
-    when(thirdRepositoryMock.getUpdatedAt()).thenReturn(
-        Date.from(LocalDateTime.now().minusDays(1).atZone(ZoneId.systemDefault()).toInstant()));
-
-    GHRepository fourthRepositoryMock = mock(GHRepository.class);
-    when(fourthRepositoryMock.getName()).thenReturn("gc-implementation-TestUser2");
-    when(fourthRepositoryMock.getUpdatedAt()).thenReturn(
-        Date.from(LocalDateTime.now().minusDays(45).atZone(ZoneId.systemDefault()).toInstant()));
-
-    GHRepository fifthRepositoryMock = mock(GHRepository.class);
-    when(fifthRepositoryMock.getName()).thenReturn("some-random-repo");
-    when(fifthRepositoryMock.getUpdatedAt()).thenReturn(
-        Date.from(LocalDateTime.now().minusDays(5).atZone(ZoneId.systemDefault()).toInstant()));
-
-    Map<String, GHRepository> repositoriesMocks = new HashMap<>();
-    repositoriesMocks.put("intro-TestUser1", firstRepositoryMock);
-    repositoriesMocks.put("generics-TestUser1", secondRepositoryMock);
-    repositoriesMocks.put("game-of-life-TestUser2", thirdRepositoryMock);
-    repositoriesMocks.put("gc-implementation-TestUser2", fourthRepositoryMock);
-    repositoriesMocks.put("some-random-repo", fifthRepositoryMock);
-
-    GHOrganization ghOrganizationMock = mock(GHOrganization.class);
-    when(ghOrganizationMock.getRepositories()).thenReturn(repositoriesMocks);
-
-    Map<String, GHOrganization> organizations = new HashMap<>();
-    organizations.put(traineeshipOrganizationName, ghOrganizationMock);
-    when(gitHub.getMyOrganizations()).thenReturn(organizations);
-
-    List<GithubUserDto> expectedUsers = Arrays.asList(
-        new GithubUserDto("TestUser1", LocalDate.now().minusDays(22)),
-        new GithubUserDto("TestUser2", LocalDate.now().minusDays(1))
-    );
-
-    List<GithubUserDto> actualUsers = classroomService.getAllActiveUsers(Period.ofDays(35));
-
-    assertEquals(2, actualUsers.size());
-    assertTrue(actualUsers.contains(expectedUsers.get(0)));
-    assertTrue(actualUsers.contains(expectedUsers.get(1)));
   }
 }
