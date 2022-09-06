@@ -1,6 +1,7 @@
 package com.community.tools.controller;
 
 import com.community.tools.dto.GithubUserDto;
+import com.community.tools.dto.UserForLeaderboardDto;
 import com.community.tools.service.LeaderBoardService;
 import java.time.Period;
 import java.util.List;
@@ -24,25 +25,10 @@ public class LeaderBoardController {
   }
 
   @GetMapping("/leaderboard")
-  public ResponseEntity<List<GithubUserDto>> getRepositories(
+  public ResponseEntity<List<UserForLeaderboardDto>> getRepositories(
       @RequestParam(required = false) Optional<Integer> days) {
     return new ResponseEntity<>(
-        leaderBoardService.getActiveUsersFromPeriod(Period.ofDays(days.orElse(defaultNumberOfDays))),
-        HttpStatus.OK);
-  }
-
-  //todo delete it later
-  @GetMapping("/test/leaderboard")
-  public ResponseEntity<String> testOfEndpoint(
-      @RequestParam(required = false) Optional<Integer> days) {
-    return new ResponseEntity<>(
-        Period.ofDays(days.orElse(defaultNumberOfDays)).toString(),
-        HttpStatus.OK);
-  }
-
-  @GetMapping("/test/getAllUsers")
-  public ResponseEntity<List<GithubUserDto>> test() {
-    return new ResponseEntity<>(leaderBoardService.test(Period.ofDays(20)),
+        leaderBoardService.getLeaderBoard(Period.ofDays(days.orElse(defaultNumberOfDays))),
         HttpStatus.OK);
   }
 
