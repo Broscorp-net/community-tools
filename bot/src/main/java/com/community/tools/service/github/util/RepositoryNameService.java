@@ -22,7 +22,7 @@ public class RepositoryNameService {
   public boolean isPrefixedWithTaskName(String repositoryName) {
     return taskRepositoryNamesPrefixes
         .stream()
-        .anyMatch(repositoryName::startsWith);
+        .anyMatch(prefix -> repositoryName.startsWith(prefix + "-"));
   }
 
   public ParsedRepositoryName parseRepositoryName(String repositoryName) {
