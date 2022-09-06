@@ -1,6 +1,6 @@
 package com.community.tools.controller;
 
-import com.community.tools.dto.UserDto;
+import com.community.tools.dto.GithubUserDto;
 import com.community.tools.service.LeaderBoardService;
 import java.time.Period;
 import java.util.List;
@@ -17,24 +17,31 @@ public class LeaderBoardController {
   private static final Integer DAYS_IN_A_WEEK = 7;
   private final LeaderBoardService leaderBoardService;
 
+
   public LeaderBoardController(LeaderBoardService leaderBoardService) {
     this.leaderBoardService = leaderBoardService;
   }
 
+  @GetMapping("/leaderboard")
+  public ResponseEntity<List<GithubUserDto>> getRepositories(
+      @RequestParam(required = false) Optional<Integer> days) {
+    return new ResponseEntity<>(
+        leaderBoardService.getActiveUsersFromPeriod(Period.ofDays(days.orElse(DAYS_IN_A_WEEK))),
+        HttpStatus.OK);
+  }
+
   //todo delete it later
   @GetMapping("/test/leaderboard")
-  public ResponseEntity<String> test(
+  public ResponseEntity<String> testOfEndpoint(
       @RequestParam(required = false) Optional<Integer> days) {
     return new ResponseEntity<>(
         Period.ofDays(days.orElse(DAYS_IN_A_WEEK)).toString(),
         HttpStatus.OK);
   }
 
-  @GetMapping("/leaderboard")
-  public ResponseEntity<List<UserDto>> getLeaderboard(
-      @RequestParam(required = false) Optional<Integer> days) {
-    return new ResponseEntity<>(
-        leaderBoardService.getActiveUsersFromPeriod(Period.ofDays(days.orElse(DAYS_IN_A_WEEK))),
+  @GetMapping("/test/getAllUsers")
+  public ResponseEntity<List<GithubUserDto>> test() {
+    return new ResponseEntity<>(leaderBoardService.test(Period.ofDays(20)),
         HttpStatus.OK);
   }
 

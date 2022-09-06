@@ -1,15 +1,9 @@
 package com.community.tools.service;
 
-import com.community.tools.exception.UserNotFoundException;
-import com.community.tools.dto.UserDto;
-import com.community.tools.model.User;
-import com.community.tools.repository.UserRepository;
+import com.community.tools.dto.GithubUserDto;
 import com.community.tools.service.github.ClassroomService;
-import com.community.tools.util.mapper.Mapper;
 import java.time.Period;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -17,15 +11,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class LeaderBoardService {
 
-  private final UserRepository userRepository;
-  private final ClassroomService classroomService;
-  private final Mapper<User, UserDto> mapper;
 
-  public LeaderBoardService(UserRepository userRepository,
-      ClassroomService classroomService, Mapper<User, UserDto> mapper) {
-    this.userRepository = userRepository;
+  private final ClassroomService classroomService;
+
+  public LeaderBoardService(ClassroomService classroomService) {
     this.classroomService = classroomService;
-    this.mapper = mapper;
   }
 
   /**
@@ -34,17 +24,13 @@ public class LeaderBoardService {
    * @param period Period in days.
    * @return List of active Users.
    */
-  public List<UserDto> getActiveUsersFromPeriod(Period period) {
-    List<UserDto> activeUsers = new ArrayList<>();
-    classroomService.getAllActiveUsers(period).forEach(githubUserDto -> {
-      Optional<User> user = userRepository.findByGitName(githubUserDto.getGitName());
-      if (user.isPresent()) {
-        activeUsers.add(mapper.entityToDto(user.get()));
-      } else {
-        log.error(new UserNotFoundException(githubUserDto.getGitName()).getMessage());
-      }
-    });
-    return activeUsers;
+  public List<GithubUserDto> getActiveUsersFromPeriod(Period period) {
+    return classroomService.getAllActiveUsers(period);
+  }
+
+  //TODO delete it later
+  public List<GithubUserDto> test(Period period) {
+    return classroomService.getAllActiveUsers(period);
   }
 
 }
