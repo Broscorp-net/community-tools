@@ -7,7 +7,9 @@ import com.community.tools.dto.GithubRepositoryDto;
 import com.community.tools.dto.GithubUserDto;
 import com.community.tools.service.github.util.RepositoryNameService;
 import com.community.tools.service.github.util.dto.ParsedRepositoryName;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneId;
@@ -25,6 +27,7 @@ import org.kohsuke.github.GHOrganization;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GHTeam;
 import org.kohsuke.github.GHUser;
+import org.kohsuke.github.GHWorkflowRun;
 import org.kohsuke.github.GitHub;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -129,27 +132,52 @@ public class ClassroomServiceImpl implements ClassroomService {
     String repositoryName = repository.getName();
     ParsedRepositoryName parsedRepositoryName = repositoryNameService.parseRepositoryName(
         repository.getName());
+    GHWorkflowRun workflowRun = getWorkflowRun(repository);
 
     return GithubRepositoryDto.builder()
         .repositoryName(repositoryName)
         .taskName(parsedRepositoryName.getTaskName())
-        .lastBuildStatus(getLastBuildStatus(repository))
+        .lastBuildStatus(getLastBuildStatus(workflowRun))
         .labels(getLabels(repository))
+        .points(getPoints(workflowRun))
         .createdAt(getCreatedAt(repository))
         .updatedAt(getUpdatedAt(repository))
         .build();
   }
 
   @SneakyThrows
-  private String getLastBuildStatus(GHRepository repository) {
+  private String getLastBuildStatus(GHWorkflowRun workflowRun) {
+    return workflowRun
+        .getConclusion()
+        .toString();
+  }
+
+  @SneakyThrows
+  private int getPoints(GHWorkflowRun workflowRun) {
+    return workflowRun
+        .listJobs()
+        .toList()
+        .get(0)
+        .downloadLogs(in -> new BufferedReader(new InputStreamReader(in)))
+        .lines()
+        .filter(line -> line.contains("Points"))
+        .map(line -> {
+          String[] lineSplit = line.split(" ");
+          String[] points = lineSplit[2].split("/");
+          return Integer.parseInt(points[0]);
+        })
+        .findFirst()
+        .orElse(0);
+  }
+
+  @SneakyThrows
+  private GHWorkflowRun getWorkflowRun(GHRepository repository) {
     return repository
         .getWorkflow("classroom.yml")
         .listRuns()
         .withPageSize(1)
         .iterator()
-        .next()
-        .getConclusion()
-        .toString();
+        .next();
   }
 
   private Set<String> getLabels(GHRepository repository) {
