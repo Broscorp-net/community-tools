@@ -5,7 +5,9 @@ import com.community.tools.dto.GithubUserDto;
 import com.community.tools.service.github.ClassroomServiceImpl;
 import java.time.Period;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,20 +19,22 @@ public class TaskStatusService {
     this.classroomService = classroomService;
   }
 
+  //TODO add comparator interface to method's arguments
   public List<GithubUserDto> getAll(Period period) {
-    return classroomService.getAllActiveUsers(period);
+    return classroomService.getAllActiveUsers(period)
+        .stream()
+        .sorted(Comparator.comparingInt(GithubUserDto::getCompletedTasks).reversed())
+        .collect(Collectors.toList());
   }
 
+  //TODO add comparator interface to method's arguments
   public List<GithubRepositoryDto> getTaskStatusesForName(String taskName, Period period) {
     List<GithubRepositoryDto> result = new ArrayList<>();
     classroomService.getAllActiveUsers(period).forEach(
-        githubUserDto -> githubUserDto.getRepositories().forEach(githubRepositoryDto -> {
-          if (githubRepositoryDto.getTaskName().equals(taskName)) {
-            result.add(githubRepositoryDto);
-          }
-        })
-    );
-    return result;
+        githubUserDto -> githubUserDto.getRepositoryWithName(taskName).ifPresent(result::add));
+    return result.stream()
+        .sorted(Comparator.comparingInt(GithubRepositoryDto::getPoints).reversed())
+        .collect(Collectors.toList());
   }
 
 }

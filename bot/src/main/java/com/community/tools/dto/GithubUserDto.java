@@ -26,7 +26,7 @@ public class GithubUserDto {
   public Optional<GithubRepositoryDto> getRepositoryWithName(String name) {
     return repositories
         .stream()
-        .filter(githubRepositoryDto -> githubRepositoryDto.getRepositoryName().equals(name))
+        .filter(repositoryDto -> repositoryDto.getTaskName().equals(name))
         .findFirst();
   }
 
