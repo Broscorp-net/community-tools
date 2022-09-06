@@ -143,8 +143,9 @@ public class ClassroomServiceImpl implements ClassroomService {
     return repository
         .getWorkflow("classroom.yml")
         .listRuns()
-        .toList()
-        .get(0)
+        .withPageSize(1)
+        .iterator()
+        .next()
         .getConclusion()
         .toString();
   }
