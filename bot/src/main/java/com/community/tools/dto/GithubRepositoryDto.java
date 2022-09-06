@@ -13,6 +13,7 @@ public class GithubRepositoryDto {
   private final String taskName;
   private final String lastBuildStatus;
   private final Set<String> labels;
+  private final int points;
   private final LocalDate createdAt;
   private final LocalDate updatedAt;
 }
