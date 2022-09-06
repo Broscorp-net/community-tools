@@ -17,9 +17,10 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import org.kohsuke.github.GHFileNotFoundException;
 import org.kohsuke.github.GHLabel;
@@ -69,58 +70,71 @@ public class ClassroomServiceImpl implements ClassroomService {
   @SneakyThrows
   @Override
   public List<GithubUserDto> getAllActiveUsers(Period period) {
-    Date startDate = Date.from(LocalDate
+    Date startDate = convertToDate(LocalDate
         .now()
-        .minus(period)
-        .atStartOfDay(ZoneId.systemDefault()).toInstant());
+        .minus(period));
 
     GHOrganization organization = gitHub.getMyOrganizations().get(traineeshipOrganizationName);
 
-    Map<String, List<GHRepository>> allUsersRepositories = organization
-        .getRepositories()
-        .entrySet()
-        .stream()
-        .filter(entry -> repositoryNameService.isPrefixedWithTaskName(entry.getKey()))
-        .map(Entry::getValue)
-        .collect(groupingBy(repository -> {
-          ParsedRepositoryName parsedName = repositoryNameService.parseRepositoryName(
-              repository.getName());
-          return parsedName.getCreatorGitName();
-        }));
+    Map<String, List<FetchedRepository>> activeUsersRepositories = fetchAllUserRepositories(
+        organization);
 
-    allUsersRepositories
+    activeUsersRepositories
         .entrySet()
         .removeIf(entry -> {
-          List<GHRepository> userRepositories = entry.getValue();
-          return userRepositories.stream().noneMatch(repository -> {
-            try {
-              return repository.getUpdatedAt().after(startDate);
-            } catch (IOException exception) {
-              throw new RuntimeException(exception);
-            }
-          });
+          List<FetchedRepository> userRepositories = entry.getValue();
+          return userRepositories.stream().noneMatch(fetchedRepository -> fetchedRepository
+              .getLastCommitDate()
+              .after(startDate)
+          );
         });
 
-    return allUsersRepositories
+    return activeUsersRepositories
         .entrySet()
         .stream()
         .map(entry -> buildGithubUserDto(entry.getKey(), entry.getValue()))
         .collect(Collectors.toList());
   }
 
-  private GithubUserDto buildGithubUserDto(String creatorGitName, List<GHRepository> repositories) {
-    repositories.sort(comparing(repository -> {
-      try {
-        return repository.getUpdatedAt();
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-    }));
+  private Map<String, List<FetchedRepository>> fetchAllUserRepositories(GHOrganization organization)
+      throws IOException {
+    return organization
+        .getRepositories()
+        .entrySet()
+        .stream()
+        .filter(entry -> repositoryNameService.isPrefixedWithTaskName(entry.getKey()))
+        .map(entry -> {
+          try {
+            GHRepository repository = entry.getValue();
+            Date lastCommitDate = repository
+                .queryCommits()
+                .pageSize(1)
+                .list()
+                .iterator()
+                .next()
+                .getCommitDate();
+
+            return new FetchedRepository(repository, lastCommitDate);
+          } catch (IOException e) {
+            throw new RuntimeException(e);
+          }
+        })
+        .collect(groupingBy(fetchedRepository -> {
+          ParsedRepositoryName parsedName = repositoryNameService.parseRepositoryName(
+              fetchedRepository.getRepository().getName());
+          return parsedName.getCreatorGitName();
+        }));
+  }
+
+  private GithubUserDto buildGithubUserDto(String creatorGitName,
+      List<FetchedRepository> fetchedRepositories) {
+    fetchedRepositories.sort(comparing(FetchedRepository::getLastCommitDate).reversed());
+    LocalDate lastCommitDate = convertToLocalDate(fetchedRepositories.get(0).getLastCommitDate());
 
     return GithubUserDto.builder()
         .gitName(creatorGitName)
-        .lastCommit(getUpdatedAt(repositories.get(repositories.size() - 1)))
-        .repositories(repositories
+        .lastCommit(lastCommitDate)
+        .repositories(fetchedRepositories
             .stream()
             .map(this::buildGithubRepositoryDto)
             .collect(Collectors.toList()))
@@ -128,7 +142,9 @@ public class ClassroomServiceImpl implements ClassroomService {
   }
 
   @SneakyThrows
-  private GithubRepositoryDto buildGithubRepositoryDto(GHRepository repository) {
+  private GithubRepositoryDto buildGithubRepositoryDto(FetchedRepository fetchedRepository) {
+    GHRepository repository = fetchedRepository.getRepository();
+
     String repositoryName = repository.getName();
     ParsedRepositoryName parsedRepositoryName = repositoryNameService.parseRepositoryName(
         repository.getName());
@@ -140,8 +156,8 @@ public class ClassroomServiceImpl implements ClassroomService {
         .lastBuildStatus(getLastBuildStatus(workflowRun))
         .labels(getLabels(repository))
         .points(getPoints(workflowRun))
-        .createdAt(getCreatedAt(repository))
-        .updatedAt(getUpdatedAt(repository))
+        .createdAt(convertToLocalDate(repository.getCreatedAt()))
+        .updatedAt(convertToLocalDate(fetchedRepository.getLastCommitDate()))
         .build();
   }
 
@@ -195,22 +211,26 @@ public class ClassroomServiceImpl implements ClassroomService {
     }
   }
 
-  @SneakyThrows
-  private LocalDate getCreatedAt(GHRepository repository) {
-    return repository
-        .getCreatedAt()
+  private Date convertToDate(LocalDate date) {
+    return Date
+        .from(date
+            .atStartOfDay(ZoneId.systemDefault())
+            .toInstant());
+  }
+
+  private LocalDate convertToLocalDate(Date date) {
+    return date
         .toInstant()
         .atZone(ZoneId.systemDefault())
         .toLocalDate();
   }
 
-  @SneakyThrows
-  private LocalDate getUpdatedAt(GHRepository repository) {
-    return repository
-        .getUpdatedAt()
-        .toInstant()
-        .atZone(ZoneId.systemDefault())
-        .toLocalDate();
+  @Getter
+  @AllArgsConstructor
+  private static class FetchedRepository {
+
+    private final GHRepository repository;
+    private final Date lastCommitDate;
   }
 }
 
