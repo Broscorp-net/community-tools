@@ -14,6 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+
+/**
+ *doesn't work
+ * refactor it or delete
+ */
+@Deprecated
 @Component
 @RequiredArgsConstructor
 public class PublishWeekStatsService {

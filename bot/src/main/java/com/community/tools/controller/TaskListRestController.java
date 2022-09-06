@@ -5,6 +5,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ *doesn't work
+ * refactor it or delete
+ */
+@Deprecated
 @RestController
 @RequestMapping("api/tasks")
 public class TaskListRestController {

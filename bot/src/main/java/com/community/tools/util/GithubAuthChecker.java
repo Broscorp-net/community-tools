@@ -8,6 +8,11 @@ import javax.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Hex;
 
+/**
+ * we are not sure is it necessary
+ * refactor it or delete
+ */
+@Deprecated
 @Slf4j
 public final class GithubAuthChecker {
 

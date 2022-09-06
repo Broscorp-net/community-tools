@@ -12,6 +12,11 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+/**
+ *doesn't work
+ * refactor it or delete
+ */
+@Deprecated
 public class ImageService {
   /**
    * This method put html code into JEditorPane and print image.
