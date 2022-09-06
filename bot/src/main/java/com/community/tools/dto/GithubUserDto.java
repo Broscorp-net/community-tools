@@ -1,16 +1,17 @@
 package com.community.tools.dto;
 
 import java.time.LocalDate;
-import lombok.AllArgsConstructor;
+import java.util.List;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
-@Getter
 @EqualsAndHashCode
-@AllArgsConstructor
+@Getter
+@Builder
 public class GithubUserDto {
 
   private final String gitName;
   private final LocalDate lastCommit;
-
+  private List<GithubRepositoryDto> repositories;
 }
