@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneId;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.SneakyThrows;
+import org.kohsuke.github.GHFileNotFoundException;
 import org.kohsuke.github.GHLabel;
 import org.kohsuke.github.GHOrganization;
 import org.kohsuke.github.GHRepository;
@@ -150,14 +152,19 @@ public class ClassroomServiceImpl implements ClassroomService {
         .toString();
   }
 
-  @SneakyThrows
   private Set<String> getLabels(GHRepository repository) {
-    return repository
-        .getPullRequest(1)
-        .getLabels()
-        .stream()
-        .map(GHLabel::getName)
-        .collect(Collectors.toSet());
+    try {
+      return repository
+          .getPullRequest(1)
+          .getLabels()
+          .stream()
+          .map(GHLabel::getName)
+          .collect(Collectors.toSet());
+    } catch (GHFileNotFoundException e) {
+      return Collections.emptySet();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   @SneakyThrows
