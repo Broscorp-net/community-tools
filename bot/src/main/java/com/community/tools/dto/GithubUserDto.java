@@ -1,6 +1,7 @@
 package com.community.tools.dto;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import lombok.Builder;
@@ -41,6 +42,14 @@ public class GithubUserDto {
           }
         })
         .sum();
+  }
+
+  public static Comparator<GithubUserDto> getForAscendingOrder() {
+    return Comparator.comparingInt(GithubUserDto::getTotalPoints);
+  }
+
+  public static Comparator<GithubUserDto> getForDescendingOrder() {
+    return Comparator.comparingInt(GithubUserDto::getTotalPoints).reversed();
   }
 
 }

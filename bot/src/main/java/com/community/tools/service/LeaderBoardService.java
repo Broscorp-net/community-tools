@@ -27,11 +27,11 @@ public class LeaderBoardService {
    * @param period Period in days.
    * @return List of active Users.
    */
-  //TODO add comparator interface to method's arguments
-  public List<UserForLeaderboardDto> getLeaderBoard(Period period) {
+  public List<UserForLeaderboardDto> getLeaderBoard(Period period,
+      Comparator<GithubUserDto> comparator) {
     return classroomService.getAllActiveUsers(period)
         .stream()
-        .sorted(Comparator.comparingInt(GithubUserDto::getTotalPoints).reversed())
+        .sorted(comparator)
         .map(dto -> new UserForLeaderboardDto(
             dto.getGitName(),
             dto.getLastCommit(),

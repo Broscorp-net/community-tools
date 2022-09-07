@@ -4,6 +4,7 @@ import com.community.tools.dto.GithubUserDto;
 import com.community.tools.dto.UserForLeaderboardDto;
 import com.community.tools.service.LeaderBoardService;
 import java.time.Period;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,10 +27,23 @@ public class LeaderBoardController {
 
   @GetMapping("/leaderboard")
   public ResponseEntity<List<UserForLeaderboardDto>> getRepositories(
-      @RequestParam(required = false) Optional<Integer> days) {
+      @RequestParam(required = false) Optional<Integer> days,
+      @RequestParam(required = false) Optional<String> comparatorForSort) {
+    Comparator<GithubUserDto> comparator = GithubUserDto.getForDescendingOrder();
+
+    if (comparatorForSort.isPresent()) {
+      if (comparatorForSort.get().equals("asc")) {
+        comparator = GithubUserDto.getForAscendingOrder();
+      } else if (comparatorForSort.get().equals("desc")) {
+        comparator = GithubUserDto.getForDescendingOrder();
+      } else {
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+      }
+    }
+
     return new ResponseEntity<>(
-        leaderBoardService.getLeaderBoard(Period.ofDays(days.orElse(defaultNumberOfDays))),
-        HttpStatus.OK);
+        leaderBoardService.getLeaderBoard(Period.ofDays(days.orElse(defaultNumberOfDays)),
+            comparator), HttpStatus.OK);
   }
 
 }
