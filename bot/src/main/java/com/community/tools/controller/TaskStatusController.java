@@ -37,6 +37,10 @@ public class TaskStatusController {
         HttpStatus.OK);
   }
 
+  /**
+   * @deprecated Unused endpoint
+   */
+  @Deprecated
   @GetMapping("/taskStatus/getTaskForName/{taskName}")
   public ResponseEntity<List<GithubRepositoryDto>> getTaskStatusesForName(@PathVariable String taskName,
       @RequestParam(required = false) Optional<Integer> days) {
@@ -47,7 +51,6 @@ public class TaskStatusController {
               Period.ofDays(days.orElse(defaultNumberOfDays))),
           HttpStatus.OK);
     } else {
-      //TODO throw exception and add AOP handler
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 

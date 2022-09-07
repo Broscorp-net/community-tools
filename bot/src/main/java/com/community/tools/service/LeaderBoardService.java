@@ -27,11 +27,12 @@ public class LeaderBoardService {
    * @param period Period in days.
    * @return List of active Users.
    */
-  public List<UserForLeaderboardDto> getLeaderBoard(Period period,
+  public List<UserForLeaderboardDto> getLeaderBoard(Integer userLimit, Period period,
       Comparator<GithubUserDto> comparator) {
     return classroomService.getAllActiveUsers(period)
         .stream()
         .sorted(comparator)
+        .limit(userLimit)
         .map(dto -> new UserForLeaderboardDto(
             dto.getGitName(),
             dto.getLastCommit(),

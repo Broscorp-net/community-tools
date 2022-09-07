@@ -19,6 +19,8 @@ public class LeaderBoardController {
 
   @Value("${defaultNumberOfDaysForStatistic}")
   private Integer defaultNumberOfDays;
+  @Value("${defaultUserLimit}")
+  private Integer defaultUserLimit;
   private final LeaderBoardService leaderBoardService;
 
   public LeaderBoardController(LeaderBoardService leaderBoardService) {
@@ -27,6 +29,7 @@ public class LeaderBoardController {
 
   @GetMapping("/leaderboard")
   public ResponseEntity<List<UserForLeaderboardDto>> getRepositories(
+      @RequestParam(required = false) Optional<Integer> userLimit,
       @RequestParam(required = false) Optional<Integer> days,
       @RequestParam(required = false) Optional<String> comparatorForSort) {
     Comparator<GithubUserDto> comparator = GithubUserDto.getComparatorForDescendingOrder();
@@ -44,7 +47,9 @@ public class LeaderBoardController {
     }
 
     return new ResponseEntity<>(
-        leaderBoardService.getLeaderBoard(Period.ofDays(days.orElse(defaultNumberOfDays)),
+        leaderBoardService.getLeaderBoard(
+            userLimit.orElse(defaultUserLimit),
+            Period.ofDays(days.orElse(defaultNumberOfDays)),
             comparator), HttpStatus.OK);
   }
 
