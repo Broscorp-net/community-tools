@@ -29,16 +29,18 @@ public class LeaderBoardController {
   public ResponseEntity<List<UserForLeaderboardDto>> getRepositories(
       @RequestParam(required = false) Optional<Integer> days,
       @RequestParam(required = false) Optional<String> comparatorForSort) {
-    Comparator<GithubUserDto> comparator = GithubUserDto.getForDescendingOrder();
+    Comparator<GithubUserDto> comparator = GithubUserDto.getComparatorForDescendingOrder();
 
     if (comparatorForSort.isPresent()) {
+
       if (comparatorForSort.get().equals("asc")) {
-        comparator = GithubUserDto.getForAscendingOrder();
+        comparator = GithubUserDto.getComparatorForAscendingOrder();
       } else if (comparatorForSort.get().equals("desc")) {
-        comparator = GithubUserDto.getForDescendingOrder();
+        comparator = GithubUserDto.getComparatorForDescendingOrder();
       } else {
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
       }
+
     }
 
     return new ResponseEntity<>(

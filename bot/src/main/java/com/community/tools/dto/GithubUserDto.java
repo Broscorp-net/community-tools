@@ -44,11 +44,11 @@ public class GithubUserDto {
         .sum();
   }
 
-  public static Comparator<GithubUserDto> getForAscendingOrder() {
+  public static Comparator<GithubUserDto> getComparatorForAscendingOrder() {
     return Comparator.comparingInt(GithubUserDto::getTotalPoints);
   }
 
-  public static Comparator<GithubUserDto> getForDescendingOrder() {
+  public static Comparator<GithubUserDto> getComparatorForDescendingOrder() {
     return Comparator.comparingInt(GithubUserDto::getTotalPoints).reversed();
   }
 
