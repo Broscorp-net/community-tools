@@ -11,11 +11,13 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import lombok.AllArgsConstructor;
 import org.json.JSONObject;
-import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Implements handler for 'repository created' GitHub hook event. To enable this handler, class must
+ * be annotated with @Component annotation.
+ */
 @AllArgsConstructor
-@Component
 public class RepositoryGithubEventHandler implements GithubEventHandler {
 
   private final UserRepository userRepository;
