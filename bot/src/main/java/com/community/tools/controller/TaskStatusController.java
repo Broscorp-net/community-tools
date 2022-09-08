@@ -30,10 +30,9 @@ public class TaskStatusController {
   }
 
   @GetMapping("/taskStatus/getAll")
-  public ResponseEntity<List<GithubUserDto>> getAllTaskStatuses(
-      @RequestParam(required = false) Optional<Integer> periodInDays) {
+  public ResponseEntity<List<GithubUserDto>> getAllTaskStatuses() {
     return new ResponseEntity<>(
-        taskStatusService.getAll(Period.ofDays(periodInDays.orElse(defaultNumberOfDays))),
+        taskStatusService.getAll(Period.ofDays(defaultNumberOfDays)),
         HttpStatus.OK);
   }
 

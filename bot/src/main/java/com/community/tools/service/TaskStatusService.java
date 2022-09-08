@@ -8,8 +8,10 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 public class TaskStatusService {
 
@@ -21,13 +23,20 @@ public class TaskStatusService {
 
   //TODO add comparator interface to method's arguments
   public List<GithubUserDto> getAll(Period period) {
+    log.info("running...");
     return classroomService.getAllActiveUsers(period)
         .stream()
         .sorted(Comparator.comparingInt(GithubUserDto::getCompletedTasks).reversed())
         .collect(Collectors.toList());
   }
 
-  //TODO add comparator interface to method's arguments
+  /**
+   * @deprecated unused
+   * @param taskName
+   * @param period
+   * @return
+   */
+  @Deprecated
   public List<GithubRepositoryDto> getTaskStatusesForName(String taskName, Period period) {
     List<GithubRepositoryDto> result = new ArrayList<>();
     classroomService.getAllActiveUsers(period).forEach(

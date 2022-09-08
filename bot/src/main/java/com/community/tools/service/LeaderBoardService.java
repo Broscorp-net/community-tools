@@ -29,6 +29,8 @@ public class LeaderBoardService {
    */
   public List<UserForLeaderboardDto> getLeaderBoard(Integer userLimit, Period period,
       Comparator<GithubUserDto> comparator) {
+    log.info("running..." + " period = " + period + " comparator = " + comparator.toString()
+        + " limit = " + userLimit);
     return classroomService.getAllActiveUsers(period)
         .stream()
         .sorted(comparator)

@@ -10,6 +10,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,7 +20,7 @@ public class LeaderBoardController {
 
   @Value("${defaultNumberOfDaysForStatistic}")
   private Integer defaultNumberOfDays;
-  @Value("${defaultUserLimit}")
+  @Value("${defaultRowLimit}")
   private Integer defaultUserLimit;
   private final LeaderBoardService leaderBoardService;
 
@@ -28,17 +29,18 @@ public class LeaderBoardController {
   }
 
   @GetMapping("/leaderboard")
+  @CrossOrigin(origins = "http://localhost:4200")
   public ResponseEntity<List<UserForLeaderboardDto>> getRepositories(
-      @RequestParam(required = false) Optional<Integer> userLimit,
+      @RequestParam(required = false) Optional<Integer> limit,
       @RequestParam(required = false) Optional<Integer> days,
-      @RequestParam(required = false) Optional<String> comparatorName) {
+      @RequestParam(required = false) Optional<String> sort) {
     Comparator<GithubUserDto> comparator = GithubUserDto.getComparatorForDescendingOrder();
 
-    if (comparatorName.isPresent()) {
+    if (sort.isPresent()) {
 
-      if (comparatorName.get().equals("asc")) {
+      if (sort.get().equals("asc")) {
         comparator = GithubUserDto.getComparatorForAscendingOrder();
-      } else if (comparatorName.get().equals("desc")) {
+      } else if (sort.get().equals("desc")) {
         comparator = GithubUserDto.getComparatorForDescendingOrder();
       } else {
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -48,7 +50,7 @@ public class LeaderBoardController {
 
     return new ResponseEntity<>(
         leaderBoardService.getLeaderBoard(
-            userLimit.orElse(defaultUserLimit),
+            limit.orElse(defaultUserLimit),
             Period.ofDays(days.orElse(defaultNumberOfDays)),
             comparator), HttpStatus.OK);
   }
