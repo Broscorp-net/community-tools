@@ -56,6 +56,11 @@ public class ClassroomServiceImpl implements ClassroomService {
     this.repositoryNameService = repositoryNameService;
   }
 
+  /**
+   * Adds user with passed GitHub login to the organization.
+   *
+   * @param gitName github login
+   */
   @SneakyThrows
   @Override
   public void addUserToOrganization(String gitName) {
@@ -67,6 +72,13 @@ public class ClassroomServiceImpl implements ClassroomService {
     traineesTeam.add(user);
   }
 
+  /**
+   * Fetches users, who made at least one commit during the passed period and returns information
+   * about them and their repositories.
+   *
+   * @param period period
+   * @return information about users and their repositories
+   */
   @SneakyThrows
   @Override
   public List<GithubUserDto> getAllActiveUsers(Period period) {
