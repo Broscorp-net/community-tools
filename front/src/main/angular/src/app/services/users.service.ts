@@ -9,7 +9,7 @@ import {environment} from 'src/environments/environment';
 })
 export class UsersService {
 
-  private defaultApi: string = `${environment.apiURL}/api/users`;
+  private defaultApi: string = `${environment.apiURL}/leaderboard`;
 
   paramFormedString: string;
 
@@ -17,10 +17,13 @@ export class UsersService {
   }
 
   getRestUsers(userLimit: number, daysFetch: number, sort: string): Observable<User[]> {
+    if (daysFetch == null && sort == null && userLimit == null) {
+      return this.http.get<User[]>(this.defaultApi);
+    }
     this.paramFormedString = "?" +
-      (userLimit != undefined ? "userLimit=" + userLimit + "&" : "") +
-      (daysFetch != undefined ? "daysFetch=" + daysFetch + "&" : "") +
-      (sort != undefined ? "sort=" + sort : "");
+      (userLimit != undefined ? `${environment.endpointNameForLeaderboardLimitOfRows}` + "=" + userLimit + "&" : "") +
+      (daysFetch != undefined ? `${environment.endpointNameForLeaderboardPeriodInDays}`+ "=" + daysFetch + "&" : "") +
+      (sort != undefined ? `${environment.endpointNameForLeaderboardSort}` + "=" + sort : "");
     return this.http.get<User[]>(this.defaultApi + this.paramFormedString);
   }
 

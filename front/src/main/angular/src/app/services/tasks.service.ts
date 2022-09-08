@@ -8,7 +8,7 @@ import { environment } from 'src/environments/environment';
 })
 export class TasksService {
 
-  private defaultApi: string = `${environment.apiURL}/api/tasks`;
+  private defaultApi: string = `${environment.apiURL}/taskStatus/getAll`;
 
   constructor (private http: HttpClient) {  }
 
