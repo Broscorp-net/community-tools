@@ -12,12 +12,12 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-public class LeaderBoardService {
+public class LeaderboardService {
 
 
   private final ClassroomService classroomService;
 
-  public LeaderBoardService(ClassroomService classroomService) {
+  public LeaderboardService(ClassroomService classroomService) {
     this.classroomService = classroomService;
   }
 

@@ -22,11 +22,11 @@ export class LeaderboardComponent implements OnInit {
     this.activatedRoute.queryParamMap
     .subscribe(params => {
       // @ts-ignore
-      this.rowLimit = +params.get(`${environment.endpointNameForLeaderboardLimitOfRows}`)||null;
+      this.rowLimit = +params.get(`${environment.endpointParamForLeaderboardLimitOfRows}`)||null;
       // @ts-ignore
-      this.daysFetch = +params.get(`${environment.endpointNameForLeaderboardPeriodInDays}`)||null;
+      this.daysFetch = +params.get(`${environment.endpointParamForLeaderboardPeriodInDays}`)||null;
       // @ts-ignore
-      this.sort = +params.get(`${environment.endpointNameForLeaderboardSort}`)||null;
+      this.sort = +params.get(`${environment.endpointParamForLeaderboardSort}`)||null;
     });
 
     this.getUsers(this.rowLimit, this.daysFetch, this.sort);

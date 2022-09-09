@@ -1,7 +1,7 @@
 package com.community.tools.dto;
 
 import java.time.LocalDate;
-import java.util.Set;
+import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -12,8 +12,16 @@ public class GithubRepositoryDto {
   private final String repositoryName;
   private final String taskName;
   private final String lastBuildStatus;
-  private final Set<String> labels;
+  private final List<String> labels;
   private final int points;
   private final LocalDate createdAt;
   private final LocalDate updatedAt;
+
+  public List<String> getLabels() {
+    if (labels.isEmpty()) {
+      labels.add("pull");
+    }
+    return labels;
+  }
+
 }

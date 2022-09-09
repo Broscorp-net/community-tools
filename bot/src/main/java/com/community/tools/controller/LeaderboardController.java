@@ -2,7 +2,7 @@ package com.community.tools.controller;
 
 import com.community.tools.dto.GithubUserDto;
 import com.community.tools.dto.UserForLeaderboardDto;
-import com.community.tools.service.LeaderBoardService;
+import com.community.tools.service.LeaderboardService;
 import java.time.Period;
 import java.util.Comparator;
 import java.util.List;
@@ -16,15 +16,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class LeaderBoardController {
+public class LeaderboardController {
 
   @Value("${defaultNumberOfDaysForStatistic}")
   private Integer defaultNumberOfDays;
   @Value("${defaultRowLimit}")
   private Integer defaultUserLimit;
-  private final LeaderBoardService leaderBoardService;
+  private final LeaderboardService leaderBoardService;
 
-  public LeaderBoardController(LeaderBoardService leaderBoardService) {
+  public LeaderboardController(LeaderboardService leaderBoardService) {
     this.leaderBoardService = leaderBoardService;
   }
 
@@ -34,14 +34,14 @@ public class LeaderBoardController {
       @RequestParam(required = false) Optional<Integer> limit,
       @RequestParam(required = false) Optional<Integer> days,
       @RequestParam(required = false) Optional<String> sort) {
-    Comparator<GithubUserDto> comparator = GithubUserDto.getComparatorForDescendingOrder();
+    Comparator<GithubUserDto> comparator = GithubUserDto.getComparatorForLeaderboardDESC();
 
     if (sort.isPresent()) {
 
       if (sort.get().equals("asc")) {
-        comparator = GithubUserDto.getComparatorForAscendingOrder();
+        comparator = GithubUserDto.getComparatorForLeaderboardASC();
       } else if (sort.get().equals("desc")) {
-        comparator = GithubUserDto.getComparatorForDescendingOrder();
+        comparator = GithubUserDto.getComparatorForLeaderboardDESC();
       } else {
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
       }

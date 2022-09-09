@@ -21,9 +21,9 @@ export class UsersService {
       return this.http.get<User[]>(this.defaultApi);
     }
     this.paramFormedString = "?" +
-      (userLimit != undefined ? `${environment.endpointNameForLeaderboardLimitOfRows}` + "=" + userLimit + "&" : "") +
-      (daysFetch != undefined ? `${environment.endpointNameForLeaderboardPeriodInDays}`+ "=" + daysFetch + "&" : "") +
-      (sort != undefined ? `${environment.endpointNameForLeaderboardSort}` + "=" + sort : "");
+      (userLimit != undefined ? `${environment.endpointParamForLeaderboardLimitOfRows}` + "=" + userLimit + "&" : "") +
+      (daysFetch != undefined ? `${environment.endpointParamForLeaderboardPeriodInDays}`+ "=" + daysFetch + "&" : "") +
+      (sort != undefined ? `${environment.endpointParamForLeaderboardSort}` + "=" + sort : "");
     return this.http.get<User[]>(this.defaultApi + this.paramFormedString);
   }
 

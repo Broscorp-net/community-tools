@@ -2,14 +2,17 @@ package com.community.tools.controller;
 
 import com.community.tools.dto.GithubRepositoryDto;
 import com.community.tools.dto.GithubUserDto;
+import com.community.tools.dto.UserForTaskStatusDto;
 import com.community.tools.service.TaskStatusService;
 import java.time.Period;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,6 +25,8 @@ public class TaskStatusController {
   private Set<String> tasksForUsers;
   @Value("${defaultNumberOfDaysForStatistic}")
   private Integer defaultNumberOfDays;
+  @Value("${defaultRowLimit}")
+  private Integer defaultUserLimit;
 
   private final TaskStatusService taskStatusService;
 
@@ -29,30 +34,23 @@ public class TaskStatusController {
     this.taskStatusService = taskStatusService;
   }
 
-  @GetMapping("/taskStatus/getAll")
-  public ResponseEntity<List<GithubUserDto>> getAllTaskStatuses() {
+  @GetMapping("/taskStatus/getStatuses")
+  @CrossOrigin(origins = "http://localhost:4200")
+  public ResponseEntity<List<UserForTaskStatusDto>> getTaskStatuses() {
     return new ResponseEntity<>(
-        taskStatusService.getAll(Period.ofDays(defaultNumberOfDays)),
+        taskStatusService.getTaskStatuses(
+            Period.ofDays(defaultNumberOfDays),
+            defaultUserLimit,
+            GithubUserDto.getComparatorForTaskStatusesDESC()),
         HttpStatus.OK);
   }
 
-  /**
-   * @deprecated Unused endpoint
-   */
-  @Deprecated
-  @GetMapping("/taskStatus/getTaskForName/{taskName}")
-  public ResponseEntity<List<GithubRepositoryDto>> getTaskStatusesForName(@PathVariable String taskName,
-      @RequestParam(required = false) Optional<Integer> days) {
-
-    if (tasksForUsers.contains(taskName)) {
-      return new ResponseEntity<>(
-          taskStatusService.getTaskStatusesForName(taskName,
-              Period.ofDays(days.orElse(defaultNumberOfDays))),
-          HttpStatus.OK);
-    } else {
-      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-    }
-
+  @GetMapping("/taskStatus/getTasks")
+  @CrossOrigin(origins = "http://localhost:4200")
+  public ResponseEntity<Set<String>> getTaskNames() {
+    return new ResponseEntity<>(
+        tasksForUsers,
+        HttpStatus.OK);
   }
 
 }
