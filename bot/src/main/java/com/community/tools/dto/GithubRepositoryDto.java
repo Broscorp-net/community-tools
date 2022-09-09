@@ -16,12 +16,4 @@ public class GithubRepositoryDto {
   private final int points;
   private final LocalDate createdAt;
   private final LocalDate updatedAt;
-
-  public List<String> getLabels() {
-    if (labels.isEmpty()) {
-      labels.add("pull");
-    }
-    return labels;
-  }
-
 }
