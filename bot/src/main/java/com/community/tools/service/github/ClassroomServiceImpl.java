@@ -104,7 +104,7 @@ public class ClassroomServiceImpl implements ClassroomService {
           );
         });
 
-    return new PageImpl<>(null, pageable, 0);
+    return new PageImpl<>(Collections.emptyList(), pageable, 0);
   }
 
   private Map<String, List<FetchedRepository>> fetchAllUserRepositories(GHOrganization organization)
