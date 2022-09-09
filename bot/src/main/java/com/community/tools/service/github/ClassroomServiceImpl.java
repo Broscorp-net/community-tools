@@ -17,7 +17,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -32,6 +31,7 @@ import org.kohsuke.github.GHWorkflowRun;
 import org.kohsuke.github.GitHub;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -81,7 +81,8 @@ public class ClassroomServiceImpl implements ClassroomService {
    */
   @SneakyThrows
   @Override
-  public List<GithubUserDto> getAllActiveUsers(Period period) {
+  public List<GithubUserDto> getAllActiveUsers(Period period,
+      Pageable pageable) {
     Date startDate = convertToDate(LocalDate
         .now()
         .minus(period));
