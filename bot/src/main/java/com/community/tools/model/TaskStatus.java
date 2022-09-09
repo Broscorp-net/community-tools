@@ -4,6 +4,5 @@ public enum TaskStatus {
   //TODO delete
   DONE, ON_REVIEW, IN_PROGRESS,
 
-  pull, readyForReview, changesRequested, done
-
+  undefined, pull, readyForReview, changesRequested, done
 }
