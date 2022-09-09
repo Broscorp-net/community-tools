@@ -8,6 +8,11 @@ import org.springframework.statemachine.StateMachine;
 import org.springframework.statemachine.persist.StateMachinePersister;
 import org.springframework.stereotype.Service;
 
+/**
+ *doesn't work
+ * refactor it or delete
+ */
+@Deprecated
 @Service
 public class GiveNewTaskService {
 

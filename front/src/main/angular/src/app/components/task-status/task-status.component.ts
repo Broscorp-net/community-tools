@@ -35,7 +35,7 @@ export class TaskStatusComponent implements OnInit {
   }
 
   getTasks(): void {
-    this.tasksService.getRestTasks().subscribe(
+    this.tasksService.getTaskNames().subscribe(
       data => {
         this.tasks = data;
       });

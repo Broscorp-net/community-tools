@@ -208,16 +208,16 @@ public class ClassroomServiceImpl implements ClassroomService {
         .next();
   }
 
-  private Set<String> getLabels(GHRepository repository) {
+  private List<String> getLabels(GHRepository repository) {
     try {
       return repository
           .getPullRequest(1)
           .getLabels()
           .stream()
           .map(GHLabel::getName)
-          .collect(Collectors.toSet());
+          .collect(Collectors.toList());
     } catch (GHFileNotFoundException e) {
-      return Collections.emptySet();
+      return Collections.emptyList();
     } catch (IOException e) {
       throw new RuntimeException(e);
     }

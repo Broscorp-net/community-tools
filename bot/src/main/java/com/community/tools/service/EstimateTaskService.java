@@ -10,7 +10,12 @@ import org.springframework.statemachine.StateMachine;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ *doesn't work
+ * refactor it or delete
+ */
 @Service
+@Deprecated
 public class EstimateTaskService {
 
   @Autowired

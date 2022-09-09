@@ -9,8 +9,13 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+/**
+ * we are not sure is it work
+ * refactor it or delete
+ */
 @Slf4j
 @Service
+@Deprecated
 public class EmailService {
   @Autowired
   public JavaMailSender emailSender;

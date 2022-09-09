@@ -16,8 +16,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.stereotype.Service;
 
-//TODO rework it
+/**
+ *doesn't work
+ * refactor it or delete
+ */
+
 @Service
+@Deprecated
 public class PointsTaskService {
 
   @Value("#{${pointsForTask}}")
