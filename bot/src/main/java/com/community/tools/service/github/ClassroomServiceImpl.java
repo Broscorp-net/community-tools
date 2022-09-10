@@ -81,16 +81,18 @@ public class ClassroomServiceImpl implements ClassroomService {
   @SneakyThrows
   @Override
   public List<GithubUserDto> getAllActiveUsers(Period period) {
+    GHOrganization organization = gitHub
+        .getMyOrganizations()
+        .get(traineeshipOrganizationName);
+
+    Map<String, List<FetchedRepository>> allUserRepositories =
+        fetchAllUserRepositories(organization);
+
     Date startDate = convertToDate(LocalDate
         .now()
         .minus(period));
 
-    GHOrganization organization = gitHub.getMyOrganizations().get(traineeshipOrganizationName);
-
-    Map<String, List<FetchedRepository>> activeUsersRepositories = fetchAllUserRepositories(
-        organization);
-
-    activeUsersRepositories
+    allUserRepositories
         .entrySet()
         .removeIf(entry -> {
           List<FetchedRepository> userRepositories = entry.getValue();
@@ -100,7 +102,7 @@ public class ClassroomServiceImpl implements ClassroomService {
           );
         });
 
-    return activeUsersRepositories
+    return allUserRepositories
         .entrySet()
         .stream()
         .map(entry -> buildGithubUserDto(entry.getKey(), entry.getValue()))
@@ -140,16 +142,40 @@ public class ClassroomServiceImpl implements ClassroomService {
   private GithubUserDto buildGithubUserDto(String creatorGitName,
       List<FetchedRepository> fetchedRepositories) {
     fetchedRepositories.sort(comparing(FetchedRepository::getLastCommitDate).reversed());
+
     LocalDate lastCommitDate = convertToLocalDate(fetchedRepositories.get(0).getLastCommitDate());
+
+    List<GithubRepositoryDto> repositories = fetchedRepositories
+        .stream()
+        .map(this::buildGithubRepositoryDto)
+        .collect(Collectors.toList());
+
+    int totalPoints = getTotalPoints(repositories);
+    int completedTasks = getCompletedTasks(repositories);
 
     return GithubUserDto.builder()
         .gitName(creatorGitName)
         .lastCommit(lastCommitDate)
-        .repositories(fetchedRepositories
-            .stream()
-            .map(this::buildGithubRepositoryDto)
-            .collect(Collectors.toList()))
+        .repositories(repositories)
+        .totalPoints(totalPoints)
+        .completedTasks(completedTasks)
         .build();
+  }
+
+  private int getCompletedTasks(List<GithubRepositoryDto> repositories) {
+    return (int) repositories
+        .stream()
+        .flatMap(repository -> repository.getLabels().stream())
+        .map(String::toLowerCase)
+        .filter(label -> label.equals("done"))
+        .count();
+  }
+
+  private int getTotalPoints(List<GithubRepositoryDto> repositories) {
+    return repositories
+        .stream()
+        .map(GithubRepositoryDto::getPoints)
+        .reduce(0, Integer::sum);
   }
 
   @SneakyThrows
@@ -157,8 +183,10 @@ public class ClassroomServiceImpl implements ClassroomService {
     GHRepository repository = fetchedRepository.getRepository();
 
     String repositoryName = repository.getName();
-    ParsedRepositoryName parsedRepositoryName = repositoryNameService.parseRepositoryName(
-        repository.getName());
+
+    ParsedRepositoryName parsedRepositoryName =
+        repositoryNameService.parseRepositoryName(repository.getName());
+
     GHWorkflowRun workflowRun = getWorkflowRun(repository);
 
     return GithubRepositoryDto.builder()
