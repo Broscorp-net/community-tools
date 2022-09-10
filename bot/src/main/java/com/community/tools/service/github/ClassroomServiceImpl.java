@@ -31,9 +31,6 @@ import org.kohsuke.github.GHWorkflowRun;
 import org.kohsuke.github.GitHub;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -83,8 +80,7 @@ public class ClassroomServiceImpl implements ClassroomService {
    */
   @SneakyThrows
   @Override
-  public Page<GithubUserDto> getAllActiveUsers(Period period,
-      Pageable pageable) {
+  public List<GithubUserDto> getAllActiveUsers(Period period) {
     Date startDate = convertToDate(LocalDate
         .now()
         .minus(period));
@@ -104,7 +100,11 @@ public class ClassroomServiceImpl implements ClassroomService {
           );
         });
 
-    return new PageImpl<>(Collections.emptyList(), pageable, 0);
+    return activeUsersRepositories
+        .entrySet()
+        .stream()
+        .map(entry -> buildGithubUserDto(entry.getKey(), entry.getValue()))
+        .collect(Collectors.toList());
   }
 
   private Map<String, List<FetchedRepository>> fetchAllUserRepositories(GHOrganization organization)
