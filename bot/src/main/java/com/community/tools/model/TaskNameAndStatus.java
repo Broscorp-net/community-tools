@@ -8,9 +8,9 @@ public class TaskNameAndStatus {
   private final String taskName;
   private final TaskStatus taskStatus;
 
-  public TaskNameAndStatus(String taskName, String taskStatus) {
+  public TaskNameAndStatus(String taskName, TaskStatus taskStatus) {
     this.taskName = taskName;
-    this.taskStatus = TaskStatus.valueOf(taskStatus);
+    this.taskStatus = taskStatus;
   }
 
 }

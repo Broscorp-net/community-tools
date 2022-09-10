@@ -2,6 +2,8 @@ package com.community.tools.service;
 
 import com.community.tools.dto.GithubUserDto;
 import com.community.tools.dto.UserForTaskStatusDto;
+import com.community.tools.model.TaskNameAndStatus;
+import com.community.tools.model.TaskStatus;
 import com.community.tools.service.github.ClassroomServiceImpl;
 import java.time.Period;
 import java.util.Comparator;
@@ -22,19 +24,30 @@ public class TaskStatusService {
 
   public List<UserForTaskStatusDto> getTaskStatuses(Period period, Integer limit,
       Comparator<GithubUserDto> comparator) {
-    log.info(
-        "running..." + " period = " + period.toString() + " comparator = " + comparator.toString()
-            + "limit = " + limit);
+    log.info("running with period = {}, comparator = {}, limit = {}", period, comparator, limit);
     return classroomService.getAllActiveUsers(period)
         .stream()
         .sorted(comparator)
         .limit(limit)
-        .map(dto -> new UserForTaskStatusDto(
-            dto.getGitName(),
-            dto.getLastCommit(),
-            dto.getCompletedTasks(),
-            dto.getTasksAndTaskStatuses()))
+        .map(githubUserDto -> new UserForTaskStatusDto(
+            githubUserDto.getGitName(),
+            githubUserDto.getLastCommit(),
+            githubUserDto.getCompletedTasks(),
+            getAllTaskNameAndStatusesForEachUser(githubUserDto)
+        ))
         .collect(Collectors.toList());
+  }
+
+  private List<TaskNameAndStatus> getAllTaskNameAndStatusesForEachUser(GithubUserDto user) {
+    return user.getRepositories().stream().map(repo -> {
+      if (repo.getLabels().isEmpty()) {
+        return new TaskNameAndStatus(repo.getTaskName(), TaskStatus.pull);
+      }
+      if (repo.getLabels().size() > 1) {
+        return new TaskNameAndStatus(repo.getTaskName(), TaskStatus.undefined);
+      }
+      return new TaskNameAndStatus(repo.getTaskName(), TaskStatus.valueOf(repo.getLabels().get(0)));
+    }).collect(Collectors.toList());
   }
 
 }

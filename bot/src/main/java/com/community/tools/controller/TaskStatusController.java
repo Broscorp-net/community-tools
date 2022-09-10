@@ -1,21 +1,17 @@
 package com.community.tools.controller;
 
-import com.community.tools.dto.GithubRepositoryDto;
 import com.community.tools.dto.GithubUserDto;
 import com.community.tools.dto.UserForTaskStatusDto;
 import com.community.tools.service.TaskStatusService;
 import java.time.Period;
-import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -35,22 +31,28 @@ public class TaskStatusController {
   }
 
   @GetMapping("/taskStatus/getStatuses")
+  //TODO delete annotation
   @CrossOrigin(origins = "http://localhost:4200")
   public ResponseEntity<List<UserForTaskStatusDto>> getTaskStatuses() {
     return new ResponseEntity<>(
         taskStatusService.getTaskStatuses(
             Period.ofDays(defaultNumberOfDays),
             defaultUserLimit,
-            GithubUserDto.getComparatorForTaskStatusesDESC()),
+            getComparatorForTaskStatusDESC()),
         HttpStatus.OK);
   }
 
   @GetMapping("/taskStatus/getTasks")
+  //TODO delete annotation
   @CrossOrigin(origins = "http://localhost:4200")
   public ResponseEntity<Set<String>> getTaskNames() {
     return new ResponseEntity<>(
         tasksForUsers,
         HttpStatus.OK);
+  }
+
+  private static Comparator<GithubUserDto> getComparatorForTaskStatusDESC() {
+    return Comparator.comparingInt(GithubUserDto::getCompletedTasks).reversed();
   }
 
 }
