@@ -6,9 +6,9 @@ import lombok.Data;
 public class TaskNameAndStatus {
 
   private final String taskName;
-  private final TaskStatus taskStatus;
+  private final String taskStatus;
 
-  public TaskNameAndStatus(String taskName, TaskStatus taskStatus) {
+  public TaskNameAndStatus(String taskName, String taskStatus) {
     this.taskName = taskName;
     this.taskStatus = taskStatus;
   }

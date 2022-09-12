@@ -1,8 +1,12 @@
 export const environment = {
+
   production: false,
   title: 'Brotasks LOCAL',
   apiURL: 'http://localhost:8080',
-  endpointParamForLeaderboardPeriodInDays: 'days',
-  endpointParamForLeaderboardLimitOfRows: 'limit',
-  endpointParamForLeaderboardSort: 'sort'
+  endpointParamForPeriodInDays: 'days',
+  endpointParamForLimitOfRows: 'limit',
+  endpointParamForSort: 'sort',
+  endpointMappingForLeaderboard: '/leaderboard',
+  endpointMappingForGetTaskStatuses: '/taskStatus/getStatuses',
+  endpointMappingForGetTasks: '/taskStatus/getTasks'
 };

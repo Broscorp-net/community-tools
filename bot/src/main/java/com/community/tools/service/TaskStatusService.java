@@ -41,12 +41,12 @@ public class TaskStatusService {
   private List<TaskNameAndStatus> getAllTaskNameAndStatusesForEachUser(GithubUserDto user) {
     return user.getRepositories().stream().map(repo -> {
       if (repo.getLabels().isEmpty()) {
-        return new TaskNameAndStatus(repo.getTaskName(), TaskStatus.pull);
+        return new TaskNameAndStatus(repo.getTaskName(), "pull request");
       }
       if (repo.getLabels().size() > 1) {
-        return new TaskNameAndStatus(repo.getTaskName(), TaskStatus.undefined);
+        return new TaskNameAndStatus(repo.getTaskName(), "undefined");
       }
-      return new TaskNameAndStatus(repo.getTaskName(), TaskStatus.valueOf(repo.getLabels().get(0)));
+      return new TaskNameAndStatus(repo.getTaskName(), repo.getLabels().get(0));
     }).collect(Collectors.toList());
   }
 

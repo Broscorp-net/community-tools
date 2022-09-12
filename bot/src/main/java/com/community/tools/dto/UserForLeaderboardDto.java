@@ -6,6 +6,8 @@ import lombok.Data;
 @Data
 public class UserForLeaderboardDto {
 
+  //TODO fill this field
+  private final String platformName = null;
   private final String gitName;
   //TODO fill this field
   private LocalDate dateRegistration = null;
