@@ -21,9 +21,10 @@ import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.SneakyThrows;
-import org.kohsuke.github.GHFileNotFoundException;
+import org.kohsuke.github.GHIssueState;
 import org.kohsuke.github.GHLabel;
 import org.kohsuke.github.GHOrganization;
+import org.kohsuke.github.GHPullRequest;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GHTeam;
 import org.kohsuke.github.GHUser;
@@ -237,13 +238,16 @@ public class ClassroomServiceImpl implements ClassroomService {
 
   private List<String> getLabels(GHRepository repository) {
     try {
-      return repository
-          .getPullRequest(1)
-          .getLabels()
-          .stream()
-          .map(GHLabel::getName)
-          .collect(Collectors.toList());
-    } catch (GHFileNotFoundException e) {
+      List<GHPullRequest> openPullRequests = repository.getPullRequests(GHIssueState.OPEN);
+      for (GHPullRequest pullRequest : openPullRequests) {
+        if (pullRequest.getTitle().equals("Feedback")) {
+          return pullRequest.getLabels()
+              .stream()
+              .map(GHLabel::getName)
+              .collect(Collectors.toList());
+        }
+      }
+
       return Collections.emptyList();
     } catch (IOException e) {
       throw new RuntimeException(e);
