@@ -36,10 +36,13 @@ public class GitHubHookService {
   private StateMachineService stateMachineService;
   @Autowired
   private KarmaService karmaService;
-  @Autowired
+
+//  @Autowired
   private PointsTaskService pointsTaskService;
+
   @Autowired
   private MessageService messageService;
+
 //  @Autowired
 //  private TaskStatusService taskStatusService;
 

@@ -34,9 +34,6 @@ public class User {
   private String secondAnswerAboutRules;
   private String thirdAnswerAboutRules;
 
-  @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
-  private List<Repository> repositories = new ArrayList<>();
-
   @Transient
   private String platformName;
 
@@ -46,8 +43,4 @@ public class User {
 
   private Date lastCommit;
 
-  public void addRepository(Repository repository) {
-    repositories.add(repository);
-    repository.setUser(this);
-  }
 }

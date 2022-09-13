@@ -2,7 +2,7 @@ package com.community.tools.service.github;
 
 import com.community.tools.model.GitHubComment;
 import com.community.tools.model.User;
-import com.community.tools.service.github.jpa.MentorsRepository;
+import com.community.tools.repository.MentorsRepository;
 import com.community.tools.repository.UserRepository;
 
 import java.io.IOException;

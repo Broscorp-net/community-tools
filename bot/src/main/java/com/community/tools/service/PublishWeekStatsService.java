@@ -16,8 +16,8 @@ import org.springframework.stereotype.Component;
 
 
 /**
- *doesn't work
- * refactor it or delete
+ *
+ * refactor it
  */
 @Deprecated
 @Component

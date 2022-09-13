@@ -6,7 +6,7 @@ import static org.mockito.Mockito.when;
 
 import com.community.tools.model.Mentors;
 import com.community.tools.model.User;
-import com.community.tools.service.github.jpa.MentorsRepository;
+import com.community.tools.repository.MentorsRepository;
 import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
 import com.community.tools.repository.UserRepository;

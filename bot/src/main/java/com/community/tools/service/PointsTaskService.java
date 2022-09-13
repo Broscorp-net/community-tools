@@ -2,7 +2,7 @@ package com.community.tools.service;
 
 import com.community.tools.model.Messages;
 import com.community.tools.model.User;
-import com.community.tools.service.github.jpa.MentorsRepository;
+import com.community.tools.repository.MentorsRepository;
 import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
 import com.community.tools.repository.UserRepository;
@@ -21,7 +21,7 @@ import org.springframework.stereotype.Service;
  * refactor it or delete
  */
 
-@Service
+//@Service
 @Deprecated
 public class PointsTaskService {
 

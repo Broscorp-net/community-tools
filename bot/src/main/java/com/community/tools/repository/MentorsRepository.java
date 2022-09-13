@@ -1,4 +1,4 @@
-package com.community.tools.service.github.jpa;
+package com.community.tools.repository;
 
 import com.community.tools.model.Mentors;
 
