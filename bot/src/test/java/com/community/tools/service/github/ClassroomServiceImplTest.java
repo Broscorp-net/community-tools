@@ -34,13 +34,13 @@ public class ClassroomServiceImplTest {
   @Autowired
   private ClassroomService classroomService;
 
-  @Value("${github.organization.main}")
+  @Value("${github.organizations.main}")
   private String mainOrganizationName;
 
-  @Value("${github.organization.traineeship}")
+  @Value("${github.organizations.traineeship}")
   private String traineeshipOrganizationName;
 
-  @Value("${github.team.trainees}")
+  @Value("${github.teams.trainees}")
   private String traineesTeamName;
 
   @BeforeEach

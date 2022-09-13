@@ -41,18 +41,27 @@ public class ClassroomServiceImpl implements ClassroomService {
   private final String mainOrganizationName;
   private final String traineeshipOrganizationName;
   private final String traineesTeamName;
+  private final String classroomWorkflow;
+  private final String completedTaskLabel;
+  private final String defaultPullRequestName;
   private final RepositoryNameService repositoryNameService;
 
   @Autowired
   public ClassroomServiceImpl(GitHub gitHub,
-      @Value("${github.organization.main}") String mainOrganizationName,
-      @Value("${github.organization.traineeship}") String traineeshipOrganizationName,
-      @Value("${github.team.trainees}") String traineesTeamName,
+      @Value("${github.organizations.main}") String mainOrganizationName,
+      @Value("${github.organizations.traineeship}") String traineeshipOrganizationName,
+      @Value("${github.teams.trainees}") String traineesTeamName,
+      @Value("${github.workflows.classroom}") String classroomWorkflow,
+      @Value("${github.labels.completed-task}") String completedTaskLabel,
+      @Value("${github.pull-requests.default}") String defaultPullRequestName,
       RepositoryNameService repositoryNameService) {
     this.gitHub = gitHub;
     this.mainOrganizationName = mainOrganizationName;
     this.traineeshipOrganizationName = traineeshipOrganizationName;
     this.traineesTeamName = traineesTeamName;
+    this.classroomWorkflow = classroomWorkflow;
+    this.completedTaskLabel = completedTaskLabel;
+    this.defaultPullRequestName = defaultPullRequestName;
     this.repositoryNameService = repositoryNameService;
   }
 
@@ -168,7 +177,7 @@ public class ClassroomServiceImpl implements ClassroomService {
         .stream()
         .flatMap(repository -> repository.getLabels().stream())
         .map(String::toLowerCase)
-        .filter(label -> label.equals("done"))
+        .filter(label -> label.equals(completedTaskLabel))
         .count();
   }
 
@@ -229,7 +238,7 @@ public class ClassroomServiceImpl implements ClassroomService {
   @SneakyThrows
   private GHWorkflowRun getWorkflowRun(GHRepository repository) {
     return repository
-        .getWorkflow("classroom.yml")
+        .getWorkflow(classroomWorkflow)
         .listRuns()
         .withPageSize(1)
         .iterator()
@@ -240,7 +249,7 @@ public class ClassroomServiceImpl implements ClassroomService {
     try {
       List<GHPullRequest> openPullRequests = repository.getPullRequests(GHIssueState.OPEN);
       for (GHPullRequest pullRequest : openPullRequests) {
-        if (pullRequest.getTitle().equals("Feedback")) {
+        if (pullRequest.getTitle().equals(defaultPullRequestName)) {
           return pullRequest.getLabels()
               .stream()
               .map(GHLabel::getName)

@@ -14,7 +14,7 @@ public class RepositoryNameService {
   private final Set<String> taskRepositoryNamesPrefixes;
 
   @Autowired
-  public RepositoryNameService(@Value("${github.task-repository-names.prefixes}")
+  public RepositoryNameService(@Value("${github.task-repository-name.prefixes}")
       String[] taskRepositoryNamesPrefixes) {
     this.taskRepositoryNamesPrefixes = new HashSet<>(Arrays.asList(taskRepositoryNamesPrefixes));
   }
