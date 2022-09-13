@@ -1,24 +1,26 @@
-import { HttpClient } from '@angular/common/http';
+import {HttpClient} from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import {User} from "../models/user.model";
+import {UserForTaskStatus} from "../models/userForTaskStatus.model";
+import {UtilService} from "./util.service";
 
 @Injectable({
   providedIn: 'root'
 })
 export class TasksService {
 
-  private defaultApi: string = `${environment.apiURL}/taskStatus`;
+  private defaultApi: string = `${environment.apiURL}`;
 
-  constructor (private http: HttpClient) {  }
+  constructor (private http: HttpClient) {}
 
   getTaskNames(): Observable<string[]> {
-    return this.http.get<string[]>(this.defaultApi + `/getTasks`);
+    return this.http.get<string[]>(this.defaultApi + `${environment.endpointMappingForGetTasks}`);
   }
 
-  // getTaskStatuses(): Observable<User[]> {
-  //   return this.http.get<User[]>(this.defaultApi);
-  // }
+  getTaskStatuses(rowLimit: number, daysFetch: number, sort: string): Observable<UserForTaskStatus[]> {
+    return this.http.get<UserForTaskStatus[]>(this.defaultApi + `${environment.endpointMappingForGetTaskStatuses}`,
+      {params: UtilService.getParams(rowLimit, daysFetch, sort)});
+  }
 
 }

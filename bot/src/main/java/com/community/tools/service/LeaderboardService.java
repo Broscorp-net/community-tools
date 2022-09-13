@@ -27,14 +27,15 @@ public class LeaderboardService {
    * @param period Period in days.
    * @return List of active Users.
    */
-  public List<UserForLeaderboardDto> getLeaderBoard(Integer userLimit, Period period,
+  public List<UserForLeaderboardDto> getLeaderBoard(
+      Integer limit,
+      Period period,
       Comparator<GithubUserDto> comparator) {
-    log.info("running..." + " period = " + period + " comparator = " + comparator.toString()
-        + " limit = " + userLimit);
+    log.info("running with period = {}, comparator = {}, limit = {}", period, comparator, limit);
     return classroomService.getAllActiveUsers(period)
         .stream()
         .sorted(comparator)
-        .limit(userLimit)
+        .limit(limit)
         .map(dto -> new UserForLeaderboardDto(
             dto.getGitName(),
             dto.getLastCommit(),
@@ -42,6 +43,5 @@ public class LeaderboardService {
             dto.getTotalPoints()
         )).collect(Collectors.toList());
   }
-
 
 }

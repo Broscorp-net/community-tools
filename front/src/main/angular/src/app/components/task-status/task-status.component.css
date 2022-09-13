@@ -24,6 +24,10 @@ table {
   background: #9ea9b3;
 }
 
+.undefined {
+  background: #5C00A3;
+}
+
 .loader{
   margin: 0 auto;
   width: 55px;

@@ -6,13 +6,15 @@ import lombok.Data;
 @Data
 public class UserForLeaderboardDto {
 
+  //TODO fill this field
+  private final String platformName = null;
   private final String gitName;
-  //TODO add this field
+  //TODO fill this field
   private LocalDate dateRegistration = null;
   private final LocalDate dateLastActivity;
   private final Integer completedTasks;
   private final Integer pointByTask;
-  //TODO add this field
+  //TODO fill this field
   private Integer karma = 0;
   private final Integer totalPoints;
 

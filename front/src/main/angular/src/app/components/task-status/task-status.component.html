@@ -10,17 +10,19 @@
         </tr>
     </thead>
     <tbody>
-        <tr *ngFor="let user of users;">
+        <tr *ngFor="let user of userForTaskStatuses;">
             <td>{{user.platformName}}</td>
             <td>{{user.gitName}}</td>
             <td>{{user.dateRegistration | date: 'dd/MM/yyyy'}}</td>
             <td>{{user.dateLastActivity | date: 'dd/MM/yyyy'}}</td>
             <td>{{user.completedTasks}}</td>
-            <td *ngFor="let item of [].constructor(tasks.length); let i = index;" [ngClass]="getClass(user, tasks[i])"></td>
+            <td *ngFor="let item of [].constructor(tasks.length);
+                  let i = index;" [ngClass]="getClass(user, tasks[i])">
+            </td>
         </tr>
     </tbody>
 </table>
-<div *ngIf="!users" class="loader">
+<div *ngIf="!userForTaskStatuses" class="loader">
   <img
     src="https://i.imgur.com/vU5yI2I.png"
     alt="Loading...">

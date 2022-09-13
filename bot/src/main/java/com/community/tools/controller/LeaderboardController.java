@@ -29,23 +29,23 @@ public class LeaderboardController {
   }
 
   @GetMapping("/leaderboard")
+  //TODO delete annotation
   @CrossOrigin(origins = "http://localhost:4200")
   public ResponseEntity<List<UserForLeaderboardDto>> getRepositories(
       @RequestParam(required = false) Optional<Integer> limit,
       @RequestParam(required = false) Optional<Integer> days,
       @RequestParam(required = false) Optional<String> sort) {
-    Comparator<GithubUserDto> comparator = GithubUserDto.getComparatorForLeaderboardDESC();
+    Comparator<GithubUserDto> comparator = getComparatorForLeaderboardDESC();
 
     if (sort.isPresent()) {
-
-      if (sort.get().equals("asc")) {
-        comparator = GithubUserDto.getComparatorForLeaderboardASC();
-      } else if (sort.get().equals("desc")) {
-        comparator = GithubUserDto.getComparatorForLeaderboardDESC();
+      String tmp = sort.get();
+      if (tmp.equalsIgnoreCase("asc")) {
+        comparator = getComparatorForLeaderboardASC();
+      } else if (tmp.equalsIgnoreCase("desc")) {
+        comparator = getComparatorForLeaderboardDESC();
       } else {
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
       }
-
     }
 
     return new ResponseEntity<>(
@@ -53,6 +53,14 @@ public class LeaderboardController {
             limit.orElse(defaultUserLimit),
             Period.ofDays(days.orElse(defaultNumberOfDays)),
             comparator), HttpStatus.OK);
+  }
+
+  private static Comparator<GithubUserDto> getComparatorForLeaderboardASC() {
+    return Comparator.comparingInt(GithubUserDto::getTotalPoints);
+  }
+
+  private static Comparator<GithubUserDto> getComparatorForLeaderboardDESC() {
+    return Comparator.comparingInt(GithubUserDto::getTotalPoints).reversed();
   }
 
 }
