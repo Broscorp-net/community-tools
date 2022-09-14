@@ -3,6 +3,7 @@ package com.community.tools.service;
 import com.community.tools.dto.GithubUserDto;
 import com.community.tools.dto.UserForTaskStatusDto;
 import com.community.tools.model.TaskNameAndStatus;
+import com.community.tools.model.TaskStatus;
 import com.community.tools.service.github.ClassroomServiceImpl;
 import java.time.Period;
 import java.util.Comparator;
@@ -40,10 +41,10 @@ public class TaskStatusService {
   private List<TaskNameAndStatus> getAllTaskNameAndStatusesForEachUser(GithubUserDto user) {
     return user.getRepositories().stream().map(repo -> {
       if (repo.getLabels().isEmpty()) {
-        return new TaskNameAndStatus(repo.getTaskName(), "pull request");
+        return new TaskNameAndStatus(repo.getTaskName(), TaskStatus.PULL_REQUEST.getDescription());
       }
       if (repo.getLabels().size() > 1) {
-        return new TaskNameAndStatus(repo.getTaskName(), "undefined");
+        return new TaskNameAndStatus(repo.getTaskName(), TaskStatus.UNDEFINED.getDescription());
       }
       return new TaskNameAndStatus(repo.getTaskName(), repo.getLabels().get(0));
     }).collect(Collectors.toList());

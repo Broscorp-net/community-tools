@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@AllArgsConstructor
 @RestController
+@AllArgsConstructor
 @RequestMapping("/gitHook")
 public class GithubHookController {
 
@@ -30,5 +30,6 @@ public class GithubHookController {
       eventsProcessingService.processEvent(eventJson);
     }
   }
+
 }
 

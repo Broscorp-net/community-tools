@@ -25,8 +25,8 @@ export class UtilService {
     return tmp != null;
   }
 
-  public static getKey(rowLimit: number, daysFetch: number, sort: string): string {
-    return `${environment.endpointMappingForLeaderboard}` + "?" +
+  public static getKey(endpoint: string, rowLimit: number, daysFetch: number, sort: string): string {
+    return endpoint + "?" +
       this.getParams(rowLimit, daysFetch, sort).toString();
   }
 

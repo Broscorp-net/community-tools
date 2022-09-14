@@ -4,7 +4,6 @@ import com.community.tools.dto.GithubUserDto;
 import com.community.tools.dto.UserForTaskStatusDto;
 import com.community.tools.service.TaskStatusService;
 import java.time.Period;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;

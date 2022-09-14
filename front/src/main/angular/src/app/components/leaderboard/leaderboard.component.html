@@ -12,7 +12,7 @@
         </tr>
     </thead>
     <tbody>
-        <tr *ngFor="let user of users;">
+        <tr *ngFor="let user of usersForLeaderboard;">
             <td>{{user.platformName}}</td>
             <td>{{user.gitName}}</td>
             <td>{{user.dateRegistration | date: 'dd/MM/yyyy'}}</td>
@@ -24,7 +24,7 @@
         </tr>
     </tbody>
 </table>
-<div *ngIf="!users" class="loader">
+<div *ngIf="!usersForLeaderboard" class="loader">
   <img
     src="https://i.imgur.com/vU5yI2I.png"
     alt="Loading...">

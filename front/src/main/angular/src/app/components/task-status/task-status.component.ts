@@ -54,14 +54,15 @@ export class TaskStatusComponent implements OnInit {
     return {
       'pull_request': status === 'pull request',
       'done': status === 'done',
-      'changes_requested': status === 'changes requested',
+        'changes_requested': status === 'changes requested',
       'ready_for_review': status === 'ready for review',
       'undefined': status === 'undefined'
     }
   }
 
   private getUsers(rowLimit: number, daysFetch: number, sort: string): void {
-    let key = UtilService.getKey(rowLimit, daysFetch, sort);
+    let key = UtilService.getKey(`${environment.endpointMappingForGetTaskStatuses}`,
+      rowLimit, daysFetch, sort);
     if (UtilService.isStorageContainsValueByKey(key)) {
       // @ts-ignore
       this.userForTaskStatuses = JSON.parse(sessionStorage.getItem(key)) as UserForTaskStatus[];

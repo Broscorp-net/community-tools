@@ -38,7 +38,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * @deprecated
  * Slack is probably dead.
- * he's too slack for this :) .
+ *
  */
 @Deprecated
 @RequiredArgsConstructor

@@ -127,8 +127,10 @@ public class Messages {
     ESTIMATE_QUESTION_FIFTH
   };
 
-  //TODO check it
-  //public static final String[] TASKS_FOR_USERS = tasksForUsers;
+
+  public static final String[] TASKS_FOR_USERS = {
+      "intro", "generics", "game-of-life", "gc-implementation"
+  };
 
   public static final Map<String, String> POINTS_FOR_TASK =
       Splitter.on(", ")

@@ -1,16 +1,14 @@
 package com.community.tools.model;
 
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-@Data
+@Getter
+@AllArgsConstructor
 public class TaskNameAndStatus {
 
   private final String taskName;
-  private final String taskStatus;
 
-  public TaskNameAndStatus(String taskName, String taskStatus) {
-    this.taskName = taskName;
-    this.taskStatus = taskStatus;
-  }
+  private final String taskStatus;
 
 }

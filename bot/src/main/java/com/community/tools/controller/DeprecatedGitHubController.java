@@ -86,4 +86,5 @@ public class DeprecatedGitHubController {
     List<EventData> eventData = gitHubService.getEvents(start, end);
     return ok().body(eventData);
   }
+
 }

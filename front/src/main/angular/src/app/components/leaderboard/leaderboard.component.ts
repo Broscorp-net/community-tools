@@ -12,7 +12,7 @@ import {UtilService} from "../../services/util.service";
 })
 export class LeaderboardComponent implements OnInit {
 
-  users: UserForLeaderboard[];
+  usersForLeaderboard: UserForLeaderboard[];
   rowLimit: number;
   daysFetch: number;
   sort: string;
@@ -36,14 +36,15 @@ export class LeaderboardComponent implements OnInit {
   }
 
   private getUsers(rowLimit: number, daysFetch: number, sort: string): void {
-    let key = UtilService.getKey(rowLimit, daysFetch, sort);
+    let key = UtilService.getKey(`${environment.endpointMappingForLeaderboard}`,
+      rowLimit, daysFetch, sort);
     if (UtilService.isStorageContainsValueByKey(key)) {
       // @ts-ignore
-      this.users = JSON.parse(sessionStorage.getItem(key)) as UserForLeaderboard[];
+      this.usersForLeaderboard = JSON.parse(sessionStorage.getItem(key)) as UserForLeaderboard[];
     } else {
       this.usersService.getRestUsers(rowLimit, daysFetch, sort).subscribe(
         data => {
-          this.users = data;
+          this.usersForLeaderboard = data;
           sessionStorage.setItem(key, JSON.stringify(data))
         });
     }

@@ -12,8 +12,8 @@ import org.springframework.stereotype.Service;
  *doesn't work
  * refactor it or delete
  */
-@Deprecated
 @Service
+@Deprecated
 public class GiveNewTaskService {
 
   @Value("${git.number.of.tasks}")

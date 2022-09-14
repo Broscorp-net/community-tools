@@ -16,4 +16,5 @@ public class GithubUserDto {
   private List<GithubRepositoryDto> repositories;
   private int totalPoints;
   private int completedTasks;
+
 }

@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 /**
+ * @deprecated
  * we are not sure is it work
  * refactor it or delete
  */
