@@ -3,42 +3,32 @@ package com.community.tools.service;
 import com.community.tools.model.Messages;
 import com.community.tools.model.User;
 import com.community.tools.repository.MentorsRepository;
+import com.community.tools.repository.UserRepository;
 import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
-import com.community.tools.repository.UserRepository;
-
 import java.util.Map;
-
 import javax.persistence.EntityNotFoundException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.statemachine.StateMachine;
-import org.springframework.stereotype.Service;
 
 /**
- *doesn't work
- * refactor it or delete
+ * Points for completed task are now directly extracted from trainee repository build.
  */
 
 //@Service
 @Deprecated
 public class PointsTaskService {
 
-  @Value("#{${pointsForTask}}")
-  private Map<String, Integer> pointsForTask;
-
   final int numberPullsAbilityReview = 3;
-
   @Autowired
   StateMachineService stateMachineService;
-
   @Autowired
   MentorsRepository mentorsRepository;
-
   @Autowired
   UserRepository userRepository;
-
+  @Value("#{${pointsForTask}}")
+  private Map<String, Integer> pointsForTask;
   @Autowired
   private MessageService messageService;
 
@@ -46,29 +36,30 @@ public class PointsTaskService {
   private MessageConstructor messageConstructor;
 
   /**
-   * This method adds points to the trainee, when mentor labeled pull as "done".
-   If pull has wrong name, add 0 points
-   * @param mentor GitNick of person, who add label "done" to  pull request
-   * @param creator GitNick of person, who pull request
+   * This method adds points to the trainee, when mentor labeled pull as "done". If pull has wrong
+   * name, add 0 points
+   *
+   * @param mentor   GitNick of person, who add label "done" to  pull request
+   * @param creator  GitNick of person, who pull request
    * @param pullName Pull request title
    */
   public void addPointForCompletedTask(String mentor, String creator, String pullName) {
     if (mentorsRepository.findByGitNick(mentor).isPresent()) {
       User stateEntity = userRepository.findByGitName(creator)
-              .orElseThrow(EntityNotFoundException::new);
+          .orElseThrow(EntityNotFoundException::new);
 
       StateMachine<State, Event> machine = stateMachineService
-              .restoreMachineByNick(creator);
+          .restoreMachineByNick(creator);
       int taskDone = (int) machine.getExtendedState()
-              .getVariables().getOrDefault("taskDone", 0);
+          .getVariables().getOrDefault("taskDone", 0);
       machine.getExtendedState().getVariables()
-              .put("taskDone", ++taskDone);
+          .put("taskDone", ++taskDone);
       stateMachineService.persistMachine(machine, stateEntity.getUserID());
 
       String finalPullName = pullName.toLowerCase();
       int points = pointsForTask.entrySet().stream()
-              .filter(entry -> finalPullName.contains(entry.getKey()))
-              .map(Map.Entry::getValue).findFirst().orElse(0);
+          .filter(entry -> finalPullName.contains(entry.getKey()))
+          .map(Map.Entry::getValue).findFirst().orElse(0);
       if (points == 0) {
         sendMessageWhichDescribesZeroPoints(stateEntity.getUserID(), pullName);
       }
@@ -84,6 +75,7 @@ public class PointsTaskService {
 
   /**
    * This method send AbilityReview message to the user, if user has 3 labels "done".
+   *
    * @param id Slack User Id
    */
   public void sendAbilityReviewMess(String id) {
@@ -93,6 +85,7 @@ public class PointsTaskService {
 
   /**
    * This method send AbilityReview message to the user, if user misnamed pull request.
+   *
    * @param id Slack User Id
    */
   public void sendMessageWhichDescribesZeroPoints(String id, String pullName) {

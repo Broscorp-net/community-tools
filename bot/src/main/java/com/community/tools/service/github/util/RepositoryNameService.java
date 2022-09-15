@@ -19,12 +19,24 @@ public class RepositoryNameService {
     this.taskRepositoryNamesPrefixes = new HashSet<>(Arrays.asList(taskRepositoryNamesPrefixes));
   }
 
+  /**
+   * Checks repository name to be prefixed with one of a given tasks name.
+   *
+   * @param repositoryName repository name
+   * @return true if repository name is prefixed with task name or false otherwise
+   */
   public boolean isPrefixedWithTaskName(String repositoryName) {
     return taskRepositoryNamesPrefixes
         .stream()
         .anyMatch(prefix -> repositoryName.startsWith(prefix + "-"));
   }
 
+  /**
+   * Splits repository name into task name and name of the repository creator.
+   *
+   * @param repositoryName repository name
+   * @return ParsedRepositoryName object which contains task name and name of the repository creator
+   */
   public ParsedRepositoryName parseRepositoryName(String repositoryName) {
     for (String prefix : taskRepositoryNamesPrefixes) {
       if (repositoryName.startsWith(prefix)) {

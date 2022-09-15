@@ -7,17 +7,15 @@ import static org.mockito.Mockito.when;
 import com.community.tools.model.Mentors;
 import com.community.tools.model.User;
 import com.community.tools.repository.MentorsRepository;
+import com.community.tools.repository.UserRepository;
 import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
-import com.community.tools.repository.UserRepository;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -25,7 +23,6 @@ import org.junit.jupiter.api.TestInstance;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
@@ -37,20 +34,16 @@ import org.springframework.test.util.ReflectionTestUtils;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class PointsTaskServiceTest {
 
-  @InjectMocks
-  private PointsTaskService pointsTaskService;
-
   @Mock
   StateMachineService stateMachineService;
-
   @Mock
   MentorsRepository mentorsRepository;
-
   @Mock
   UserRepository userRepository;
-
   @Mock
   StateMachine<State, Event> machine;
+  @InjectMocks
+  private PointsTaskService pointsTaskService;
   @Mock
   private ExtendedState extendedState;
 
@@ -60,9 +53,9 @@ class PointsTaskServiceTest {
     ExpressionParser parser = new SpelExpressionParser();
     EvaluationContext context = new StandardEvaluationContext();
     Map pointsForTask = (Map) parser.parseExpression("{'checkstyle':1, 'primitives':2,"
-            + " 'boxing':2, 'valueref':3, 'equals.hashcode':3, 'platform':3,\n"
-            + "  'bytecode':2, 'gc':4, 'exceptions':4, 'classpath':3, 'generics':5,"
-            + " 'inner.classes':5, 'override.overload':4, 'strings':5}").getValue(context);
+        + " 'boxing':2, 'valueref':3, 'equals.hashcode':3, 'platform':3,\n"
+        + "  'bytecode':2, 'gc':4, 'exceptions':4, 'classpath':3, 'generics':5,"
+        + " 'inner.classes':5, 'override.overload':4, 'strings':5}").getValue(context);
     ReflectionTestUtils.setField(pointsTaskService, "pointsForTask", (pointsForTask));
   }
 
@@ -73,7 +66,7 @@ class PointsTaskServiceTest {
 
     Mentors mentors = mock(Mentors.class);
     when(mentors.getGitNick()).thenReturn("test");
-    User stateEntity =  new User();
+    User stateEntity = new User();
     stateEntity.setUserID("Olena Haladzhii");
     stateEntity.setPointByTask(5);
     stateEntity.setGitName("marvintik");
@@ -85,7 +78,6 @@ class PointsTaskServiceTest {
     when(mentorsRepository.findByGitNick("test")).thenReturn(Optional.of(mentors));
     when(userRepository.findByGitName("marvintik")).thenReturn(Optional.of(stateEntity));
 
-
     pointsTaskService.addPointForCompletedTask("test", "marvintik", " valueref_test ");
     pointsTaskService.addPointForCompletedTask("rest", "marvintik", " valueref_test ");
     assertEquals(8, stateEntity.getPointByTask());
@@ -94,15 +86,15 @@ class PointsTaskServiceTest {
   @Test
   public void checkPointsTest() {
     String pullName = "valueref_test";
-    String[] tasksForUsers =  ("checkstyle, primitives, boxing, valueref, "
-            + "equals.hashcode, platform, bytecode, gc, exceptions, classpath,"
-            + " generics, inner.classes, override.overload, strings").split(",");
+    String[] tasksForUsers = ("checkstyle, primitives, boxing, valueref, "
+        + "equals.hashcode, platform, bytecode, gc, exceptions, classpath,"
+        + " generics, inner.classes, override.overload, strings").split(",");
     String[] pointsForTask = ("1,2,2,3,3,3,2,4,4,3,5,5,4,5").split(",");
     List<String> tasksList = Arrays.stream(tasksForUsers)
-            .map(String::trim).collect(Collectors.toList());
+        .map(String::trim).collect(Collectors.toList());
     pullName = pullName.toLowerCase();
     int number = tasksList.stream().filter(pullName::contains)
-            .map(tasksList::indexOf).findFirst().orElse(-1);
+        .map(tasksList::indexOf).findFirst().orElse(-1);
     System.out.println(number);
     assertEquals(3, Integer.parseInt(pointsForTask[number]));
   }

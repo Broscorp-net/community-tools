@@ -46,6 +46,18 @@ public class ClassroomServiceImpl implements ClassroomService {
   private final String defaultPullRequestName;
   private final RepositoryNameService repositoryNameService;
 
+  /**
+   * Builds ClassroomServiceImpl object with given GitHub API client and GitHub properties.
+   *
+   * @param gitHub                      GitHub API client
+   * @param mainOrganizationName        name of the main GitHub organization
+   * @param traineeshipOrganizationName name of the GitHub organization for trainees
+   * @param traineesTeamName            name of the team to add new trainees to
+   * @param classroomWorkflow           name of the workflow in trainees repositories
+   * @param completedTaskLabel          label which marks that task is completed
+   * @param defaultPullRequestName      name of the default pull request in trainees repositories
+   * @param repositoryNameService       RepositoryNameService instance
+   */
   @Autowired
   public ClassroomServiceImpl(GitHub gitHub,
       @Value("${github.organizations.main}") String mainOrganizationName,

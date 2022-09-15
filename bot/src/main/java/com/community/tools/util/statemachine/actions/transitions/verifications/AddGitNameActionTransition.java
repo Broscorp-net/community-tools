@@ -2,6 +2,7 @@ package com.community.tools.util.statemachine.actions.transitions.verifications;
 
 import com.community.tools.model.Messages;
 import com.community.tools.model.User;
+import com.community.tools.repository.UserRepository;
 import com.community.tools.service.MessageConstructor;
 import com.community.tools.service.MessageService;
 import com.community.tools.service.github.GitHubConnectService;
@@ -10,7 +11,6 @@ import com.community.tools.service.payload.VerificationPayload;
 import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
 import com.community.tools.util.statemachine.actions.Transition;
-import com.community.tools.repository.UserRepository;
 import java.io.IOException;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -28,18 +28,24 @@ import org.springframework.statemachine.config.builders.StateMachineTransitionCo
 @WithStateMachine
 public class AddGitNameActionTransition implements Transition {
 
-  @Autowired private Action<State, Event> errorAction;
+  @Autowired
+  private Action<State, Event> errorAction;
 
   @Value("${generalInformationChannel}")
   private String channel;
 
-  @Autowired private UserRepository userRepository;
-  @Autowired private GitHubConnectService gitHubConnectService;
-  @Autowired private GitHubService gitHubService;
+  @Autowired
+  private UserRepository userRepository;
+  @Autowired
+  private GitHubConnectService gitHubConnectService;
+  @Autowired
+  private GitHubService gitHubService;
 
-  @Autowired private MessageService messageService;
+  @Autowired
+  private MessageService messageService;
 
-  @Autowired private MessageConstructor messageConstructor;
+  @Autowired
+  private MessageConstructor messageConstructor;
 
   @Override
   public void configure(StateMachineTransitionConfigurer<State, Event> transitions)

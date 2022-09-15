@@ -16,10 +16,8 @@ import org.springframework.stereotype.Component;
 
 
 /**
- *
- * refactor it
+ * Must be refactored using new ClassroomService.
  */
-@Deprecated
 @Component
 @RequiredArgsConstructor
 public class PublishWeekStatsService {
@@ -45,11 +43,9 @@ public class PublishWeekStatsService {
    * @throws SlackApiException SlackApiException
    * @throws IOException       IOException
    */
-  // This scheduled task is temporarily deactivated,
-  // while services for working with github are being refactored
   //@Scheduled(cron = "0 0 0 * * MON")
   public void exportStat()
-          throws SlackApiException, IOException {
+      throws SlackApiException, IOException {
     Date endDate = new Date();
     Calendar cal = Calendar.getInstance();
     cal.add(Calendar.DATE, -7);
@@ -62,18 +58,17 @@ public class PublishWeekStatsService {
     } else {
       messageService.sendBlockMessageToConversation(channel,
           messageConstructor.createStatisticMessage(
-                  events));
+              events));
     }
   }
 
   /**
    * Publish message with link to trainee`s leaderboard and image (first 5 record of rating).
-   * @throws IOException IOException
+   *
+   * @throws IOException       IOException
    * @throws SlackApiException SlackApiException
    */
-  // This scheduled task is temporarily deactivated,
-  // while services for working with github are being refactored
-//  @Scheduled(cron = "0 10 0 * * MON")
+  //@Scheduled(cron = "0 10 0 * * MON")
   public void publishLeaderboard() throws IOException, SlackApiException {
     String url = urlServer + "leaderboard/";
     String date = LocalDate.now().toString();
@@ -86,9 +81,7 @@ public class PublishWeekStatsService {
   /**
    * Publish message with link to trainee`s tasks status and image (first 5 record of rating).
    */
-  // This scheduled task is temporarily deactivated,
-  // while services for working with github are being refactored
-//  @Scheduled(cron = "0 20 0 * * ?")
+  //@Scheduled(cron = "0 20 0 * * ?")
   public void publishTasksStatus() {
     String url = urlServer + "task-status";
     String date = LocalDate.now().toString();
