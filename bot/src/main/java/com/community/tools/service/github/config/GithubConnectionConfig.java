@@ -10,6 +10,12 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class GithubConnectionConfig {
 
+  /**
+   * Returns configured GitHub API client.
+   *
+   * @param githubToken GitHub token
+   * @return configured GitHub API client
+   */
   @SneakyThrows
   @Bean
   public GitHub gitHub(@Value("${github.token}") String githubToken) {
