@@ -3,6 +3,7 @@ package com.community.tools.service;
 import com.community.tools.model.EmailBuild;
 import com.community.tools.model.Messages;
 import com.community.tools.model.User;
+import com.community.tools.repository.UserRepository;
 import com.community.tools.service.payload.EstimatePayload;
 import com.community.tools.service.payload.Payload;
 import com.community.tools.service.payload.QuestionPayload;
@@ -10,7 +11,6 @@ import com.community.tools.service.payload.SimplePayload;
 import com.community.tools.service.payload.VerificationPayload;
 import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
-import com.community.tools.repository.UserRepository;
 import java.time.LocalDate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -23,23 +23,29 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class TrackingService {
 
-  @Autowired private MessageService messageService;
+  @Autowired
+  private MessageService messageService;
 
-  @Autowired private StateMachineService stateMachineService;
+  @Autowired
+  private StateMachineService stateMachineService;
 
-  @Autowired private UserRepository userRepository;
+  @Autowired
+  private UserRepository userRepository;
 
-  @Autowired private EstimateTaskService estimateTaskService;
+  @Autowired
+  private EstimateTaskService estimateTaskService;
 
-  @Autowired private MessageConstructor messageConstructor;
+  @Autowired
+  private MessageConstructor messageConstructor;
 
-  @Autowired private EmailService emailService;
+  @Autowired
+  private EmailService emailService;
 
   /**
    * Method to start the event by state.
    *
    * @param messageFromUser message from user
-   * @param userId user id
+   * @param userId          user id
    * @throws Exception Exception
    */
   public void doAction(String messageFromUser, String userId) throws Exception {
@@ -125,10 +131,10 @@ public class TrackingService {
       Matcher matcher = pattern.matcher(messageFromUser);
       if (matcher.matches()) {
         emailService.sendEmail(EmailBuild.builder()
-                .userEmail(messageFromUser.trim())
-                .subject("Bro_Bot Email")
-                .text(Messages.EMAIL)
-                .build());
+            .userEmail(messageFromUser.trim())
+            .subject("Bro_Bot Email")
+            .text(Messages.EMAIL)
+            .build());
       } else {
         messageService.sendPrivateMessage(messageService.getUserById(userId), message);
       }
