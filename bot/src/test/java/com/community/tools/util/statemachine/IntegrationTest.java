@@ -22,6 +22,7 @@ import static org.mockito.Mockito.when;
 import com.community.tools.discord.DiscordConfig;
 import com.community.tools.model.Messages;
 import com.community.tools.model.User;
+import com.community.tools.repository.UserRepository;
 import com.community.tools.service.MessageService;
 import com.community.tools.service.StateMachineService;
 import com.community.tools.service.github.GitHubConnectService;
@@ -31,7 +32,6 @@ import com.community.tools.service.payload.Payload;
 import com.community.tools.service.payload.QuestionPayload;
 import com.community.tools.service.payload.SimplePayload;
 import com.community.tools.service.payload.VerificationPayload;
-import com.community.tools.repository.UserRepository;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
@@ -56,8 +56,6 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 
-
-
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @TestPropertySource(locations = "/application-test.properties")
@@ -67,43 +65,30 @@ class IntegrationTest {
   private static final String USER_ID = "U01QY6GRZ0X";
   private static final String USER_NAME = "Some User";
   private static final Integer VALUE_FOR_ESTIMATE = 1;
-
-  @Value("${welcomeChannelMessage}")
-  private String welcomeChanelMessage;
-
-  @Value("${firstQuestion}")
-  private String firstQuestion;
-
-  @Value("${secondQuestion}")
-  private String secondQuestion;
-
-  @Value("${thirdQuestion}")
-  private String thirdQuestion;
-
-  @Value("${messageAboutSeveralInfoChannel}")
-  private String messageAboutSeveralInfoChannel;
-
-  @Value("${addGitName}")
-  private String addGitName;
-
-  @Value("${askAboutProfile}")
-  private String askAboutProfile;
-
-  @Value("${getFirstTask}")
-  private String getFirstTask;
-
-  @Value("${answeredNoDuringVerification}")
-  private String answeredNoDuringVerification;
-
-  @Value("${lastTask}")
-  private String lastTask;
-
-  @Value("${generalInformationChannel}")
-  private String channel;
-
   @Value("${estimateTheTask}")
   String estimateTheTask;
-
+  @Value("${welcomeChannelMessage}")
+  private String welcomeChanelMessage;
+  @Value("${firstQuestion}")
+  private String firstQuestion;
+  @Value("${secondQuestion}")
+  private String secondQuestion;
+  @Value("${thirdQuestion}")
+  private String thirdQuestion;
+  @Value("${messageAboutSeveralInfoChannel}")
+  private String messageAboutSeveralInfoChannel;
+  @Value("${addGitName}")
+  private String addGitName;
+  @Value("${askAboutProfile}")
+  private String askAboutProfile;
+  @Value("${getFirstTask}")
+  private String getFirstTask;
+  @Value("${answeredNoDuringVerification}")
+  private String answeredNoDuringVerification;
+  @Value("${lastTask}")
+  private String lastTask;
+  @Value("${generalInformationChannel}")
+  private String channel;
   @Autowired
   private StateMachineService stateMachineService;
 
