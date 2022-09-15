@@ -68,7 +68,7 @@ public class PublishWeekStatsService {
    * @throws IOException       IOException
    * @throws SlackApiException SlackApiException
    */
-//  @Scheduled(cron = "0 10 0 * * MON")
+  //@Scheduled(cron = "0 10 0 * * MON")
   public void publishLeaderboard() throws IOException, SlackApiException {
     String url = urlServer + "leaderboard/";
     String date = LocalDate.now().toString();
@@ -81,7 +81,7 @@ public class PublishWeekStatsService {
   /**
    * Publish message with link to trainee`s tasks status and image (first 5 record of rating).
    */
-//  @Scheduled(cron = "0 20 0 * * ?")
+  //@Scheduled(cron = "0 20 0 * * ?")
   public void publishTasksStatus() {
     String url = urlServer + "task-status";
     String date = LocalDate.now().toString();
