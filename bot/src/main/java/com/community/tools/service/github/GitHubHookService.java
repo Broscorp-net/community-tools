@@ -14,10 +14,6 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
-/**
- * Implement GithubEvenHandler for GitHub hook events handling instead.
- */
-@Deprecated
 //@Service
 public class GitHubHookService {
 
@@ -36,9 +32,6 @@ public class GitHubHookService {
   private StateMachineService stateMachineService;
   @Autowired
   private KarmaService karmaService;
-
-  //@Autowired
-  // private PointsTaskService pointsTaskService;
 
   @Autowired
   private MessageService messageService;
