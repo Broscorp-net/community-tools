@@ -7,13 +7,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
-/** @deprecated
- * we are not sure is it work
- * refactor it or delete
- */
-@Deprecated
 @Configuration
 public class EmailConfig {
+
   @Value("${email.login}")
   private String email;
   @Value("${email.password}")
@@ -21,6 +17,7 @@ public class EmailConfig {
 
   /**
    * Config Gmail for send email.
+   *
    * @return JavaMailSender.
    **/
   @Bean

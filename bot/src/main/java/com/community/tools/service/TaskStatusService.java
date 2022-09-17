@@ -22,6 +22,13 @@ public class TaskStatusService {
     this.classroomService = classroomService;
   }
 
+  /**
+   * Service for sorting, limiting and creating DTO.
+   * @param limit - limit of users for view.
+   * @param period - period of days fow view.
+   * @param comparator - sort order (DESC, ASC).
+   * @return - return list of DTO.
+   */
   public List<UserForTaskStatusDto> getTaskStatuses(Period period, Integer limit,
       Comparator<GithubUserDto> comparator) {
     log.info("running with period = {}, comparator = {}, limit = {}", period, comparator, limit);
@@ -38,6 +45,12 @@ public class TaskStatusService {
         .collect(Collectors.toList());
   }
 
+  /**
+   * Getting List of task, and status of this task, for each user,
+   *  based on labels.
+   * @param user - user DTO.
+   * @return - list of task, and status of this task, for each user.
+   */
   private List<TaskNameAndStatus> getAllTaskNameAndStatusesForEachUser(GithubUserDto user) {
     return user.getRepositories().stream().map(repo -> {
       if (repo.getLabels().isEmpty()) {

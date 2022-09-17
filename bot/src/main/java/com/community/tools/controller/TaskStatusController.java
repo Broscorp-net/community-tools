@@ -11,7 +11,6 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,21 +31,26 @@ public class TaskStatusController {
     this.taskStatusService = taskStatusService;
   }
 
+  /**
+   * Endpoint for task status service.
+   * @param limit - limit of users for view.
+   * @param days - period of days fow view.
+   * @param sort - sort order (DESC, ASC).
+   * @return - return list of DTO.
+   */
   @GetMapping("/taskStatus/getStatuses")
-  //TODO delete annotation
-  @CrossOrigin(origins = "http://localhost:4200")
   public ResponseEntity<List<UserForTaskStatusDto>> getTaskStatuses(
       @RequestParam(required = false) Optional<Integer> limit,
       @RequestParam(required = false) Optional<Integer> days,
       @RequestParam(required = false) Optional<String> sort) {
-    Comparator<GithubUserDto> comparator = getComparatorForTaskStatusDESC();
+    Comparator<GithubUserDto> comparator = getComparatorForTaskStatusDesc();
 
     if (sort.isPresent()) {
       String tmp = sort.get();
       if (tmp.equalsIgnoreCase("asc")) {
-        comparator = getComparatorForTaskStatusASC();
+        comparator = getComparatorForTaskStatusAsc();
       } else if (tmp.equalsIgnoreCase("desc")) {
-        comparator = getComparatorForTaskStatusDESC();
+        comparator = getComparatorForTaskStatusDesc();
       } else {
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
       }
@@ -59,20 +63,22 @@ public class TaskStatusController {
             comparator), HttpStatus.OK);
   }
 
+  /**
+   * Endpoint for receiving task names.
+   * @return - set of names.
+   */
   @GetMapping("/taskStatus/getTasks")
-  //TODO delete annotation
-  @CrossOrigin(origins = "http://localhost:4200")
   public ResponseEntity<Set<String>> getTaskNames() {
     return new ResponseEntity<>(
         tasksForUsers,
         HttpStatus.OK);
   }
 
-  private static Comparator<GithubUserDto> getComparatorForTaskStatusDESC() {
+  private static Comparator<GithubUserDto> getComparatorForTaskStatusDesc() {
     return Comparator.comparingInt(GithubUserDto::getCompletedTasks).reversed();
   }
 
-  private static Comparator<GithubUserDto> getComparatorForTaskStatusASC() {
+  private static Comparator<GithubUserDto> getComparatorForTaskStatusAsc() {
     return Comparator.comparingInt(GithubUserDto::getCompletedTasks).reversed();
   }
 

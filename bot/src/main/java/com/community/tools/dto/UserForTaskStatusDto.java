@@ -17,7 +17,13 @@ public class UserForTaskStatusDto {
   private final Integer completedTasks;
   private final List<TaskNameAndStatus> taskStatuses;
 
-
+  /**
+   * Constructor for DTO.
+   * @param gitName - gitName
+   * @param dateLastActivity - dateLastActivity
+   * @param completedTasks - completedTasks
+   * @param taskStatuses - list of task and status
+   */
   public UserForTaskStatusDto(String gitName, LocalDate dateLastActivity, Integer completedTasks,
       List<TaskNameAndStatus> taskStatuses) {
     this.gitName = gitName;

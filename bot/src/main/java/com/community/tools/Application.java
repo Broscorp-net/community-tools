@@ -1,6 +1,6 @@
 package com.community.tools;
 
-import com.community.tools.util.IOUtils;
+import com.community.tools.util.IoUtils;
 import java.util.Map;
 import java.util.Properties;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -31,7 +31,7 @@ public class Application {
    * @return Properties
    */
   private static Properties props() {
-    Map<String, String> prop = IOUtils.readPropertiesFromFile("property.txt");
+    Map<String, String> prop = IoUtils.readPropertiesFromFile("property.txt");
     Properties properties = new Properties();
     properties.putAll(prop);
     return properties;

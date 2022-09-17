@@ -2,7 +2,7 @@ package com.community.tools;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.community.tools.util.IOUtils;
+import com.community.tools.util.IoUtils;
 import com.mgnt.utils.StringUnicodeEncoderDecoder;
 
 import java.io.BufferedReader;
@@ -106,7 +106,7 @@ public class ConvertIntoUnicodeTest {
   @SneakyThrows
   @Test
   public void convertProperty() {
-    Map<String,String> prop = IOUtils.convertToUnicode("src/test/resources/prop.txt");
+    Map<String,String> prop = IoUtils.convertToUnicode("src/test/resources/prop.txt");
     assertEquals(prop.get("firstValue"), "My first value");
   }
 

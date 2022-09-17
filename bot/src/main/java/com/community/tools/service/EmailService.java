@@ -4,21 +4,19 @@ import com.community.tools.model.EmailBuild;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
-/**
- * we are not sure is it work
- * refactor it or delete
- */
 @Slf4j
 @Service
-@Deprecated
 public class EmailService {
-  @Autowired
-  public JavaMailSender emailSender;
+
+  public final JavaMailSender emailSender;
+
+  public EmailService(JavaMailSender emailSender) {
+    this.emailSender = emailSender;
+  }
 
   /**
    * This method send email.
@@ -26,7 +24,7 @@ public class EmailService {
   */
   public void sendEmail(EmailBuild builder) {
     MimeMessage message = emailSender.createMimeMessage();
-    MimeMessageHelper helper = null;
+    MimeMessageHelper helper;
     try {
       helper = new MimeMessageHelper(message, true, "utf-8");
       helper.setTo(builder.getUserEmail());
@@ -39,4 +37,5 @@ public class EmailService {
     // Send Email!
     this.emailSender.send(message);
   }
+
 }

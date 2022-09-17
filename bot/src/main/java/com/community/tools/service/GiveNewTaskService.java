@@ -2,24 +2,21 @@ package com.community.tools.service;
 
 import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.statemachine.persist.StateMachinePersister;
 import org.springframework.stereotype.Service;
 
-/**
- *doesn't work
- * refactor it or delete
- */
 @Service
-@Deprecated
 public class GiveNewTaskService {
 
   @Value("${git.number.of.tasks}")
   private Integer numberOfTasks;
-  @Autowired
-  private StateMachinePersister<State, Event, String> persister;
+  private final StateMachinePersister<State, Event, String> persister;
+
+  public GiveNewTaskService(StateMachinePersister<State, Event, String> persister) {
+    this.persister = persister;
+  }
 
   /**
    * Give new Task to the trainee. Checks for the last task.

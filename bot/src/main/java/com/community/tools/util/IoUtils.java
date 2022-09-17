@@ -14,11 +14,17 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class IOUtils {
+public class IoUtils {
 
-  private IOUtils() {}
+  private IoUtils() {}
 
   //TODO rework it
+  /**
+   * Getting properties from file.
+   * @param fileName - file name
+   * @return - map with properties
+   * @throws IOException - exception
+   */
   public static Map<String,String> convertToUnicode(String fileName) throws IOException {
     Path path = Paths.get(fileName);
     Stream<String> lines = Files.lines(path);
