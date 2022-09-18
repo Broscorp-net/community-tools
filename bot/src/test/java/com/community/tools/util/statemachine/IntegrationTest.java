@@ -14,7 +14,6 @@ import static com.community.tools.util.statemachine.State.SECOND_QUESTION;
 import static com.community.tools.util.statemachine.State.THIRD_QUESTION;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -25,6 +24,7 @@ import com.community.tools.model.User;
 import com.community.tools.repository.UserRepository;
 import com.community.tools.service.MessageService;
 import com.community.tools.service.StateMachineService;
+import com.community.tools.service.github.ClassroomService;
 import com.community.tools.service.github.GitHubConnectService;
 import com.community.tools.service.github.GitHubService;
 import com.community.tools.service.payload.EstimatePayload;
@@ -33,8 +33,6 @@ import com.community.tools.service.payload.QuestionPayload;
 import com.community.tools.service.payload.SimplePayload;
 import com.community.tools.service.payload.VerificationPayload;
 import java.net.URL;
-import java.util.HashSet;
-import java.util.Set;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -106,6 +104,9 @@ class IntegrationTest {
 
   @MockBean
   private DiscordConfig discordConfig;
+
+  @MockBean
+  private ClassroomService classroomService;
 
   @Mock
   private GHUser user;
@@ -268,25 +269,13 @@ class IntegrationTest {
     machine.getStateMachineAccessor().doWithAllRegions(access -> access
         .resetStateMachine(new DefaultStateMachineContext<>(CHECK_LOGIN,
             null, null, null)));
-    Set<GHTeam> mockSet = new HashSet<>();
-    mockSet.add(team);
-    when(gitHubService.getUserByLoginInGitHub(USER_NAME)).thenReturn(user);
-    when(gitHubConnectService.getGitHubRepository()).thenReturn(ghRepository);
-    when(ghRepository.getTeams()).thenReturn(mockSet);
-    when(team.getName()).thenReturn("trainees");
-    doNothing().when(team).add(user);
     when(messageService.getUserById(USER_ID)).thenReturn(USER_NAME);
     VerificationPayload payload = new VerificationPayload(USER_ID, USER_NAME);
 
     stateMachineService.doAction(machine, payload, Event.ADD_GIT_NAME_AND_FIRST_TASK);
 
-    verify(gitHubService, times(1)).getUserByLoginInGitHub(firstArg.capture());
+    verify(classroomService, times(1)).addUserToOrganization(firstArg.capture());
     assertEquals(USER_NAME, firstArg.getValue());
-    verify(gitHubConnectService, times(1)).getGitHubRepository();
-    verify(ghRepository, times(1)).getTeams();
-    verify(team, times(1)).getName();
-    verify(team, times(1)).add(ghUserCaptor.capture());
-    assertEquals(user, ghUserCaptor.getValue());
     verify(messageService, times(2)).getUserById(firstArg.capture());
     assertEquals(USER_ID, firstArg.getValue());
     verify(messageService, times(1)).sendMessageToConversation(firstArg.capture(), anyString());
