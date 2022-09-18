@@ -5,13 +5,11 @@ import com.community.tools.model.User;
 import com.community.tools.repository.UserRepository;
 import com.community.tools.service.MessageConstructor;
 import com.community.tools.service.MessageService;
-import com.community.tools.service.github.GitHubConnectService;
-import com.community.tools.service.github.GitHubService;
+import com.community.tools.service.github.ClassroomService;
 import com.community.tools.service.payload.VerificationPayload;
 import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
 import com.community.tools.util.statemachine.actions.Transition;
-import java.io.IOException;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
@@ -36,10 +34,9 @@ public class AddGitNameActionTransition implements Transition {
 
   @Autowired
   private UserRepository userRepository;
+
   @Autowired
-  private GitHubConnectService gitHubConnectService;
-  @Autowired
-  private GitHubService gitHubService;
+  private ClassroomService classroomService;
 
   @Autowired
   private MessageService messageService;
@@ -73,14 +70,9 @@ public class AddGitNameActionTransition implements Transition {
     String thirdAnswer = stateEntity.getThirdAnswerAboutRules();
     GHUser userGitLogin = new GHUser();
     try {
-      userGitLogin = gitHubService.getUserByLoginInGitHub(nickname);
-      gitHubConnectService.getGitHubRepository().getTeams().stream()
-          .filter(e -> e.getName().equals("trainees"))
-          .findFirst()
-          .get()
-          .add(userGitLogin);
+      classroomService.addUserToOrganization(nickname);
       stateEntity.setEmail(userGitLogin.getEmail());
-    } catch (IOException e) {
+    } catch (Exception e) {
       messageService.sendBlocksMessage(
           messageService.getUserById(user),
           messageConstructor.createErrorWithAddingGitNameMessage(
