@@ -8,10 +8,10 @@ import lombok.Data;
 public class UserForLeaderboardDto {
 
   //TODO fill this field
-  private final UsedPlatforms platformName = null;
+  //private final UsedPlatforms platformName = null;
   private final String gitName;
   //TODO fill this field
-  private LocalDate dateRegistration = null;
+  //private LocalDate dateRegistration = null;
   private final LocalDate dateLastActivity;
   private final Integer completedTasks;
   private final Integer pointByTask;
