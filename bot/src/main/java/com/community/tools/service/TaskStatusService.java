@@ -5,7 +5,6 @@ import com.community.tools.dto.UserForTaskStatusDto;
 import com.community.tools.model.TaskNameAndStatus;
 import com.community.tools.model.TaskStatus;
 import com.community.tools.service.github.ClassroomService;
-import com.community.tools.service.github.ClassroomServiceImpl;
 import java.time.Period;
 import java.util.Comparator;
 import java.util.List;
@@ -19,7 +18,7 @@ public class TaskStatusService {
 
   private final ClassroomService classroomService;
 
-  public TaskStatusService(ClassroomServiceImpl classroomService) {
+  public TaskStatusService(ClassroomService classroomService) {
     this.classroomService = classroomService;
   }
 
