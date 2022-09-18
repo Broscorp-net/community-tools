@@ -4,6 +4,7 @@ import com.community.tools.dto.GithubUserDto;
 import com.community.tools.dto.UserForTaskStatusDto;
 import com.community.tools.model.TaskNameAndStatus;
 import com.community.tools.model.TaskStatus;
+import com.community.tools.service.github.ClassroomService;
 import com.community.tools.service.github.ClassroomServiceImpl;
 import java.time.Period;
 import java.util.Comparator;
@@ -16,7 +17,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class TaskStatusService {
 
-  private final ClassroomServiceImpl classroomService;
+  private final ClassroomService classroomService;
 
   public TaskStatusService(ClassroomServiceImpl classroomService) {
     this.classroomService = classroomService;
