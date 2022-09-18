@@ -60,8 +60,8 @@ public class ClassroomServiceImpl implements ClassroomService {
    */
   @Autowired
   public ClassroomServiceImpl(GitHub gitHub,
-      @Value("${github.organizations.main}") String mainOrganizationName,
-      @Value("${github.organizations.traineeship}") String traineeshipOrganizationName,
+      @Value("${github.main-organization-name}") String mainOrganizationName,
+      @Value("${github.traineeship-organization-name}") String traineeshipOrganizationName,
       @Value("${github.teams.trainees}") String traineesTeamName,
       @Value("${github.workflows.classroom}") String classroomWorkflow,
       @Value("${github.labels.completed-task}") String completedTaskLabel,
