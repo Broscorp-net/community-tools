@@ -17,10 +17,12 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.kohsuke.github.GHIssueState;
 import org.kohsuke.github.GHLabel;
 import org.kohsuke.github.GHOrganization;
@@ -34,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 public class ClassroomServiceImpl implements ClassroomService {
 
@@ -139,8 +142,8 @@ public class ClassroomServiceImpl implements ClassroomService {
         .stream()
         .filter(entry -> repositoryNameService.isPrefixedWithTaskName(entry.getKey()))
         .map(entry -> {
+          GHRepository repository = entry.getValue();
           try {
-            GHRepository repository = entry.getValue();
             Date lastCommitDate = repository
                 .queryCommits()
                 .pageSize(1)
@@ -151,9 +154,11 @@ public class ClassroomServiceImpl implements ClassroomService {
 
             return new FetchedRepository(repository, lastCommitDate);
           } catch (IOException e) {
-            throw new RuntimeException(e);
+            log.warn("failed to fetch last commit date", e);
+            return new FetchedRepository(repository, null);
           }
         })
+        .filter(fetchedRepository -> fetchedRepository.getLastCommitDate() != null)
         .collect(groupingBy(fetchedRepository -> {
           ParsedRepositoryName parsedName = repositoryNameService.parseRepositoryName(
               fetchedRepository.getRepository().getName());
@@ -172,35 +177,39 @@ public class ClassroomServiceImpl implements ClassroomService {
         .map(this::buildGithubRepositoryDto)
         .collect(Collectors.toList());
 
-    int totalPoints = getTotalPoints(repositories);
-    int completedTasks = getCompletedTasks(repositories);
-
     return GithubUserDto.builder()
         .gitName(creatorGitName)
         .lastCommit(lastCommitDate)
         .repositories(repositories)
-        .totalPoints(totalPoints)
-        .completedTasks(completedTasks)
+        .totalPoints(getTotalPoints(repositories))
+        .completedTasks(getCompletedTasks(repositories))
         .build();
   }
 
-  private int getCompletedTasks(List<GithubRepositoryDto> repositories) {
-    return (int) repositories
+  private Optional<Integer> getCompletedTasks(List<GithubRepositoryDto> repositories) {
+    if (repositories.stream().anyMatch(repository -> !repository.getLabels().isPresent())) {
+      return Optional.empty();
+    }
+
+    return Optional.of((int) repositories
         .stream()
-        .flatMap(repository -> repository.getLabels().stream())
+        .flatMap(repository -> repository.getLabels().get().stream())
         .map(String::toLowerCase)
         .filter(label -> label.equals(completedTaskLabel))
-        .count();
+        .count());
   }
 
-  private int getTotalPoints(List<GithubRepositoryDto> repositories) {
-    return repositories
+  private Optional<Integer> getTotalPoints(List<GithubRepositoryDto> repositories) {
+    if (repositories.stream().anyMatch(repository -> !repository.getPoints().isPresent())) {
+      return Optional.empty();
+    }
+
+    return Optional.of(repositories
         .stream()
-        .map(GithubRepositoryDto::getPoints)
-        .reduce(0, Integer::sum);
+        .map(repository -> repository.getPoints().get())
+        .reduce(0, Integer::sum));
   }
 
-  @SneakyThrows
   private GithubRepositoryDto buildGithubRepositoryDto(FetchedRepository fetchedRepository) {
     GHRepository repository = fetchedRepository.getRepository();
 
@@ -217,61 +226,86 @@ public class ClassroomServiceImpl implements ClassroomService {
         .lastBuildStatus(getLastBuildStatus(workflowRun))
         .labels(getLabels(repository))
         .points(getPoints(workflowRun))
-        .createdAt(convertToLocalDate(repository.getCreatedAt()))
+        .createdAt(getCreatedAt(repository))
         .updatedAt(convertToLocalDate(fetchedRepository.getLastCommitDate()))
         .build();
   }
 
-  @SneakyThrows
-  private String getLastBuildStatus(GHWorkflowRun workflowRun) {
-    return workflowRun
-        .getConclusion()
-        .toString();
-  }
-
-  @SneakyThrows
-  private int getPoints(GHWorkflowRun workflowRun) {
-    return workflowRun
-        .listJobs()
-        .toList()
-        .get(0)
-        .downloadLogs(in -> new BufferedReader(new InputStreamReader(in)))
-        .lines()
-        .filter(line -> line.contains("Points"))
-        .map(line -> {
-          String[] lineSplit = line.split(" ");
-          String[] points = lineSplit[2].split("/");
-          return Integer.parseInt(points[0]);
-        })
-        .findFirst()
-        .orElse(0);
-  }
-
-  @SneakyThrows
   private GHWorkflowRun getWorkflowRun(GHRepository repository) {
-    return repository
-        .getWorkflow(classroomWorkflow)
-        .listRuns()
-        .withPageSize(1)
-        .iterator()
-        .next();
+    try {
+      return repository
+          .getWorkflow(classroomWorkflow)
+          .listRuns()
+          .withPageSize(1)
+          .iterator()
+          .next();
+    } catch (IOException e) {
+      log.warn("failed to fetch workflow run", e);
+      return null;
+    }
   }
 
-  private List<String> getLabels(GHRepository repository) {
+  private Optional<String> getLastBuildStatus(GHWorkflowRun workflowRun) {
+    if (workflowRun == null) {
+      return Optional.empty();
+    }
+
+    return Optional.of(workflowRun
+        .getConclusion()
+        .toString());
+  }
+
+  private Optional<Integer> getPoints(GHWorkflowRun workflowRun) {
+    if (workflowRun == null) {
+      return Optional.empty();
+    }
+
+    try {
+      return Optional.of(workflowRun
+          .listJobs()
+          .toList()
+          .get(0)
+          .downloadLogs(in -> new BufferedReader(new InputStreamReader(in)))
+          .lines()
+          .filter(line -> line.contains("Points"))
+          .map(line -> {
+            String[] lineSplit = line.split(" ");
+            String[] points = lineSplit[2].split("/");
+            return Integer.parseInt(points[0]);
+          })
+          .findFirst()
+          .orElse(0));
+    } catch (IOException e) {
+      log.warn("failed to fetch points from workflow run logs", e);
+      return Optional.empty();
+    }
+  }
+
+  private Optional<List<String>> getLabels(GHRepository repository) {
     try {
       List<GHPullRequest> openPullRequests = repository.getPullRequests(GHIssueState.OPEN);
       for (GHPullRequest pullRequest : openPullRequests) {
         if (pullRequest.getTitle().equals(defaultPullRequestName)) {
-          return pullRequest.getLabels()
+          return Optional.of(pullRequest.getLabels()
               .stream()
               .map(GHLabel::getName)
-              .collect(Collectors.toList());
+              .collect(Collectors.toList()));
         }
       }
 
-      return Collections.emptyList();
+      return Optional.of(Collections.emptyList());
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      log.warn("failed to fetch labels", e);
+      return Optional.empty();
+    }
+  }
+
+  private Optional<LocalDate> getCreatedAt(GHRepository repository) {
+    try {
+      return Optional.of(convertToLocalDate(repository.getCreatedAt()));
+    } catch (IOException e) {
+      log.warn("failed to fetch repository creation date", e);
+      return Optional.empty();
     }
   }
 
