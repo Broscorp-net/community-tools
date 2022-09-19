@@ -17,7 +17,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -186,28 +185,21 @@ public class ClassroomServiceImpl implements ClassroomService {
         .build();
   }
 
-  private Optional<Integer> getCompletedTasks(List<GithubRepositoryDto> repositories) {
-    if (repositories.stream().anyMatch(repository -> !repository.getLabels().isPresent())) {
-      return Optional.empty();
-    }
-
-    return Optional.of((int) repositories
+  private int getCompletedTasks(List<GithubRepositoryDto> repositories) {
+    return (int) repositories
         .stream()
-        .flatMap(repository -> repository.getLabels().get().stream())
+        .flatMap(repository -> repository.getLabels().stream())
         .map(String::toLowerCase)
         .filter(label -> label.equals(completedTaskLabel))
-        .count());
+        .count();
   }
 
-  private Optional<Integer> getTotalPoints(List<GithubRepositoryDto> repositories) {
-    if (repositories.stream().anyMatch(repository -> !repository.getPoints().isPresent())) {
-      return Optional.empty();
-    }
-
-    return Optional.of(repositories
+  private int getTotalPoints(List<GithubRepositoryDto> repositories) {
+    return repositories
         .stream()
-        .map(repository -> repository.getPoints().get())
-        .reduce(0, Integer::sum));
+        .map(GithubRepositoryDto::getPoints)
+        .filter(points -> points == -1)
+        .reduce(0, Integer::sum);
   }
 
   private GithubRepositoryDto buildGithubRepositoryDto(FetchedRepository fetchedRepository) {
@@ -245,23 +237,23 @@ public class ClassroomServiceImpl implements ClassroomService {
     }
   }
 
-  private Optional<String> getLastBuildStatus(GHWorkflowRun workflowRun) {
+  private String getLastBuildStatus(GHWorkflowRun workflowRun) {
     if (workflowRun == null) {
-      return Optional.empty();
+      return "";
     }
 
-    return Optional.of(workflowRun
+    return workflowRun
         .getConclusion()
-        .toString());
+        .toString();
   }
 
-  private Optional<Integer> getPoints(GHWorkflowRun workflowRun) {
+  private int getPoints(GHWorkflowRun workflowRun) {
     if (workflowRun == null) {
-      return Optional.empty();
+      return -1;
     }
 
     try {
-      return Optional.of(workflowRun
+      return workflowRun
           .listJobs()
           .toList()
           .get(0)
@@ -274,38 +266,38 @@ public class ClassroomServiceImpl implements ClassroomService {
             return Integer.parseInt(points[0]);
           })
           .findFirst()
-          .orElse(0));
+          .orElse(0);
     } catch (IOException e) {
       log.warn("failed to fetch points from workflow run logs", e);
-      return Optional.empty();
+      return -1;
     }
   }
 
-  private Optional<List<String>> getLabels(GHRepository repository) {
+  private List<String> getLabels(GHRepository repository) {
     try {
       List<GHPullRequest> openPullRequests = repository.getPullRequests(GHIssueState.OPEN);
       for (GHPullRequest pullRequest : openPullRequests) {
         if (pullRequest.getTitle().equals(defaultPullRequestName)) {
-          return Optional.of(pullRequest.getLabels()
+          return pullRequest.getLabels()
               .stream()
               .map(GHLabel::getName)
-              .collect(Collectors.toList()));
+              .collect(Collectors.toList());
         }
       }
 
-      return Optional.of(Collections.emptyList());
+      return Collections.emptyList();
     } catch (IOException e) {
       log.warn("failed to fetch labels", e);
-      return Optional.empty();
+      return Collections.emptyList();
     }
   }
 
-  private Optional<LocalDate> getCreatedAt(GHRepository repository) {
+  private LocalDate getCreatedAt(GHRepository repository) {
     try {
-      return Optional.of(convertToLocalDate(repository.getCreatedAt()));
+      return convertToLocalDate(repository.getCreatedAt());
     } catch (IOException e) {
       log.warn("failed to fetch repository creation date", e);
-      return Optional.empty();
+      return null;
     }
   }
 
