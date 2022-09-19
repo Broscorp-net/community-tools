@@ -198,7 +198,7 @@ public class ClassroomServiceImpl implements ClassroomService {
     return repositories
         .stream()
         .map(GithubRepositoryDto::getPoints)
-        .filter(points -> points == -1)
+        .filter(points -> points >= 0)
         .reduce(0, Integer::sum);
   }
 
