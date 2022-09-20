@@ -1,12 +1,11 @@
 package com.community.tools.service;
 
 import com.community.tools.model.User;
+import com.community.tools.repository.UserRepository;
 import com.community.tools.service.payload.Payload;
 import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
-import com.community.tools.util.statemachine.jpa.StateMachineRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.statemachine.config.StateMachineFactory;
 import org.springframework.statemachine.persist.StateMachinePersister;
@@ -16,14 +15,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class StateMachineService {
 
-  @Autowired
-  private StateMachineRepository stateMachineRepository;
-  @Autowired
-  private StateMachineFactory<State, Event> factory;
-  @Autowired
-  private StateMachinePersister<State, Event, String> persister;
-  @Autowired
-  private MessageService messageService;
+  private final UserRepository userRepository;
+  private final StateMachineFactory<State, Event> factory;
+  private final StateMachinePersister<State, Event, String> persister;
+  private final MessageService messageService;
 
   /**
    * Restore machine by Slack`s userId.
@@ -46,7 +41,7 @@ public class StateMachineService {
    * @return StateMachine
    */
   public StateMachine<State, Event> restoreMachineByNick(String nick) {
-    User user = stateMachineRepository.findByGitName(nick).get();
+    User user = userRepository.findByGitName(nick).get();
     StateMachine<State, Event> machine = factory.getStateMachine();
     machine.start();
     try {
@@ -58,7 +53,7 @@ public class StateMachineService {
   }
 
   public String getIdByNick(String nick) {
-    return stateMachineRepository.findByGitName(nick).get().getUserID();
+    return userRepository.findByGitName(nick).get().getUserID();
   }
 
   /**

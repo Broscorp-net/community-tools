@@ -2,16 +2,14 @@ package com.community.tools.util.statemachine.actions.transitions.verifications;
 
 import com.community.tools.model.Messages;
 import com.community.tools.model.User;
+import com.community.tools.repository.UserRepository;
 import com.community.tools.service.MessageConstructor;
 import com.community.tools.service.MessageService;
-import com.community.tools.service.github.GitHubConnectService;
-import com.community.tools.service.github.GitHubService;
+import com.community.tools.service.github.ClassroomService;
 import com.community.tools.service.payload.VerificationPayload;
 import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
 import com.community.tools.util.statemachine.actions.Transition;
-import com.community.tools.util.statemachine.jpa.StateMachineRepository;
-import java.io.IOException;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
@@ -28,18 +26,23 @@ import org.springframework.statemachine.config.builders.StateMachineTransitionCo
 @WithStateMachine
 public class AddGitNameActionTransition implements Transition {
 
-  @Autowired private Action<State, Event> errorAction;
+  @Autowired
+  private Action<State, Event> errorAction;
 
   @Value("${generalInformationChannel}")
   private String channel;
 
-  @Autowired private StateMachineRepository stateMachineRepository;
-  @Autowired private GitHubConnectService gitHubConnectService;
-  @Autowired private GitHubService gitHubService;
+  @Autowired
+  private UserRepository userRepository;
 
-  @Autowired private MessageService messageService;
+  @Autowired
+  private ClassroomService classroomService;
 
-  @Autowired private MessageConstructor messageConstructor;
+  @Autowired
+  private MessageService messageService;
+
+  @Autowired
+  private MessageConstructor messageConstructor;
 
   @Override
   public void configure(StateMachineTransitionConfigurer<State, Event> transitions)
@@ -60,27 +63,22 @@ public class AddGitNameActionTransition implements Transition {
     String user = payload.getId();
     String nickname = payload.getGitNick();
 
-    User stateEntity = stateMachineRepository.findByUserID(user).get();
+    User stateEntity = userRepository.findByUserID(user).get();
     stateEntity.setGitName(nickname);
     String firstAnswer = stateEntity.getFirstAnswerAboutRules();
     String secondAnswer = stateEntity.getSecondAnswerAboutRules();
     String thirdAnswer = stateEntity.getThirdAnswerAboutRules();
     GHUser userGitLogin = new GHUser();
     try {
-      userGitLogin = gitHubService.getUserByLoginInGitHub(nickname);
-      gitHubConnectService.getGitHubRepository().getTeams().stream()
-          .filter(e -> e.getName().equals("trainees"))
-          .findFirst()
-          .get()
-          .add(userGitLogin);
+      classroomService.addUserToTraineesTeam(nickname);
       stateEntity.setEmail(userGitLogin.getEmail());
-    } catch (IOException e) {
+    } catch (Exception e) {
       messageService.sendBlocksMessage(
           messageService.getUserById(user),
           messageConstructor.createErrorWithAddingGitNameMessage(
               Messages.ERROR_WITH_ADDING_GIT_NAME));
     }
-    stateMachineRepository.save(stateEntity);
+    userRepository.save(stateEntity);
     messageService.sendMessageToConversation(
         channel,
         generalInformationAboutUserToChannel(user, userGitLogin)

@@ -1,42 +1,21 @@
 package com.community.tools.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.util.Date;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import lombok.Data;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
+public enum TaskStatus {
 
-@Data
-@Entity
-public class TaskStatus {
+  UNDEFINED("undefined"),
+  PULL_REQUEST("pull request"),
+  READY_FOR_REVIEW("ready for review"),
+  CHANGES_REQUESTED("changes requested"),
+  DONE("done");
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long taskStatusID;
-  private String taskName;
-  private String taskStatus;
+  private final String description;
 
-  @ManyToOne
-  @JoinColumn(name = "userid")
-  @JsonIgnore
-  private User user;
+  TaskStatus(String description) {
+    this.description = description;
+  }
 
-
-
-  @CreatedDate
-  @Column(name = "created")
-  private Date created;
-
-  @LastModifiedDate
-  @Column(name = "updated")
-  private Date updated;
-
+  public String getDescription() {
+    return description;
+  }
 
 }

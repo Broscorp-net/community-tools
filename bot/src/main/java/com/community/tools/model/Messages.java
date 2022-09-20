@@ -3,6 +3,7 @@ package com.community.tools.model;
 import com.google.common.base.Splitter;
 import java.util.Map;
 import java.util.stream.Stream;
+import org.springframework.beans.factory.annotation.Value;
 
 public class Messages {
 
@@ -126,22 +127,9 @@ public class Messages {
     ESTIMATE_QUESTION_FIFTH
   };
 
+
   public static final String[] TASKS_FOR_USERS = {
-    "checkstyle",
-    "primitives",
-    "boxing",
-    "valueref",
-    "equals/hashcode",
-    "platform",
-    "bytecode",
-    "gc",
-    "exceptions",
-    "classpath",
-    "generics",
-    "inner/classes",
-    "override/overload",
-    "strings",
-    "gamelife"
+      "intro", "generics", "game-of-life", "gc-implementation"
   };
 
   public static final Map<String, String> POINTS_FOR_TASK =

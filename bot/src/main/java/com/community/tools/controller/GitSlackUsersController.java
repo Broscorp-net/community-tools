@@ -35,13 +35,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@Deprecated
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("app")
 public class GitSlackUsersController {
 
-  private final StateMachineService stateMachineService;
+  private StateMachineService stateMachineService;
   private final GitHubService gitService;
 
   @Autowired
@@ -122,5 +121,12 @@ public class GitSlackUsersController {
     }
     return new ResponseEntity<>("Action: " + action,
         HttpStatus.OK);
+  }
+
+  // setter injection is used to avoid circular dependency
+  // todo: figure out why StateMachineService is used here
+  @Autowired
+  public void setStateMachineService(StateMachineService stateMachineService) {
+    this.stateMachineService = stateMachineService;
   }
 }

@@ -10,7 +10,7 @@ import { LeaderboardComponent } from './components/leaderboard/leaderboard.compo
 import { RouterModule, Routes } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { TasksService } from './services/tasks.service';
-import { UsersService } from './services/users.service';
+import { LeaderboardService } from './services/leaderboard.service';
 
 const appRoutes: Routes = [
   {path: 'task-status', component: TaskStatusComponent},
@@ -30,7 +30,7 @@ const appRoutes: Routes = [
     HttpClientModule,
     RouterModule.forRoot(appRoutes)
   ],
-  providers: [TasksService, UsersService],
+  providers: [TasksService, LeaderboardService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -2,8 +2,8 @@ package com.community.tools.service.github;
 
 import com.community.tools.model.GitHubComment;
 import com.community.tools.model.User;
-import com.community.tools.service.github.jpa.MentorsRepository;
-import com.community.tools.util.statemachine.jpa.StateMachineRepository;
+import com.community.tools.repository.MentorsRepository;
+import com.community.tools.repository.UserRepository;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,14 +22,14 @@ import org.kohsuke.github.PagedIterable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-@Slf4j
 @Service
+@Slf4j
 public class KarmaService {
 
   @Autowired
   private GitHubConnectService service;
   @Autowired
-  private StateMachineRepository stateMachineRepository;
+  private UserRepository userRepository;
   @Autowired
   private MentorsRepository mentorsRepository;
 
@@ -41,11 +41,11 @@ public class KarmaService {
    */
   public void changeUserKarma(String traineeReviewer, int amountOfKarma) {
     log.info("Trainee {} gets {} points in karma", traineeReviewer, amountOfKarma);
-    if (stateMachineRepository.findByGitName(traineeReviewer).isPresent()
+    if (userRepository.findByGitName(traineeReviewer).isPresent()
             && !mentorsRepository.findByGitNick(traineeReviewer).isPresent()) {
-      User user = stateMachineRepository.findByGitName(traineeReviewer).get();
+      User user = userRepository.findByGitName(traineeReviewer).get();
       user.setKarma(user.getKarma() + amountOfKarma);
-      stateMachineRepository.save(user);
+      userRepository.save(user);
     }
   }
 

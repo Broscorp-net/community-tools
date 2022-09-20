@@ -3,8 +3,14 @@ package com.community.tools.model;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 @Entity
+@AllArgsConstructor
 @Table(name = "mentors")
 public class Mentors {
 
@@ -12,27 +18,6 @@ public class Mentors {
   private String gitNick;
   private String slackId;
 
-  public Mentors() {
-  }
+  public Mentors() {}
 
-  public Mentors(String gitNick, String slackId) {
-    this.gitNick = gitNick;
-    this.slackId = slackId;
-  }
-
-  public void setGitNick(String gitNick) {
-    this.gitNick = gitNick;
-  }
-
-  public void setSlackId(String slackId) {
-    this.slackId = slackId;
-  }
-
-  public String getGitNick() {
-    return gitNick;
-  }
-
-  public String getSlackId() {
-    return slackId;
-  }
 }
