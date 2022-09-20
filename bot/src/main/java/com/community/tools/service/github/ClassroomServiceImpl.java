@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.kohsuke.github.GHIssueState;
 import org.kohsuke.github.GHLabel;
 import org.kohsuke.github.GHOrganization;
@@ -34,6 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 public class ClassroomServiceImpl implements ClassroomService {
 
@@ -60,8 +62,8 @@ public class ClassroomServiceImpl implements ClassroomService {
    */
   @Autowired
   public ClassroomServiceImpl(GitHub gitHub,
-      @Value("${github.organizations.main}") String mainOrganizationName,
-      @Value("${github.organizations.traineeship}") String traineeshipOrganizationName,
+      @Value("${github.main-organization-name}") String mainOrganizationName,
+      @Value("${github.traineeship-organization-name}") String traineeshipOrganizationName,
       @Value("${github.teams.trainees}") String traineesTeamName,
       @Value("${github.workflows.classroom}") String classroomWorkflow,
       @Value("${github.labels.completed-task}") String completedTaskLabel,
@@ -78,13 +80,13 @@ public class ClassroomServiceImpl implements ClassroomService {
   }
 
   /**
-   * Adds user with passed GitHub login to the organization.
+   * Adds user with passed GitHub login to the organization's trainees team.
    *
    * @param gitName github login
    */
   @SneakyThrows
   @Override
-  public void addUserToOrganization(String gitName) {
+  public void addUserToTraineesTeam(String gitName) {
     GHUser user = gitHub.getUser(gitName);
 
     GHOrganization organization = gitHub.getMyOrganizations().get(mainOrganizationName);
@@ -139,8 +141,8 @@ public class ClassroomServiceImpl implements ClassroomService {
         .stream()
         .filter(entry -> repositoryNameService.isPrefixedWithTaskName(entry.getKey()))
         .map(entry -> {
+          GHRepository repository = entry.getValue();
           try {
-            GHRepository repository = entry.getValue();
             Date lastCommitDate = repository
                 .queryCommits()
                 .pageSize(1)
@@ -151,9 +153,11 @@ public class ClassroomServiceImpl implements ClassroomService {
 
             return new FetchedRepository(repository, lastCommitDate);
           } catch (IOException e) {
-            throw new RuntimeException(e);
+            log.warn("failed to fetch last commit date", e);
+            return new FetchedRepository(repository, null);
           }
         })
+        .filter(fetchedRepository -> fetchedRepository.getLastCommitDate() != null)
         .collect(groupingBy(fetchedRepository -> {
           ParsedRepositoryName parsedName = repositoryNameService.parseRepositoryName(
               fetchedRepository.getRepository().getName());
@@ -172,15 +176,12 @@ public class ClassroomServiceImpl implements ClassroomService {
         .map(this::buildGithubRepositoryDto)
         .collect(Collectors.toList());
 
-    int totalPoints = getTotalPoints(repositories);
-    int completedTasks = getCompletedTasks(repositories);
-
     return GithubUserDto.builder()
         .gitName(creatorGitName)
         .lastCommit(lastCommitDate)
         .repositories(repositories)
-        .totalPoints(totalPoints)
-        .completedTasks(completedTasks)
+        .totalPoints(getTotalPoints(repositories))
+        .completedTasks(getCompletedTasks(repositories))
         .build();
   }
 
@@ -197,10 +198,10 @@ public class ClassroomServiceImpl implements ClassroomService {
     return repositories
         .stream()
         .map(GithubRepositoryDto::getPoints)
+        .filter(points -> points >= 0)
         .reduce(0, Integer::sum);
   }
 
-  @SneakyThrows
   private GithubRepositoryDto buildGithubRepositoryDto(FetchedRepository fetchedRepository) {
     GHRepository repository = fetchedRepository.getRepository();
 
@@ -217,44 +218,59 @@ public class ClassroomServiceImpl implements ClassroomService {
         .lastBuildStatus(getLastBuildStatus(workflowRun))
         .labels(getLabels(repository))
         .points(getPoints(workflowRun))
-        .createdAt(convertToLocalDate(repository.getCreatedAt()))
+        .createdAt(getCreatedAt(repository))
         .updatedAt(convertToLocalDate(fetchedRepository.getLastCommitDate()))
         .build();
   }
 
-  @SneakyThrows
+  private GHWorkflowRun getWorkflowRun(GHRepository repository) {
+    try {
+      return repository
+          .getWorkflow(classroomWorkflow)
+          .listRuns()
+          .withPageSize(1)
+          .iterator()
+          .next();
+    } catch (IOException e) {
+      log.warn("failed to fetch workflow run", e);
+      return null;
+    }
+  }
+
   private String getLastBuildStatus(GHWorkflowRun workflowRun) {
+    if (workflowRun == null) {
+      return "";
+    }
+
     return workflowRun
         .getConclusion()
         .toString();
   }
 
-  @SneakyThrows
   private int getPoints(GHWorkflowRun workflowRun) {
-    return workflowRun
-        .listJobs()
-        .toList()
-        .get(0)
-        .downloadLogs(in -> new BufferedReader(new InputStreamReader(in)))
-        .lines()
-        .filter(line -> line.contains("Points"))
-        .map(line -> {
-          String[] lineSplit = line.split(" ");
-          String[] points = lineSplit[2].split("/");
-          return Integer.parseInt(points[0]);
-        })
-        .findFirst()
-        .orElse(0);
-  }
+    if (workflowRun == null) {
+      return -1;
+    }
 
-  @SneakyThrows
-  private GHWorkflowRun getWorkflowRun(GHRepository repository) {
-    return repository
-        .getWorkflow(classroomWorkflow)
-        .listRuns()
-        .withPageSize(1)
-        .iterator()
-        .next();
+    try {
+      return workflowRun
+          .listJobs()
+          .toList()
+          .get(0)
+          .downloadLogs(in -> new BufferedReader(new InputStreamReader(in)))
+          .lines()
+          .filter(line -> line.contains("Points"))
+          .map(line -> {
+            String[] lineSplit = line.split(" ");
+            String[] points = lineSplit[2].split("/");
+            return Integer.parseInt(points[0]);
+          })
+          .findFirst()
+          .orElse(0);
+    } catch (IOException e) {
+      log.warn("failed to fetch points from workflow run logs", e);
+      return -1;
+    }
   }
 
   private List<String> getLabels(GHRepository repository) {
@@ -271,7 +287,17 @@ public class ClassroomServiceImpl implements ClassroomService {
 
       return Collections.emptyList();
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      log.warn("failed to fetch labels", e);
+      return Collections.emptyList();
+    }
+  }
+
+  private LocalDate getCreatedAt(GHRepository repository) {
+    try {
+      return convertToLocalDate(repository.getCreatedAt());
+    } catch (IOException e) {
+      log.warn("failed to fetch repository creation date", e);
+      return null;
     }
   }
 

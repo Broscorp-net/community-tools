@@ -34,11 +34,8 @@ public class ClassroomServiceImplTest {
   @Autowired
   private ClassroomService classroomService;
 
-  @Value("${github.organizations.main}")
+  @Value("${github.main-organization-name}")
   private String mainOrganizationName;
-
-  @Value("${github.organizations.traineeship}")
-  private String traineeshipOrganizationName;
 
   @Value("${github.teams.trainees}")
   private String traineesTeamName;
@@ -63,7 +60,7 @@ public class ClassroomServiceImplTest {
     organizations.put(mainOrganizationName, ghOrganizationMock);
     when(gitHub.getMyOrganizations()).thenReturn(organizations);
 
-    classroomService.addUserToOrganization(userGitName);
+    classroomService.addUserToTraineesTeam(userGitName);
 
     verify(ghTeamMock).add(ghUserMock);
   }
