@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface ClassroomService {
 
-  void addUserToOrganization(String gitName);
+  void addUserToTraineesTeam(String gitName);
 
   List<GithubUserDto> getAllActiveUsers(Period period);
 

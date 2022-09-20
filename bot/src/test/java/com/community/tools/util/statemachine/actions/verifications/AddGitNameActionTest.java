@@ -96,7 +96,7 @@ public class AddGitNameActionTest {
     addGitNameAction.execute(stateContext);
 
     verify(stateContext, times(2)).getExtendedState();
-    verify(classroomService, times(1)).addUserToOrganization(payload.getGitNick());
+    verify(classroomService, times(1)).addUserToTraineesTeam(payload.getGitNick());
     verify(messageService, times(2)).getUserById("U0191K2V20K");
     verify(messageService, times(1)).sendMessageToConversation(anyString(), anyString());
     verify(messageService, times(1))
@@ -123,13 +123,13 @@ public class AddGitNameActionTest {
     when(stateContext.getExtendedState()).thenReturn(extendedState);
     when(extendedState.getVariables()).thenReturn(mockData);
     when(repository.findByUserID("U0191K2V20K")).thenReturn(Optional.of(entity));
-    doThrow(RuntimeException.class).when(classroomService).addUserToOrganization("likeRewca");
+    doThrow(RuntimeException.class).when(classroomService).addUserToTraineesTeam("likeRewca");
     when(messageService.getUserById("U0191K2V20K")).thenReturn("Горб Юра");
 
     addGitNameAction.execute(stateContext);
 
     verify(stateContext, times(2)).getExtendedState();
-    verify(classroomService, times(1)).addUserToOrganization("likeRewca");
+    verify(classroomService, times(1)).addUserToTraineesTeam("likeRewca");
     verify(messageService, times(3)).getUserById("U0191K2V20K");
     verify(messageService, times(1))
         .sendBlocksMessage("Горб Юра",

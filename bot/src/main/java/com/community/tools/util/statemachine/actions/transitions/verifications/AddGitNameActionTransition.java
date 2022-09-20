@@ -70,7 +70,7 @@ public class AddGitNameActionTransition implements Transition {
     String thirdAnswer = stateEntity.getThirdAnswerAboutRules();
     GHUser userGitLogin = new GHUser();
     try {
-      classroomService.addUserToOrganization(nickname);
+      classroomService.addUserToTraineesTeam(nickname);
       stateEntity.setEmail(userGitLogin.getEmail());
     } catch (Exception e) {
       messageService.sendBlocksMessage(
