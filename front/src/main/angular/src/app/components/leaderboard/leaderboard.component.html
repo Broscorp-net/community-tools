@@ -1,9 +1,7 @@
 <table class="table table-bordered">
     <thead>
         <tr>
-<!--            <th scope="col">SlackName or DiscordName</th>-->
             <th scope="col">GitName</th>
-<!--            <th scope="col">Date registration</th>-->
             <th scope="col">Date last activity</th>
             <th scope="col">Tasks done</th>
             <th scope="col">Points for tasks</th>
@@ -13,13 +11,11 @@
     </thead>
     <tbody>
         <tr *ngFor="let user of usersForLeaderboard;">
-<!--            <td>{{user.platformName}}</td>-->
             <td>{{user.gitName}}</td>
-<!--            <td>{{user.dateRegistration | date: 'dd/MM/yyyy'}}</td>-->
             <td>{{user.dateLastActivity | date: 'dd/MM/yyyy'}}</td>
             <td>{{user.completedTasks}}</td>
             <td>{{user.pointByTask}}</td>
-            <td>{{user.karma}}</td>
+            <td>{{user.karma || "No Data"}}</td>
             <td>{{user.totalPoints}}</td>
         </tr>
     </tbody>
