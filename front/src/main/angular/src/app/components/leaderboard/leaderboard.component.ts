@@ -3,7 +3,7 @@ import {UserForLeaderboard} from 'src/app/models/userForLeaderboard.model';
 import {LeaderboardService} from 'src/app/services/leaderboard.service';
 import {ActivatedRoute} from "@angular/router";
 import {environment} from "../../../environments/environment";
-import {UtilService} from "../../services/util.service";
+import {HttpParams} from "@angular/common/http";
 
 @Component({
   selector: 'app-leaderboard',
@@ -36,9 +36,9 @@ export class LeaderboardComponent implements OnInit {
   }
 
   private getUsers(rowLimit: number, daysFetch: number, sort: string): void {
-    let key = UtilService.getKey(`${environment.endpointMappingForLeaderboard}`,
+    let key = this.getKey(`${environment.endpointMappingForLeaderboard}`,
       rowLimit, daysFetch, sort);
-    if (UtilService.isStorageContainsValueByKey(key)) {
+    if (this.isStorageContainsValueByKey(key)) {
       // @ts-ignore
       this.usersForLeaderboard = JSON.parse(sessionStorage.getItem(key)) as UserForLeaderboard[];
     } else {
@@ -48,6 +48,28 @@ export class LeaderboardComponent implements OnInit {
           sessionStorage.setItem(key, JSON.stringify(data))
         });
     }
+  }
+
+  private isStorageContainsValueByKey(keyName: string): boolean {
+    let tmp = sessionStorage.getItem(keyName);
+    return tmp != null;
+  }
+
+  private getKey(endpoint: string, rowLimit: number, daysFetch: number, sort: string): string {
+    let queryParams = new HttpParams();
+    if (daysFetch != null) {
+      queryParams = queryParams.append(
+        `${environment.endpointParamForPeriodInDays}`, daysFetch);
+    }
+    if (rowLimit != null) {
+      queryParams = queryParams.append(
+        `${environment.endpointParamForLimitOfRows}`, rowLimit);
+    }
+    if (sort != null) {
+      queryParams = queryParams.append(
+        `${environment.endpointParamForSort}`, sort);
+    }
+    return endpoint + "?" + queryParams.toString();
   }
 
 }
