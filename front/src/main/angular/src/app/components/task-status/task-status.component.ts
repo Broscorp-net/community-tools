@@ -3,8 +3,8 @@ import {UserForTaskStatus} from 'src/app/models/userForTaskStatus.model';
 import {TasksService} from 'src/app/services/tasks.service';
 import {ActivatedRoute} from "@angular/router";
 import {UserTaskStatus} from "../../models/user-task-status.model";
-import {UtilService} from "../../services/util.service";
 import {environment} from "../../../environments/environment";
+import {HttpParams} from "@angular/common/http";
 
 @Component({
   selector: 'app-task-status',
@@ -61,9 +61,9 @@ export class TaskStatusComponent implements OnInit {
   }
 
   private getUsers(rowLimit: number, daysFetch: number, sort: string): void {
-    let key = UtilService.getKey(`${environment.endpointMappingForGetTaskStatuses}`,
+    let key = this.getKey(`${environment.endpointMappingForGetTaskStatuses}`,
       rowLimit, daysFetch, sort);
-    if (UtilService.isStorageContainsValueByKey(key)) {
+    if (this.isStorageContainsValueByKey(key)) {
       // @ts-ignore
       this.userForTaskStatuses = JSON.parse(sessionStorage.getItem(key)) as UserForTaskStatus[];
     } else {
@@ -73,6 +73,28 @@ export class TaskStatusComponent implements OnInit {
           sessionStorage.setItem(key,  JSON.stringify(data))
         });
     }
+  }
+
+  private isStorageContainsValueByKey(keyName: string): boolean {
+    let tmp = sessionStorage.getItem(keyName);
+    return tmp != null;
+  }
+
+  private getKey(endpoint: string, rowLimit: number, daysFetch: number, sort: string): string {
+    let queryParams = new HttpParams();
+    if (daysFetch != null) {
+      queryParams = queryParams.append(
+        `${environment.endpointParamForPeriodInDays}`, daysFetch);
+    }
+    if (rowLimit != null) {
+      queryParams = queryParams.append(
+        `${environment.endpointParamForLimitOfRows}`, rowLimit);
+    }
+    if (sort != null) {
+      queryParams = queryParams.append(
+        `${environment.endpointParamForSort}`, sort);
+    }
+    return endpoint + "?" + queryParams.toString();
   }
 
 }

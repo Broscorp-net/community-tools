@@ -5,7 +5,9 @@ import com.community.tools.dto.UserForLeaderboardDto;
 import com.community.tools.service.LeaderboardService;
 import java.time.Period;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -21,10 +23,21 @@ public class LeaderboardController {
   private Integer defaultNumberOfDays;
   @Value("${defaultRowLimit}")
   private Integer defaultUserLimit;
+  private final Map<String, Comparator<GithubUserDto>> comparators
+      = new HashMap<>();
   private final LeaderboardService leaderBoardService;
 
+
+  /**
+   * Constructor.
+   * @param leaderBoardService - Inject leaderBoardService
+   */
   public LeaderboardController(LeaderboardService leaderBoardService) {
     this.leaderBoardService = leaderBoardService;
+    comparators.put("DESC",
+        Comparator.comparingInt(GithubUserDto::getTotalPoints).reversed());
+    comparators.put("ASC",
+        Comparator.comparingInt(GithubUserDto::getTotalPoints));
   }
 
   /**
@@ -39,32 +52,16 @@ public class LeaderboardController {
       @RequestParam(required = false) Optional<Integer> limit,
       @RequestParam(required = false) Optional<Integer> days,
       @RequestParam(required = false) Optional<String> sort) {
-    Comparator<GithubUserDto> comparator = getComparatorForLeaderboardDesc();
 
-    if (sort.isPresent()) {
-      String tmp = sort.get();
-      if (tmp.equalsIgnoreCase("asc")) {
-        comparator = getComparatorForLeaderboardAsc();
-      } else if (tmp.equalsIgnoreCase("desc")) {
-        comparator = getComparatorForLeaderboardDesc();
-      } else {
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-      }
-    }
+    Comparator<GithubUserDto> comparator = comparators.getOrDefault(
+        sort.orElse("DESC").toUpperCase(),
+        Comparator.comparingInt(GithubUserDto::getCompletedTasks).reversed());
 
     return new ResponseEntity<>(
         leaderBoardService.getLeaderBoard(
             limit.orElse(defaultUserLimit),
             Period.ofDays(days.orElse(defaultNumberOfDays)),
             comparator), HttpStatus.OK);
-  }
-
-  private static Comparator<GithubUserDto> getComparatorForLeaderboardAsc() {
-    return Comparator.comparingInt(GithubUserDto::getTotalPoints);
-  }
-
-  private static Comparator<GithubUserDto> getComparatorForLeaderboardDesc() {
-    return Comparator.comparingInt(GithubUserDto::getTotalPoints).reversed();
   }
 
 }

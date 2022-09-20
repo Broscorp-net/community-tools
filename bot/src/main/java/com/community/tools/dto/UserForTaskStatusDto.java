@@ -8,11 +8,7 @@ import lombok.Data;
 @Data
 public class UserForTaskStatusDto {
 
-  //TODO fill this field
-  private final String platformName = null;
   private final String gitName;
-  //TODO fill this field
-  private final LocalDate dateRegistration = null;
   private final LocalDate dateLastActivity;
   private final Integer completedTasks;
   private final List<TaskNameAndStatus> taskStatuses;
