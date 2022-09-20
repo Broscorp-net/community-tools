@@ -41,6 +41,8 @@ public class TrackingService {
   @Autowired
   private EmailService emailService;
 
+  @Autowired private EmailService emailService;
+
   /**
    * Method to start the event by state.
    *
