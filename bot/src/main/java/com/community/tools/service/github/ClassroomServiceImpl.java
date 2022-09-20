@@ -80,13 +80,13 @@ public class ClassroomServiceImpl implements ClassroomService {
   }
 
   /**
-   * Adds user with passed GitHub login to the organization.
+   * Adds user with passed GitHub login to the organization's trainees team.
    *
    * @param gitName github login
    */
   @SneakyThrows
   @Override
-  public void addUserToOrganization(String gitName) {
+  public void addUserToTraineesTeam(String gitName) {
     GHUser user = gitHub.getUser(gitName);
 
     GHOrganization organization = gitHub.getMyOrganizations().get(mainOrganizationName);

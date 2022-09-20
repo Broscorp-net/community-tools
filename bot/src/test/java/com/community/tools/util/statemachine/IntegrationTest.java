@@ -274,7 +274,7 @@ class IntegrationTest {
 
     stateMachineService.doAction(machine, payload, Event.ADD_GIT_NAME_AND_FIRST_TASK);
 
-    verify(classroomService, times(1)).addUserToOrganization(firstArg.capture());
+    verify(classroomService, times(1)).addUserToTraineesTeam(firstArg.capture());
     assertEquals(USER_NAME, firstArg.getValue());
     verify(messageService, times(2)).getUserById(firstArg.capture());
     assertEquals(USER_ID, firstArg.getValue());

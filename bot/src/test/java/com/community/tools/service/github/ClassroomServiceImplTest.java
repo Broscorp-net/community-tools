@@ -60,7 +60,7 @@ public class ClassroomServiceImplTest {
     organizations.put(mainOrganizationName, ghOrganizationMock);
     when(gitHub.getMyOrganizations()).thenReturn(organizations);
 
-    classroomService.addUserToOrganization(userGitName);
+    classroomService.addUserToTraineesTeam(userGitName);
 
     verify(ghTeamMock).add(ghUserMock);
   }
