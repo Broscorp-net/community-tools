@@ -27,6 +27,11 @@ public class LeaderboardController {
       = new HashMap<>();
   private final LeaderboardService leaderBoardService;
 
+
+  /**
+   * Constructor.
+   * @param leaderBoardService - Inject leaderBoardService
+   */
   public LeaderboardController(LeaderboardService leaderBoardService) {
     this.leaderBoardService = leaderBoardService;
     comparators.put("DESC",

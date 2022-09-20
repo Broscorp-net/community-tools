@@ -31,6 +31,10 @@ public class TaskStatusController {
 
   private final TaskStatusService taskStatusService;
 
+  /**
+   * Constructor.
+   * @param taskStatusService - Inject taskStatusService
+   */
   public TaskStatusController(TaskStatusService taskStatusService) {
     this.taskStatusService = taskStatusService;
     comparators.put("DESC",
