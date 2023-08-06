@@ -1,14 +1,12 @@
 package com.community.tools.service.github;
 
+import com.community.tools.repository.MentorsRepository;
 import com.community.tools.service.MessageService;
 import com.community.tools.service.StateMachineService;
-import com.community.tools.service.github.jpa.MentorsRepository;
 import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
-
 import com.github.seratch.jslack.api.methods.SlackApiException;
 import java.io.IOException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.statemachine.StateMachine;
@@ -16,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class AddMentorService {
+
   @Value("${generalInformationChannel}")
   private String channel;
   @Autowired
@@ -37,14 +36,14 @@ public class AddMentorService {
       StateMachine<State, Event> machine = stateMachineService.restoreMachineByNick(creator);
       machine.getExtendedState().getVariables().put("mentor", mentor);
       stateMachineService
-              .persistMachine(machine, machine.getExtendedState()
-                      .getVariables().get("id").toString());
+          .persistMachine(machine, machine.getExtendedState()
+              .getVariables().get("id").toString());
     }
   }
 
   public boolean doesMentorExist(String user) {
     return !stateMachineService.restoreMachineByNick(user).getExtendedState().getVariables()
-            .get("mentor").equals("NO_MENTOR");
+        .get("mentor").equals("NO_MENTOR");
   }
 
   /**
@@ -56,11 +55,11 @@ public class AddMentorService {
   public void sendNotifyWithMentor(String user, String url) throws IOException, SlackApiException {
     messageService
         .sendMessageToConversation(channel, "User " + user
-         + " created a pull request \n url: " + url
-         + "\n Please check it : <@" + mentorsRepository
-           .findByGitNick(stateMachineService.restoreMachineByNick(user)
-             .getExtendedState().getVariables().get("mentor").toString())
-               .get().getSlackId() + ">");
+            + " created a pull request \n url: " + url
+            + "\n Please check it : <@" + mentorsRepository
+            .findByGitNick(stateMachineService.restoreMachineByNick(user)
+                .getExtendedState().getVariables().get("mentor").toString())
+            .get().getSlackId() + ">");
 
   }
 

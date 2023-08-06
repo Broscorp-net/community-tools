@@ -4,20 +4,20 @@ import com.community.tools.model.EventData;
 import com.community.tools.model.Messages;
 import com.community.tools.service.github.GitHubService;
 import com.github.seratch.jslack.api.methods.SlackApiException;
-
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+
+/**
+ * Must be refactored using new ClassroomService.
+ */
 @Component
 @RequiredArgsConstructor
 public class PublishWeekStatsService {
@@ -43,9 +43,9 @@ public class PublishWeekStatsService {
    * @throws SlackApiException SlackApiException
    * @throws IOException       IOException
    */
-  @Scheduled(cron = "0 0 0 * * MON")
+  //@Scheduled(cron = "0 0 0 * * MON")
   public void exportStat()
-          throws SlackApiException, IOException {
+      throws SlackApiException, IOException {
     Date endDate = new Date();
     Calendar cal = Calendar.getInstance();
     cal.add(Calendar.DATE, -7);
@@ -58,16 +58,17 @@ public class PublishWeekStatsService {
     } else {
       messageService.sendBlockMessageToConversation(channel,
           messageConstructor.createStatisticMessage(
-                  events));
+              events));
     }
   }
 
   /**
    * Publish message with link to trainee`s leaderboard and image (first 5 record of rating).
-   * @throws IOException IOException
+   *
+   * @throws IOException       IOException
    * @throws SlackApiException SlackApiException
    */
-  @Scheduled(cron = "0 10 0 * * MON")
+  //@Scheduled(cron = "0 10 0 * * MON")
   public void publishLeaderboard() throws IOException, SlackApiException {
     String url = urlServer + "leaderboard/";
     String date = LocalDate.now().toString();
@@ -80,7 +81,7 @@ public class PublishWeekStatsService {
   /**
    * Publish message with link to trainee`s tasks status and image (first 5 record of rating).
    */
-  @Scheduled(cron = "0 20 0 * * ?")
+  //@Scheduled(cron = "0 20 0 * * ?")
   public void publishTasksStatus() {
     String url = urlServer + "task-status";
     String date = LocalDate.now().toString();

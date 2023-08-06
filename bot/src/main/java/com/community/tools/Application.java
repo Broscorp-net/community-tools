@@ -1,15 +1,14 @@
 package com.community.tools;
 
-import static com.community.tools.util.ReadPropertyFromFile.readPropertiesFromFile;
-
-import java.util.HashMap;
+import com.community.tools.util.IoUtils;
+import java.util.Map;
 import java.util.Properties;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-@SpringBootApplication
 @EnableScheduling
+@SpringBootApplication
 public class Application {
 
   /**
@@ -32,9 +31,10 @@ public class Application {
    * @return Properties
    */
   private static Properties props() {
-    HashMap<String, String> prop = readPropertiesFromFile("property.txt");
+    Map<String, String> prop = IoUtils.readPropertiesFromFile("property.txt");
     Properties properties = new Properties();
     properties.putAll(prop);
     return properties;
   }
+
 }

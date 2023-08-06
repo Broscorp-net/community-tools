@@ -1,4 +1,4 @@
-package com.community.tools.util.statemachine.actions.guard;
+package com.community.tools.util.statemachine.guard;
 
 import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
@@ -16,6 +16,6 @@ public class LastTaskGuard implements Guard<State, Event> {
   @Override
   public boolean evaluate(StateContext<State, Event> stateContext) {
     return stateContext.getExtendedState().getVariables()
-            .get("taskNumber").equals(numberOfTasks - 1);
+        .get("taskNumber").equals(numberOfTasks - 1);
   }
 }
