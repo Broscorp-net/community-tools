@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.interactions.components.Button;
 import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
@@ -22,12 +23,10 @@ import org.springframework.stereotype.Service;
 @Profile("discord")
 public class DiscordService implements MessageService<MessageEmbed> {
 
-  private JDA jda;
+  private final Button buttonWithEmbed = Button.primary("buttonEmbed", "Button");
 
-  @Autowired
-  public DiscordService(JDA jda) {
-    this.jda = jda;
-  }
+  @Autowired private JDA jda;
+  @Autowired private DiscordMessagingService discordMessagingService;
 
   /**
    * Send private message with messageText to username.
@@ -52,13 +51,12 @@ public class DiscordService implements MessageService<MessageEmbed> {
    */
   @Override
   public void sendBlocksMessage(String username, MessageEmbed message) {
-    DiscordMessageService discordMessageService = new DiscordMessageService(jda);
     jda.getUserById(getIdByUsername(username))
         .openPrivateChannel()
         .queue(
             (channel) -> {
-              discordMessageService.sendDiscordMessage(
-                  channel.getId(), message, message.getFields());
+              discordMessagingService.sendDiscordMessage(
+                  channel.getId(), message, message.getFields(), buttonWithEmbed);
             });
   }
 
@@ -70,13 +68,12 @@ public class DiscordService implements MessageService<MessageEmbed> {
    */
   @Override
   public void sendAttachmentsMessage(String username, MessageEmbed message) {
-    DiscordMessageService discordMessageService = new DiscordMessageService(jda);
     jda.getUserById(getIdByUsername(username))
         .openPrivateChannel()
         .queue(
             (channel) -> {
-              discordMessageService.sendDiscordMessage(
-                  channel.getId(), message, message.getFields());
+              discordMessagingService.sendDiscordMessage(
+                  channel.getId(), message, message.getFields(), buttonWithEmbed);
             });
   }
 
@@ -100,8 +97,8 @@ public class DiscordService implements MessageService<MessageEmbed> {
   @Override
   public void sendBlockMessageToConversation(String channelName, MessageEmbed message) {
     TextChannel textChannel = jda.getTextChannelById(getIdByChannelName(channelName));
-    DiscordMessageService discordMessageService = new DiscordMessageService(jda);
-    discordMessageService.sendDiscordMessage(textChannel.getId(), message, message.getFields());
+    discordMessagingService.sendDiscordMessage(
+        textChannel.getId(), message, message.getFields(), buttonWithEmbed);
   }
 
   /**
@@ -189,5 +186,4 @@ public class DiscordService implements MessageService<MessageEmbed> {
         .filter(u -> u.getName() != null)
         .collect(Collectors.toMap(user -> user.getId(), user -> user.getName()));
   }
-
 }

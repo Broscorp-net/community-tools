@@ -17,17 +17,12 @@ import org.springframework.stereotype.Service;
 @Service
 @Data
 @Profile("discord")
-public class DiscordMessageService {
+public class DiscordMessagingService {
 
   private static final int MAX_CHARACTERS = 6000;
   private static final int MAX_MESSAGE_ELEMENTS = 25;
 
-  private JDA jda;
-
-  @Autowired
-  public DiscordMessageService(JDA jda) {
-    this.jda = jda;
-  }
+  @Autowired private JDA jda;
 
   /**
    * Sends a Discord message with embedded messages and a button in the specified text channel. If
@@ -35,22 +30,24 @@ public class DiscordMessageService {
    * part.
    *
    * @param channelId The identifier of the channel to send the message to.
-   * @param text The initial MessageEmbed to be sent.
+   * @param messageBody The initial MessageEmbed to be sent.
    * @param fields The list of fields for the message (supports MessageEmbed).
    */
-  protected void sendDiscordMessage(
-      String channelId, MessageEmbed text, List<MessageEmbed.Field> fields) {
+  public void sendDiscordMessage(
+      String channelId,
+      MessageEmbed messageBody,
+      List<MessageEmbed.Field> fields,
+      Button button) {
     TextChannel textChannel = jda.getTextChannelById(channelId);
 
-    Button button = Button.primary("buttonEmbed", "Button");
     List<MessageEmbed> messageChunks;
 
-    if (isCharacterLimitExceeded(text)) {
+    if (isCharacterLimitExceeded(messageBody)) {
       messageChunks = splitMessageByCharacterLimit(fields);
     } else if (fields.size() > MAX_MESSAGE_ELEMENTS) {
       messageChunks = splitMessageByFieldLimit(fields);
     } else {
-      sendEmbedWithButton(textChannel, text, button);
+      sendEmbedWithButton(textChannel, messageBody, button);
       return;
     }
 
@@ -74,8 +71,8 @@ public class DiscordMessageService {
   private List<MessageEmbed> splitMessageByFieldLimit(List<MessageEmbed.Field> fields) {
     List<MessageEmbed> messageChunks = new ArrayList<>();
 
-    for (int i = 0; i < fields.size(); i += 25) {
-      int endIndex = Math.min(i + 25, fields.size());
+    for (int i = 0; i < fields.size(); i += MAX_MESSAGE_ELEMENTS) {
+      int endIndex = Math.min(i + MAX_MESSAGE_ELEMENTS, fields.size());
       List<MessageEmbed.Field> chunkFields = fields.subList(i, endIndex);
       EmbedBuilder chunkBuilder = new EmbedBuilder();
       chunkFields.forEach(chunkBuilder::addField);
