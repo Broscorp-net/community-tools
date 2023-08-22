@@ -209,7 +209,7 @@ public class ClassroomServiceImpl implements ClassroomService {
    * @throws IOException If an I/O error occurs during the GitHub API calls.
    */
   @Scheduled(fixedRateString = "${millisecondsIntervalForClassroomParse}")
-  public void notificationHandler() throws IOException {
+  public void handleNotifications() throws IOException {
     Date currentTime = new Date();
 
     GHOrganization organization = gitHub.getMyOrganizations().get(traineeshipOrganizationName);

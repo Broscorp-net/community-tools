@@ -12,6 +12,6 @@ public interface ClassroomService {
 
   List<GithubUserDto> getAllActiveUsers(Period period);
 
-  void notificationHandler() throws IOException;
+  void handleNotifications() throws IOException;
 
 }
