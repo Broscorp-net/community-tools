@@ -22,7 +22,12 @@ import org.springframework.stereotype.Service;
 @Profile("discord")
 public class DiscordService implements MessageService<MessageEmbed> {
 
-  @Autowired private JDA jda;
+  private JDA jda;
+
+  @Autowired
+  public DiscordService(JDA jda) {
+    this.jda = jda;
+  }
 
   /**
    * Send private message with messageText to username.
@@ -47,11 +52,13 @@ public class DiscordService implements MessageService<MessageEmbed> {
    */
   @Override
   public void sendBlocksMessage(String username, MessageEmbed message) {
+    DiscordMessageService discordMessageService = new DiscordMessageService(jda);
     jda.getUserById(getIdByUsername(username))
         .openPrivateChannel()
         .queue(
             (channel) -> {
-              channel.sendMessage(message).queue();
+              discordMessageService.sendDiscordMessage(
+                  channel.getId(), message, message.getFields());
             });
   }
 
@@ -63,11 +70,13 @@ public class DiscordService implements MessageService<MessageEmbed> {
    */
   @Override
   public void sendAttachmentsMessage(String username, MessageEmbed message) {
+    DiscordMessageService discordMessageService = new DiscordMessageService(jda);
     jda.getUserById(getIdByUsername(username))
         .openPrivateChannel()
         .queue(
             (channel) -> {
-              channel.sendMessage(message).queue();
+              discordMessageService.sendDiscordMessage(
+                  channel.getId(), message, message.getFields());
             });
   }
 
@@ -90,7 +99,9 @@ public class DiscordService implements MessageService<MessageEmbed> {
    */
   @Override
   public void sendBlockMessageToConversation(String channelName, MessageEmbed message) {
-    jda.getTextChannelById(getIdByChannelName(channelName)).sendMessage(message).queue();
+    TextChannel textChannel = jda.getTextChannelById(getIdByChannelName(channelName));
+    DiscordMessageService discordMessageService = new DiscordMessageService(jda);
+    discordMessageService.sendDiscordMessage(textChannel.getId(), message, message.getFields());
   }
 
   /**
