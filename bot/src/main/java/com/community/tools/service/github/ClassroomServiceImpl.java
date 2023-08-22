@@ -11,9 +11,11 @@ import com.community.tools.model.TaskStatus;
 import com.community.tools.service.EmailService;
 import com.community.tools.service.github.util.RepositoryNameService;
 import com.community.tools.service.github.util.dto.ParsedRepositoryName;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.rmi.RemoteException;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneId;
@@ -22,6 +24,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -85,13 +88,13 @@ public class ClassroomServiceImpl implements ClassroomService {
    */
   @Autowired
   public ClassroomServiceImpl(GitHub gitHub,
-          @Value("${github.main-organization-name}") String mainOrganizationName,
-          @Value("${github.traineeship-organization-name}") String traineeshipOrganizationName,
-          @Value("${github.teams.trainees}") String traineesTeamName,
-          @Value("${github.workflows.classroom}") String classroomWorkflow,
-          @Value("${github.labels.completed-task}") String completedTaskLabel,
-          @Value("${github.pull-requests.default}") String defaultPullRequestName,
-          RepositoryNameService repositoryNameService) {
+           @Value("${github.main-organization-name}") String mainOrganizationName,
+           @Value("${github.traineeship-organization-name}") String traineeshipOrganizationName,
+           @Value("${github.teams.trainees}") String traineesTeamName,
+           @Value("${github.workflows.classroom}") String classroomWorkflow,
+           @Value("${github.labels.completed-task}") String completedTaskLabel,
+           @Value("${github.pull-requests.default}") String defaultPullRequestName,
+           RepositoryNameService repositoryNameService) {
 
     this.gitHub = gitHub;
     this.mainOrganizationName = mainOrganizationName;
@@ -228,42 +231,85 @@ public class ClassroomServiceImpl implements ClassroomService {
         Date lastCommitDate = lastCommit.getCommitDate();
 
         List<GHPullRequestReview> listReviews = pullRequest.listReviews().toList();
-        boolean hasReviewers = !listReviews.isEmpty();
+        GHPullRequestReview lastReview = listReviews.isEmpty() ? null :
+                listReviews.get(listReviews.size() - 1);
 
-        if (lastWorkflowConclusion == GHWorkflowRun.Conclusion.FAILURE) {
-          long dayInMillis = 24 * 60 * 60 * 1000;
-          if (containsLabel(repository, TaskStatus.READY_FOR_REVIEW.getDescription())
-                  && isOverTimeInterval(currentTime, lastCommitDate, dayInMillis)
-                  && !isOverTimeInterval(currentTime, lastCommitDate,
-                  dayInMillis + classroomMillisecondsInterval)) {
-            pullRequest.comment("Tasks with failed builds will not be reviewed.");
-            pullRequest.removeLabel(TaskStatus.READY_FOR_REVIEW.getDescription());
+        TaskStatus taskStatus = determineTaskStatus(lastWorkflowConclusion, repository,
+                listReviews, currentTime, lastCommitDate, lastReview);
+
+        processTaskStatus(repository, pullRequest, taskStatus, lastReview, lastCommit);
+      }
+    }
+  }
+
+  private TaskStatus determineTaskStatus(GHWorkflowRun.Conclusion lastWorkflowConclusion,
+                                         GHRepository repository,
+                                         List<GHPullRequestReview> listReviews,
+                                         Date currentTime, Date lastCommitDate,
+                                         GHPullRequestReview lastReview) throws IOException {
+
+    boolean hasReviewers = !listReviews.isEmpty();
+    if (lastWorkflowConclusion == GHWorkflowRun.Conclusion.FAILURE) {
+      long dayInMillis = 24 * 60 * 60 * 1000;
+      if (containsLabel(repository, TaskStatus.READY_FOR_REVIEW.getDescription())
+              && isOverTimeInterval(currentTime, lastCommitDate, dayInMillis)
+              && !isOverTimeInterval(currentTime, lastCommitDate,
+              dayInMillis + classroomMillisecondsInterval)) {
+        return TaskStatus.FAILURE;
+      }
+    } else if (containsLabel(repository, TaskStatus.READY_FOR_REVIEW.getDescription())
+            && !isOverTimeInterval(currentTime, lastCommitDate,
+            classroomMillisecondsInterval)) {
+      if (hasReviewers) {
+        if (lastReview.getState() != GHPullRequestReviewState.APPROVED) {
+          Date lastReviewDate = lastReview.getSubmittedAt();
+          if (lastReviewDate.compareTo(lastCommitDate) > 0) {
+            return TaskStatus.CHANGES_REQUESTED;
+          } else {
+            return TaskStatus.READY_FOR_REVIEW;
           }
         } else {
-          if (containsLabel(repository, TaskStatus.READY_FOR_REVIEW.getDescription())
-                  && !isOverTimeInterval(currentTime, lastCommitDate,
-                  classroomMillisecondsInterval)) {
-            String pullRequestLink = pullRequest.getHtmlUrl().toString();
-            if (hasReviewers) {
-              GHPullRequestReview lastReview = listReviews.get(listReviews.size() - 1);
-              if (lastReview.getState() != GHPullRequestReviewState.APPROVED) {
-                Date lastReviewDate = lastReview.getSubmittedAt();
-                if (lastReviewDate.compareTo(lastCommitDate) > 0) {
-                  pullRequest.removeLabel(TaskStatus.READY_FOR_REVIEW.getDescription());
-                  pullRequest.addLabels(TaskStatus.CHANGES_REQUESTED.getDescription());
-                } else if (isEmailEnabled) {
-                  sendNewCommitEmail(lastReview.getUser(), lastCommit, pullRequestLink);
-                }
-              } else {
-                removeAllLabels(repository);
-                pullRequest.addLabels(TaskStatus.DONE.getDescription());
-              }
-            } else {
-              sendReviewToDiscord(pullRequestLink);
-            }
+          return TaskStatus.DONE;
+        }
+      } else {
+        return TaskStatus.NEW;
+      }
+    }
+    return TaskStatus.UNDEFINED;
+  }
+
+  private void processTaskStatus(GHRepository repository, GHPullRequest pullRequest,
+                                 TaskStatus taskStatus, GHPullRequestReview lastReview,
+                                 GHCommit lastCommit) throws IOException {
+
+    switch (taskStatus) {
+      case FAILURE:
+        pullRequest.comment("Tasks with failed builds will not be reviewed.");
+        pullRequest.removeLabel(TaskStatus.READY_FOR_REVIEW.getDescription());
+        break;
+      case NEW:
+        sendReviewToDiscord(pullRequest.getHtmlUrl().toString());
+        break;
+      case READY_FOR_REVIEW:
+        if (isEmailEnabled) {
+          try {
+            sendNewCommitEmail(lastReview.getUser(), lastCommit,
+                    pullRequest.getHtmlUrl().toString());
+          } catch (NullPointerException e) {
+            throw new RemoteException("No reviewer found");
           }
         }
-      }
+        break;
+      case CHANGES_REQUESTED:
+        pullRequest.removeLabel(TaskStatus.READY_FOR_REVIEW.getDescription());
+        pullRequest.addLabels(TaskStatus.CHANGES_REQUESTED.getDescription());
+        break;
+      case DONE:
+        removeAllLabels(repository);
+        pullRequest.addLabels(TaskStatus.DONE.getDescription());
+        break;
+      default:
+        break;
     }
   }
 
