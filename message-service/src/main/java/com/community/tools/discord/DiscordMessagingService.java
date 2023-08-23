@@ -22,7 +22,8 @@ public class DiscordMessagingService {
   private static final int MAX_CHARACTERS = 6000;
   private static final int MAX_MESSAGE_ELEMENTS = 25;
 
-  @Autowired private JDA jda;
+  @Autowired
+  private JDA jda;
 
   /**
    * Sends a Discord message with embedded messages and a button in the specified text channel. If

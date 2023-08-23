@@ -25,8 +25,10 @@ public class DiscordService implements MessageService<MessageEmbed> {
 
   private final Button buttonWithEmbed = Button.primary("buttonEmbed", "Button");
 
-  @Autowired private JDA jda;
-  @Autowired private DiscordMessagingService discordMessagingService;
+  @Autowired
+  private JDA jda;
+  @Autowired
+  private DiscordMessagingService discordMessagingService;
 
   /**
    * Send private message with messageText to username.
