@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.interactions.components.Button;
 import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
@@ -22,7 +23,12 @@ import org.springframework.stereotype.Service;
 @Profile("discord")
 public class DiscordService implements MessageService<MessageEmbed> {
 
-  @Autowired private JDA jda;
+  private final Button buttonWithEmbed = Button.primary("buttonEmbed", "Button");
+
+  @Autowired
+  private JDA jda;
+  @Autowired
+  private DiscordMessagingService discordMessagingService;
 
   /**
    * Send private message with messageText to username.
@@ -51,7 +57,8 @@ public class DiscordService implements MessageService<MessageEmbed> {
         .openPrivateChannel()
         .queue(
             (channel) -> {
-              channel.sendMessage(message).queue();
+              discordMessagingService.sendDiscordMessage(
+                  channel.getId(), message, message.getFields(), buttonWithEmbed);
             });
   }
 
@@ -67,7 +74,8 @@ public class DiscordService implements MessageService<MessageEmbed> {
         .openPrivateChannel()
         .queue(
             (channel) -> {
-              channel.sendMessage(message).queue();
+              discordMessagingService.sendDiscordMessage(
+                  channel.getId(), message, message.getFields(), buttonWithEmbed);
             });
   }
 
@@ -90,7 +98,9 @@ public class DiscordService implements MessageService<MessageEmbed> {
    */
   @Override
   public void sendBlockMessageToConversation(String channelName, MessageEmbed message) {
-    jda.getTextChannelById(getIdByChannelName(channelName)).sendMessage(message).queue();
+    TextChannel textChannel = jda.getTextChannelById(getIdByChannelName(channelName));
+    discordMessagingService.sendDiscordMessage(
+        textChannel.getId(), message, message.getFields(), buttonWithEmbed);
   }
 
   /**
@@ -178,5 +188,4 @@ public class DiscordService implements MessageService<MessageEmbed> {
         .filter(u -> u.getName() != null)
         .collect(Collectors.toMap(user -> user.getId(), user -> user.getName()));
   }
-
 }
