@@ -19,10 +19,7 @@ import java.rmi.RemoteException;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneId;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import lombok.AllArgsConstructor;
@@ -191,6 +188,66 @@ public class ClassroomServiceImpl implements ClassroomService {
               return parsedName.getCreatorGitName();
             }));
   }
+
+    @SneakyThrows
+    public List<GithubUserDto> getAllActiveUsersForDiscord(Period period) {
+        GHOrganization organization = gitHub
+                .getMyOrganizations()
+                .get(traineeshipOrganizationName);
+
+        Date startDate = convertToDate(LocalDate
+                .now()
+                .minus(period));
+        return fetchAllUserRepositoriesForDiscord(organization, startDate);
+    }
+
+    private List<GithubUserDto> fetchAllUserRepositoriesForDiscord(GHOrganization organization, Date startDate)
+            throws IOException {
+        Map<String, GHRepository> repos = organization.getRepositories();
+
+        Map<String, GithubUserDto> ghRepositoryMap = repos.values().stream().filter(repo -> {
+            return repositoryNameService.isPrefixedWithTaskName(repo.getName())
+                    && isValidCommitDate(repo, startDate);
+        }).collect(Collectors.toMap(repo -> {
+                    ParsedRepositoryName parsedRepositoryName = repositoryNameService.parseRepositoryName(repo.getName());
+                    String name = parsedRepositoryName.getCreatorGitName();
+                    return name;
+                },
+                repo -> {
+                    String repositoryName = repo.getName();
+                    ParsedRepositoryName parsedRepositoryName =
+                            repositoryNameService.parseRepositoryName(repo.getName());
+                    GHWorkflowRun workflowRun = getWorkflowRun(repo);
+                    GithubRepositoryDto repoDto = GithubRepositoryDto.builder()
+                            .repositoryName(repositoryName)
+                            .taskName(parsedRepositoryName.getTaskName())
+                            .lastBuildStatus(getLastBuildStatus(workflowRun))
+                            .labels(getLabels(repo))
+                            .createdAt(getCreatedAt(repo))
+                            .build();
+                    List<GithubRepositoryDto> repositories = new ArrayList<>();
+                    repositories.add(repoDto);
+                    log.info("Adding new repoDto " + repoDto.getRepositoryName());
+                    return GithubUserDto.builder().gitName(parsedRepositoryName.getCreatorGitName()).repositories(repositories).build();
+                },
+                (existing, repo) -> {
+                    log.info("Adding new colliding repo for name " + existing.getGitName() + "; repository " + repo.getRepositories().get(0).getRepositoryName());
+                    existing.getRepositories().add(repo.getRepositories().get(0));
+                    return existing;
+                }));
+        List<GithubUserDto> githubUserList = new ArrayList<>(ghRepositoryMap.values());
+        return githubUserList;
+    }
+
+    private boolean isValidCommitDate(GHRepository repository, Date startDate) {
+        try {
+            Iterator<GHCommit> iterator = repository.queryCommits().pageSize(1).list().iterator();
+            return iterator.hasNext() && repositoryNameService.isPrefixedWithTaskName(repository.getName())
+                    && iterator.next().getCommitDate().after(startDate);
+        } catch (IOException e) {
+            return false;
+        }
+    }
 
   /**
    * Scheduled method to handle notifications and review requests

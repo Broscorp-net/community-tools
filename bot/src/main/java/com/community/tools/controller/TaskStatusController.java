@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.PostConstruct;
+
 @RestController
 public class TaskStatusController {
 
@@ -61,10 +63,15 @@ public class TaskStatusController {
         Comparator.comparingInt(GithubUserDto::getCompletedTasks).reversed());
 
     return new ResponseEntity<>(
-        taskStatusService.getTaskStatuses(
+      taskStatusService.getTaskStatuses(
             Period.ofDays(days.orElse(defaultNumberOfDays)),
             limit.orElse(defaultUserLimit),
             comparator), HttpStatus.OK);
+  }
+
+  @PostConstruct
+  public void doZaebis() {
+    getTaskStatuses(Optional.of(100), Optional.of(30), Optional.of("desc"));
   }
 
   /**
