@@ -190,7 +190,7 @@ public class ClassroomServiceImpl implements ClassroomService {
   }
 
     @SneakyThrows
-    public List<GithubUserDto> getAllActiveUsersForDiscord(Period period) {
+    public List<GithubUserDto> getAllActiveUsersForHallOfFame(Period period) {
         GHOrganization organization = gitHub
                 .getMyOrganizations()
                 .get(traineeshipOrganizationName);
@@ -198,10 +198,10 @@ public class ClassroomServiceImpl implements ClassroomService {
         Date startDate = convertToDate(LocalDate
                 .now()
                 .minus(period));
-        return fetchAllUserRepositoriesForDiscord(organization, startDate);
+        return fetchAllUserRepositoriesForHallOfFame(organization, startDate);
     }
 
-    private List<GithubUserDto> fetchAllUserRepositoriesForDiscord(GHOrganization organization, Date startDate)
+    private List<GithubUserDto> fetchAllUserRepositoriesForHallOfFame(GHOrganization organization, Date startDate)
             throws IOException {
         Map<String, GHRepository> repos = organization.getRepositories();
 
