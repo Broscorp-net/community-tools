@@ -27,7 +27,7 @@ public class DiscordMessagingService {
 
   /**
    * Splits and sends an EmbedBuilder's content to a text channel with the option to include a
-   * Button.
+   * Button. If the content exceeds character or field limits, it is divided into smaller messages.
    *
    * @param channelId The ID of the target text channel.
    * @param embedBuilder The EmbedBuilder containing the message's embedded content.
@@ -35,7 +35,9 @@ public class DiscordMessagingService {
    */
   public void splitAndSendEmbed(String channelId, EmbedBuilder embedBuilder, Button button) {
     TextChannel textChannel = jda.getTextChannelById(channelId);
-    if (isEmbedBuilderTooLarge(embedBuilder)) {
+
+    if (isEmbedBuilderTooLarge(embedBuilder)
+        || embedBuilder.getFields().size() > MAX_MESSAGE_ELEMENTS) {
       List<EmbedBuilder> embedChunks = splitEmbedBuilder(embedBuilder);
 
       for (int i = 0; i < embedChunks.size(); i++) {
@@ -90,7 +92,7 @@ public class DiscordMessagingService {
   }
 
   /**
-   * Splits an EmbedBuilder into multiple EmbedBuilders to fit within message size limits.
+   * Splits an EmbedBuilder into multiple smaller EmbedBuilders to fit within message size limits.
    *
    * @param embedBuilder The original EmbedBuilder to split.
    * @return A list of smaller EmbedBuilders.
@@ -102,23 +104,26 @@ public class DiscordMessagingService {
 
     StringBuilder currentDescription = new StringBuilder(embedBuilder.getDescriptionBuilder());
 
-    for (MessageEmbed.Field field : embedBuilder.getFields()) {
+    List<MessageEmbed.Field> fields = new ArrayList<>(embedBuilder.getFields());
+    int currentCharCount = currentDescription.length();
+
+    for (MessageEmbed.Field field : fields) {
       String fieldName = field.getName();
       String fieldValue = field.getValue();
-
       int fieldSize = fieldName.length() + fieldValue.length();
 
       if (currentChunk.getFields().size() >= MAX_MESSAGE_ELEMENTS
-          || currentDescription.length() + fieldSize > MAX_CHARACTERS) {
+          || currentCharCount + fieldSize > MAX_CHARACTERS) {
         embedChunks.add(currentChunk);
         currentChunk = new EmbedBuilder(embedBuilder);
         currentChunk.clearFields();
-
         currentDescription = new StringBuilder(embedBuilder.getDescriptionBuilder());
+        currentCharCount = currentDescription.length();
       }
 
       currentChunk.addField(fieldName, fieldValue, field.isInline());
       currentDescription.append(fieldName).append(fieldValue);
+      currentCharCount += fieldSize;
     }
 
     if (!currentChunk.getFields().isEmpty()) {
