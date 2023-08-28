@@ -24,6 +24,7 @@ import com.community.tools.model.User;
 import com.community.tools.repository.UserRepository;
 import com.community.tools.service.MessageService;
 import com.community.tools.service.StateMachineService;
+import com.community.tools.service.StatisticsService;
 import com.community.tools.service.github.ClassroomService;
 import com.community.tools.service.github.GitHubConnectService;
 import com.community.tools.service.github.GitHubService;
@@ -107,6 +108,9 @@ class IntegrationTest {
 
   @MockBean
   private ClassroomService classroomService;
+
+  @MockBean
+  private StatisticsService statisticsService;
 
   @Mock
   private GHUser user;
