@@ -16,5 +16,6 @@ public class GithubRepositoryDto {
   private final int points;
   private final LocalDate createdAt;
   private final LocalDate updatedAt;
+  private final String pullUrl;
 
 }

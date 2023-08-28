@@ -30,6 +30,15 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.kohsuke.github.GHCommit;
 import org.kohsuke.github.GHIssueState;
 import org.kohsuke.github.GHLabel;
@@ -285,7 +294,8 @@ public class ClassroomServiceImpl implements ClassroomService {
     switch (taskStatus) {
       case FAILURE:
         pullRequest.comment("Tasks with failed builds will not be reviewed.");
-        pullRequest.removeLabel(TaskStatus.READY_FOR_REVIEW.getDescription());
+        removeAllLabels(repository);
+        pullRequest.addLabels(TaskStatus.FAILURE.getDescription());
         break;
       case NEW:
         sendReviewToDiscord(pullRequest.getHtmlUrl().toString());
@@ -293,15 +303,20 @@ public class ClassroomServiceImpl implements ClassroomService {
       case READY_FOR_REVIEW:
         if (isEmailEnabled) {
           try {
-            sendNewCommitEmail(lastReview.getUser(), lastCommit,
-                    pullRequest.getHtmlUrl().toString());
+            String reviewerEmail = getGitHubUserEmail(lastReview.getUser().getLogin());
+            if (reviewerEmail != null) {
+              sendNewCommitEmail(lastReview.getUser(), lastCommit,
+                      pullRequest.getHtmlUrl().toString(), reviewerEmail);
+            } else {
+              log.warn("Reviewer email not found");
+            }
           } catch (NullPointerException e) {
-            throw new RemoteException("No reviewer found");
+            throw new RemoteException("Error sending email");
           }
         }
         break;
       case CHANGES_REQUESTED:
-        pullRequest.removeLabel(TaskStatus.READY_FOR_REVIEW.getDescription());
+        removeAllLabels(repository);
         pullRequest.addLabels(TaskStatus.CHANGES_REQUESTED.getDescription());
         break;
       case DONE:
@@ -343,17 +358,44 @@ public class ClassroomServiceImpl implements ClassroomService {
   }
 
   private void sendNewCommitEmail(GHUser reviewer, GHCommit commit,
-                                  String requestLink) throws IOException {
+                                  String requestLink, String reviewerEmail)
+          throws IOException {
     String mailText = "Hi, " + reviewer.getLogin()
             + "! New commit is ready for review. <br/><br/>"
             + "Link: " + requestLink + "<br/>"
-            + "Author: " + commit.getAuthor().getName() + "<br/>"
+            + "Author: " + commit.getAuthor().getLogin() + "<br/>"
             + "Date: " + commit.getCommitDate();
     emailService.sendEmail(EmailBuild.builder()
-            .userEmail(reviewer.getEmail())
+            .userEmail(reviewerEmail)
             .subject("Check New Commit")
             .text(mailText)
             .build());
+  }
+
+  private String getGitHubUserEmail(String username) throws IOException {
+    String apiUrl = String.format("https://api.github.com/users/%s/events/public", username);
+
+    CloseableHttpClient httpClient = HttpClients.createDefault();
+    HttpGet httpGet = new HttpGet(apiUrl);
+
+    try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
+      HttpEntity entity = response.getEntity();
+      if (entity != null) {
+        String jsonResponse = EntityUtils.toString(entity);
+        JSONArray events = new JSONArray(jsonResponse);
+
+        for (int i = 0; i < events.length(); i++) {
+          JSONObject event = events.getJSONObject(i);
+          if ("PushEvent".equals(event.getString("type"))) {
+            JSONArray commits = event.getJSONObject("payload").getJSONArray("commits");
+            JSONObject commit = commits.getJSONObject(0);
+            JSONObject author = commit.getJSONObject("author");
+            return author.getString("email");
+          }
+        }
+      }
+    }
+    return null;
   }
 
   private GithubUserDto buildGithubUserDto(String creatorGitName,
@@ -411,7 +453,22 @@ public class ClassroomServiceImpl implements ClassroomService {
             .points(getPoints(workflowRun))
             .createdAt(getCreatedAt(repository))
             .updatedAt(convertToLocalDate(fetchedRepository.getLastCommitDate()))
+            .pullUrl(getLastPullUrl(repository))
             .build();
+  }
+
+  private String getLastPullUrl(GHRepository repository) {
+    try {
+      List<GHPullRequest> allPullRequests = repository.getPullRequests(GHIssueState.ALL);
+
+      if (!allPullRequests.isEmpty()) {
+        GHPullRequest lastPullRequest = allPullRequests.get(allPullRequests.size() - 1);
+        return lastPullRequest.getHtmlUrl().toString();
+      }
+    } catch (IOException e) {
+      log.warn("failed to fetch pull url", e);
+    }
+    return null;
   }
 
   private GHWorkflowRun getWorkflowRun(GHRepository repository) {
