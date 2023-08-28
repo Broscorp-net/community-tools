@@ -19,140 +19,133 @@ import org.springframework.stereotype.Service;
 @Profile("discord")
 public class DiscordMessagingService {
 
-  private static final int MAX_CHARACTERS = 6000;
+  private static final int MAX_CHARACTERS = 3500;
   private static final int MAX_MESSAGE_ELEMENTS = 25;
 
   @Autowired
   private JDA jda;
 
   /**
-   * Sends a Discord message with embedded messages and a button in the specified text channel. If
-   * the message is too long and gets split into multiple parts, the button is added to the last
-   * part.
+   * Splits and sends an EmbedBuilder's content to a text channel with the option to include a
+   * Button.
    *
-   * @param channelId The identifier of the channel to send the message to.
-   * @param messageBody The initial MessageEmbed to be sent.
-   * @param fields The list of fields for the message (supports MessageEmbed).
+   * @param channelId The ID of the target text channel.
+   * @param embedBuilder The EmbedBuilder containing the message's embedded content.
+   * @param button The Button to include in the last message chunk, or null if no button is needed.
    */
-  public void sendDiscordMessage(
-      String channelId,
-      MessageEmbed messageBody,
-      List<MessageEmbed.Field> fields,
-      Button button) {
+  public void splitAndSendEmbed(String channelId, EmbedBuilder embedBuilder, Button button) {
     TextChannel textChannel = jda.getTextChannelById(channelId);
+    if (isEmbedBuilderTooLarge(embedBuilder)) {
+      List<EmbedBuilder> embedChunks = splitEmbedBuilder(embedBuilder);
 
-    List<MessageEmbed> messageChunks;
-
-    if (isCharacterLimitExceeded(messageBody)) {
-      messageChunks = splitMessageByCharacterLimit(fields);
-    } else if (fields.size() > MAX_MESSAGE_ELEMENTS) {
-      messageChunks = splitMessageByFieldLimit(fields);
-    } else {
-      sendEmbedWithButton(textChannel, messageBody, button);
-      return;
-    }
-
-    for (int i = 0; i < messageChunks.size(); i++) {
-      MessageEmbed chunk = messageChunks.get(i);
-      if (i == messageChunks.size() - 1) {
-        sendEmbedWithButton(textChannel, chunk, button);
-      } else {
-        textChannel.sendMessageEmbeds(chunk).queue();
-      }
-    }
-  }
-
-  /**
-   * Splits a list of message fields into multiple parts with consideration for the field limit
-   * (25).
-   *
-   * @param fields The list of message fields.
-   * @return A list of message parts, each containing up to 25 fields.
-   */
-  private List<MessageEmbed> splitMessageByFieldLimit(List<MessageEmbed.Field> fields) {
-    List<MessageEmbed> messageChunks = new ArrayList<>();
-
-    for (int i = 0; i < fields.size(); i += MAX_MESSAGE_ELEMENTS) {
-      int endIndex = Math.min(i + MAX_MESSAGE_ELEMENTS, fields.size());
-      List<MessageEmbed.Field> chunkFields = fields.subList(i, endIndex);
-      EmbedBuilder chunkBuilder = new EmbedBuilder();
-      chunkFields.forEach(chunkBuilder::addField);
-      messageChunks.add(chunkBuilder.build());
-    }
-
-    return messageChunks;
-  }
-
-  /**
-   * Splits a list of message fields into multiple parts with consideration for the character limit.
-   *
-   * @param fields The list of message fields.
-   * @return A list of message parts, each fitting within the character limit.
-   */
-  private List<MessageEmbed> splitMessageByCharacterLimit(List<MessageEmbed.Field> fields) {
-    List<MessageEmbed> messageChunks = new ArrayList<>();
-    EmbedBuilder currentChunk = new EmbedBuilder();
-    int fieldCount = 0;
-    int characterCount = 0;
-
-    for (MessageEmbed.Field field : fields) {
-      if (fieldCount >= MAX_MESSAGE_ELEMENTS
-          || characterCount + field.toString().length() > MAX_CHARACTERS) {
-        messageChunks.add(currentChunk.build());
-        currentChunk.clearFields();
-        fieldCount = 0;
-        characterCount = 0;
-      }
-
-      if (field.toString().length() > MAX_CHARACTERS) {
-        String fieldValue = field.toString();
-        while (fieldValue.length() > MAX_CHARACTERS) {
-          currentChunk.addField(
-              field.getName(), fieldValue.substring(0, MAX_CHARACTERS), field.isInline());
-          messageChunks.add(currentChunk.build());
-          currentChunk.clearFields();
-          fieldCount = 0;
-          fieldValue = fieldValue.substring(MAX_CHARACTERS);
-          characterCount = 0;
+      for (int i = 0; i < embedChunks.size(); i++) {
+        EmbedBuilder chunk = embedChunks.get(i);
+        if (i == embedChunks.size() - 1 && button != null) {
+          sendEmbedWithButton(textChannel, chunk.build(), button);
+        } else {
+          sendEmbed(textChannel, chunk.build());
         }
-        currentChunk.addField(field.getName(), fieldValue, field.isInline());
-      } else {
-        currentChunk.addField(field);
+      }
+    } else {
+      sendEmbedWithButton(textChannel, embedBuilder.build(), button);
+    }
+  }
+
+  /**
+   * Checks if an EmbedBuilder's content is too large to send in a single message.
+   *
+   * @param embedBuilder The EmbedBuilder to check.
+   * @return True if the content is too large, otherwise false.
+   */
+  private boolean isEmbedBuilderTooLarge(EmbedBuilder embedBuilder) {
+    try {
+      int totalCharacterCount = calculateEmbedLength(embedBuilder);
+
+      return totalCharacterCount > MAX_CHARACTERS;
+    } catch (Exception e) {
+      return true;
+    }
+  }
+
+  /**
+   * Calculates the length of an EmbedBuilder's content in characters.
+   *
+   * @param embedBuilder The EmbedBuilder to calculate the length for.
+   * @return The total character count.
+   */
+  private int calculateEmbedLength(EmbedBuilder embedBuilder) {
+    int length = 0;
+
+    length += embedBuilder.getDescriptionBuilder().length();
+
+    if (embedBuilder.build().getFooter() != null) {
+      length += embedBuilder.build().getFooter().getText().length();
+    }
+
+    for (MessageEmbed.Field field : embedBuilder.getFields()) {
+      length += field.getName().length() + field.getValue().length();
+    }
+
+    return length;
+  }
+
+  /**
+   * Splits an EmbedBuilder into multiple EmbedBuilders to fit within message size limits.
+   *
+   * @param embedBuilder The original EmbedBuilder to split.
+   * @return A list of smaller EmbedBuilders.
+   */
+  private List<EmbedBuilder> splitEmbedBuilder(EmbedBuilder embedBuilder) {
+    List<EmbedBuilder> embedChunks = new ArrayList<>();
+    EmbedBuilder currentChunk = new EmbedBuilder(embedBuilder);
+    currentChunk.clearFields();
+
+    StringBuilder currentDescription = new StringBuilder(embedBuilder.getDescriptionBuilder());
+
+    for (MessageEmbed.Field field : embedBuilder.getFields()) {
+      String fieldName = field.getName();
+      String fieldValue = field.getValue();
+
+      int fieldSize = fieldName.length() + fieldValue.length();
+
+      if (currentChunk.getFields().size() >= MAX_MESSAGE_ELEMENTS
+          || currentDescription.length() + fieldSize > MAX_CHARACTERS) {
+        embedChunks.add(currentChunk);
+        currentChunk = new EmbedBuilder(embedBuilder);
+        currentChunk.clearFields();
+
+        currentDescription = new StringBuilder(embedBuilder.getDescriptionBuilder());
       }
 
-      fieldCount++;
-      characterCount += field.toString().length();
+      currentChunk.addField(fieldName, fieldValue, field.isInline());
+      currentDescription.append(fieldName).append(fieldValue);
     }
 
-    if (fieldCount > 0) {
-      messageChunks.add(currentChunk.build());
+    if (!currentChunk.getFields().isEmpty()) {
+      embedChunks.add(currentChunk);
     }
 
-    return messageChunks;
+    return embedChunks;
   }
 
   /**
-   * Checks if the character limit for a message is exceeded.
+   * Sends an Embed with a Button to a text channel.
    *
-   * @param message The message with fields to check.
-   * @return true if the limit is exceeded, false otherwise.
-   */
-  private boolean isCharacterLimitExceeded(MessageEmbed message) {
-    int totalCharacterCount = 0;
-    for (MessageEmbed.Field field : message.getFields()) {
-      totalCharacterCount += field.getValue().length();
-    }
-    return totalCharacterCount > MAX_CHARACTERS;
-  }
-
-  /**
-   * Sends a Discord message with an embedded message and a button in the specified text channel.
-   *
-   * @param textChannel The TextChannel where the message should be sent.
-   * @param embed The MessageEmbed to include in the message.
-   * @param button The Button to be added to the message.
+   * @param textChannel The target text channel.
+   * @param embed The Embed to send.
+   * @param button The Button to include.
    */
   private void sendEmbedWithButton(TextChannel textChannel, MessageEmbed embed, Button button) {
     textChannel.sendMessageEmbeds(embed).setActionRows(ActionRow.of(button)).queue();
+  }
+
+  /**
+   * Sends an Embed to a text channel.
+   *
+   * @param textChannel The target text channel.
+   * @param embed The Embed to send.
+   */
+  private void sendEmbed(TextChannel textChannel, MessageEmbed embed) {
+    textChannel.sendMessageEmbeds(embed).queue();
   }
 }
