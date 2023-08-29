@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.Compression;
@@ -46,6 +47,9 @@ public class DiscordConfig {
           .setActivity(Activity.playing("Discord"))
           .addEventListeners(discordEventListener)
           .build();
+      jda.updateCommands()
+              .addCommands(new CommandData("statistic", "Показать статистику"))
+              .queue();
       jda.awaitReady();
       return jda;
     } catch (LoginException | InterruptedException exception) {
