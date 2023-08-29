@@ -16,6 +16,7 @@ import java.util.Set;
 
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import net.dv8tion.jda.api.EmbedBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -73,6 +74,9 @@ public class SlackService implements MessageService<String> {
     }
   }
 
+  @Override
+  public void sendBlocksMessage(String username, EmbedBuilder embedBuilder) { }
+
   /**
    * Send attachment message with messageText to username.
    *
@@ -97,6 +101,10 @@ public class SlackService implements MessageService<String> {
       throw new RuntimeException(exception);
     }
   }
+
+
+  @Override
+  public void sendAttachmentsMessage(String username, EmbedBuilder embedBuilder) { }
 
   /**
    * Send attachment message with messageText to channel.
@@ -145,6 +153,9 @@ public class SlackService implements MessageService<String> {
       throw new RuntimeException(exception);
     }
   }
+
+  @Override
+  public void sendBlockMessageToConversation(String channelName, EmbedBuilder embedBuilder) { }
 
   /**
    * Get Conversation by Slack`s channelName.

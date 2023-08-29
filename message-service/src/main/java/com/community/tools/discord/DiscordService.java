@@ -2,11 +2,13 @@ package com.community.tools.discord;
 
 import com.community.tools.model.ServiceUser;
 import com.community.tools.service.MessageService;
+
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -47,9 +49,10 @@ public class DiscordService implements MessageService<MessageEmbed> {
   }
 
   /**
-   * Send block message with messageText to username.
-   * @param username Discord login
-   * @param message object of MessageEmbed
+   * Sends a message with embedded content to a user's private channel.
+   *
+   * @param username The username of the recipient.
+   * @param message The MessageEmbed content to be sent.
    */
   @Override
   public void sendBlocksMessage(String username, MessageEmbed message) {
@@ -57,16 +60,32 @@ public class DiscordService implements MessageService<MessageEmbed> {
         .openPrivateChannel()
         .queue(
             (channel) -> {
-              discordMessagingService.sendDiscordMessage(
-                  channel.getId(), message, message.getFields(), buttonWithEmbed);
+              channel.sendMessageEmbeds(message).queue();
             });
   }
 
   /**
-   * Send attachment message with messageText to username.
+   * Sends a message with embedded content using an EmbedBuilder to a user's private channel.
    *
-   * @param username Discord login
-   * @param message object of MessageEmbed
+   * @param username The username of the recipient.
+   * @param embedBuilder The EmbedBuilder containing the message's embedded content.
+   */
+  @Override
+  public void sendBlocksMessage(String username, EmbedBuilder embedBuilder) {
+    jda.getUserById(getIdByUsername(username))
+        .openPrivateChannel()
+        .queue(
+            (channel) -> {
+              discordMessagingService.splitAndSendEmbed(
+                  channel.getId(), embedBuilder, buttonWithEmbed);
+            });
+  }
+
+  /**
+   * Sends a message with embedded content and attachments to a user's private channel.
+   *
+   * @param username The username of the recipient.
+   * @param message The MessageEmbed content to be sent.
    */
   @Override
   public void sendAttachmentsMessage(String username, MessageEmbed message) {
@@ -74,8 +93,25 @@ public class DiscordService implements MessageService<MessageEmbed> {
         .openPrivateChannel()
         .queue(
             (channel) -> {
-              discordMessagingService.sendDiscordMessage(
-                  channel.getId(), message, message.getFields(), buttonWithEmbed);
+              channel.sendMessageEmbeds(message).queue();
+            });
+  }
+
+  /**
+   * Sends a message with embedded content and attachments using an EmbedBuilder to a user's private
+   * channel.
+   *
+   * @param username The username of the recipient.
+   * @param embedBuilder The EmbedBuilder containing the message's embedded content.
+   */
+  @Override
+  public void sendAttachmentsMessage(String username, EmbedBuilder embedBuilder) {
+    jda.getUserById(getIdByUsername(username))
+        .openPrivateChannel()
+        .queue(
+            (channel) -> {
+              discordMessagingService.splitAndSendEmbed(
+                  channel.getId(), embedBuilder, buttonWithEmbed);
             });
   }
 
@@ -91,16 +127,27 @@ public class DiscordService implements MessageService<MessageEmbed> {
   }
 
   /**
-   * Send attachment message with blocks of Text to the channel.
+   * Sends a message with embedded content to a specific text channel in a conversation.
    *
-   * @param channelName Name of channel
-   * @param message object of MessageEmbed
+   * @param channelName The name of the target text channel.
+   * @param message The MessageEmbed content to be sent.
    */
   @Override
   public void sendBlockMessageToConversation(String channelName, MessageEmbed message) {
+    jda.getTextChannelById(getIdByChannelName(channelName)).sendMessageEmbeds(message);
+  }
+
+  /**
+   * Sends a message with embedded content using an EmbedBuilder to a specific text channel in a
+   * conversation.
+   *
+   * @param channelName The name of the target text channel.
+   * @param embedBuilder The EmbedBuilder containing the message's embedded content.
+   */
+  @Override
+  public void sendBlockMessageToConversation(String channelName, EmbedBuilder embedBuilder) {
     TextChannel textChannel = jda.getTextChannelById(getIdByChannelName(channelName));
-    discordMessagingService.sendDiscordMessage(
-        textChannel.getId(), message, message.getFields(), buttonWithEmbed);
+    discordMessagingService.splitAndSendEmbed(textChannel.getId(), embedBuilder, buttonWithEmbed);
   }
 
   /**
