@@ -33,8 +33,8 @@ public class TaskStatusService {
    * @param comparator - sort order (DESC, ASC).
    * @return - return list of DTO.
    */
-  public List<UserForTaskStatusDto> getTaskStatuses(
-      Period period, Integer limit, Comparator<GithubUserDto> comparator) {
+  public List<UserForTaskStatusDto> getTaskStatuses(Period period, Integer limit,
+      Comparator<GithubUserDto> comparator) {
     log.info("running with period = {}, comparator = {}, limit = {}", period, comparator, limit);
     return classroomService.getAllActiveUsers(period).stream()
         .filter(this::isActiveUser)
