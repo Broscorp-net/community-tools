@@ -27,7 +27,6 @@ public class TaskStatusService {
 
   /**
    * Service for sorting, limiting and creating DTO.
-   *
    * @param limit - limit of users for view.
    * @param period - period of days fow view.
    * @param comparator - sort order (DESC, ASC).
@@ -51,26 +50,24 @@ public class TaskStatusService {
   }
 
   /**
-   * Getting List of task, and status of this task, for each user, based on labels.
-   *
+   * Getting List of task, and status of this task, for each user,
+   *  based on labels.
    * @param user - user DTO.
    * @return - list of task, and status of this task, for each user.
    */
   private List<TaskNameAndStatus> getAllTaskNameAndStatusesForEachUser(GithubUserDto user) {
-    return user.getRepositories().stream()
-        .map(
-            repo -> {
-              if (repo.getLabels().isEmpty()) {
-                return new TaskNameAndStatus(
-                    repo.getTaskName(), TaskStatus.PULL_REQUEST.getDescription());
-              }
-              if (repo.getLabels().size() > 1) {
-                return new TaskNameAndStatus(
-                    repo.getTaskName(), TaskStatus.UNDEFINED.getDescription());
-              }
-              return new TaskNameAndStatus(repo.getTaskName(), repo.getLabels().get(0));
-            })
-        .collect(Collectors.toList());
+    return user.getRepositories().stream().map(repo -> {
+      String currentStatus;
+      if (repo.getLabels().size() > 1) {
+        currentStatus = TaskStatus.UNDEFINED.getDescription();
+      } else if (repo.getLabels().isEmpty()) {
+        currentStatus = TaskStatus.NEW.getDescription();
+      } else {
+        currentStatus = repo.getLabels().get(0);
+      }
+      return new TaskNameAndStatus(repo.getTaskName(), repo.getPullUrl(),
+              currentStatus);
+    }).collect(Collectors.toList());
   }
 
   /**
@@ -101,8 +98,7 @@ public class TaskStatusService {
 
     for (TaskNameAndStatus taskStatus : taskStatuses) {
       String status = taskStatus.getTaskStatus();
-      if (status.equals(TaskStatus.UNDEFINED.getDescription())
-          || status.equals(TaskStatus.PULL_REQUEST.getDescription())) {
+      if (status.equals(TaskStatus.UNDEFINED.getDescription())) {
         return false;
       }
 
