@@ -48,7 +48,7 @@ public class DiscordConfig {
           .addEventListeners(discordEventListener)
           .build();
       jda.updateCommands()
-              .addCommands(new CommandData("statistic", "Показать статистику"))
+              .addCommands(new CommandData("stat", "Показать статистику"))
               .queue();
       jda.awaitReady();
       return jda;

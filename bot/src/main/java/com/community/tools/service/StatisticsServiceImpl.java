@@ -24,7 +24,7 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-public class StatisticsService implements StatisticService {
+public class StatisticsServiceImpl implements StatisticService {
 
   @Value("${defaultNumberOfDaysForStatistic}")
   private Integer defaultNumberOfDays;

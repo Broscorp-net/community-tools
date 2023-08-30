@@ -22,6 +22,8 @@ import org.springframework.stereotype.Component;
 @Profile("discord")
 public class DiscordEventListener extends ListenerAdapter {
 
+  private final String showStat = "stat";
+
   @Autowired
   private EventListener listener;
 
@@ -61,7 +63,7 @@ public class DiscordEventListener extends ListenerAdapter {
 
   @Override
   public void onSlashCommand(@NotNull SlashCommandEvent event) {
-    if ("statistic".equals(event.getName())) {
+    if (showStat.equals(event.getName())) {
       List<Role> userRoles = event.getMember().getRoles();
       boolean isAdmin = userRoles.stream().anyMatch(role -> role.getName().equals("admin"));
 
