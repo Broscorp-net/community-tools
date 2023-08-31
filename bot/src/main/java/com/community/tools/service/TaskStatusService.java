@@ -141,16 +141,16 @@ public class TaskStatusService {
   }
 
   /**
-   * Checks if a repository has the "review" label.
+   * Checks if a GitHub repository has a label containing "failure".
    *
-   * @param repository The repository to check.
-   * @return true if the repository has the "review" label, otherwise false.
+   * @param repository The GitHub repository to check for labels.
+   * @return true if the repository has a label not containing "failure", otherwise false.
    */
   private boolean hasReviewLabel(GithubRepositoryDto repository) {
     List<String> labels = repository.getLabels();
     if (labels != null && !labels.isEmpty()) {
       for (String label : labels) {
-        if (label.contains("review")) {
+        if (!label.contains("failure")) {
           return true;
         }
       }
