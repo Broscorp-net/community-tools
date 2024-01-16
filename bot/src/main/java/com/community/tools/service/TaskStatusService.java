@@ -28,16 +28,17 @@ public class TaskStatusService {
 
   /**
    * Service for sorting, limiting and creating DTO.
-   * @param limit - limit of users for view.
-   * @param period - period of days fow view.
+   *
+   * @param limit      - limit of users for view.
+   * @param period     - period of days fow view.
    * @param comparator - sort order (DESC, ASC).
    * @return - return list of DTO.
    */
   public List<UserForTaskStatusDto> getTaskStatuses(Period period, Integer limit,
       Comparator<GithubUserDto> comparator) {
     log.info("running with period = {}, comparator = {}, limit = {}", period, comparator, limit);
-    return classroomService.getAllActiveUsers(period).stream()
-        .filter(this::isActiveUser)
+    return classroomService.getAllActiveUsers(period)
+        .stream()
         .sorted(comparator)
         .limit(limit)
         .map(
@@ -51,8 +52,8 @@ public class TaskStatusService {
   }
 
   /**
-   * Getting List of task, and status of this task, for each user,
-   *  based on labels.
+   * Getting List of task, and status of this task, for each user, based on labels.
+   *
    * @param user - user DTO.
    * @return - list of task, and status of this task, for each user.
    */
@@ -67,7 +68,7 @@ public class TaskStatusService {
         currentStatus = repo.getLabels().get(0);
       }
       return new TaskNameAndStatus(repo.getTaskName(), repo.getPullUrl(),
-              currentStatus);
+          currentStatus);
     }).collect(Collectors.toList());
   }
 
@@ -115,7 +116,7 @@ public class TaskStatusService {
    * Checks if a task has reviews.
    *
    * @param taskStatus The task and its status.
-   * @param user The user for whom the check is performed.
+   * @param user       The user for whom the check is performed.
    * @return true if the task has reviews, otherwise false.
    */
   private boolean hasReviews(TaskNameAndStatus taskStatus, GithubUserDto user) {
@@ -162,7 +163,7 @@ public class TaskStatusService {
    * Calculates the number of days between two dates.
    *
    * @param startDate The start date.
-   * @param endDate The end date.
+   * @param endDate   The end date.
    * @return The number of days between the two dates.
    */
   private long daysBetween(LocalDate startDate, LocalDate endDate) {

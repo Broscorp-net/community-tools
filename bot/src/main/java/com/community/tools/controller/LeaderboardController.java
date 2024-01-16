@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@Slf4j
 public class LeaderboardController {
 
   @Value("${defaultNumberOfDaysForStatistic}")
@@ -59,14 +57,11 @@ public class LeaderboardController {
         sort.orElse("DESC").toUpperCase(),
         Comparator.comparingInt(GithubUserDto::getCompletedTasks).reversed());
 
-    ResponseEntity<List<UserForLeaderboardDto>> result = new ResponseEntity<>(
+    return new ResponseEntity<>(
         leaderBoardService.getLeaderBoard(
             limit.orElse(defaultUserLimit),
             Period.ofDays(days.orElse(defaultNumberOfDays)),
             comparator), HttpStatus.OK);
-
-    log.info("Finished processing leaderboards request");
-    return result;
   }
 
 }
