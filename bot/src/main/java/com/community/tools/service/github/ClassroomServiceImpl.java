@@ -51,6 +51,7 @@ import org.kohsuke.github.GHWorkflowRun;
 import org.kohsuke.github.GitHub;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -210,8 +211,7 @@ public class ClassroomServiceImpl implements ClassroomService {
    *
    * @throws IOException If an I/O error occurs during the GitHub API calls.
    */
-  //TODO enable this back
-  //@Scheduled(fixedRateString = "${millisecondsIntervalForClassroomParse}")
+  @Scheduled(fixedRateString = "${millisecondsIntervalForClassroomParse}")
   public void handleNotifications() throws IOException {
     Date currentTime = new Date();
 
