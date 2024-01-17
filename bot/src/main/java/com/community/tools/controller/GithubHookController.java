@@ -1,8 +1,8 @@
 package com.community.tools.controller;
 
-import com.community.tools.service.github.GitHookDataService;
 import com.community.tools.service.github.event.GithubEventsProcessingService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/gitHook")
+@Slf4j
 public class GithubHookController {
 
   private final GithubEventsProcessingService eventsProcessingService;
-  private final GitHookDataService gitHookDataService;
 
   /**
    * Method receive webhook data from GitHub.
@@ -24,8 +24,8 @@ public class GithubHookController {
    */
   @PostMapping
   public void getHookData(@RequestBody String body) {
+    log.info("Hit up the endpoint!");
     JSONObject eventJson = new JSONObject(body);
-    gitHookDataService.saveDataIntoDB(eventJson);
     if (eventJson.has("action")) {
       eventsProcessingService.processEvent(eventJson);
     }
