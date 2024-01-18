@@ -2,7 +2,7 @@ package com.community.tools.controller;
 
 import com.community.tools.dto.GithubUserDto;
 import com.community.tools.dto.UserForTaskStatusDto;
-import com.community.tools.service.TaskStatusService;
+import com.community.tools.service.TaskStatusServiceRestImpl;
 import java.time.Period;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -29,13 +29,13 @@ public class TaskStatusController {
   private final Map<String, Comparator<GithubUserDto>> comparators
       = new HashMap<>();
 
-  private final TaskStatusService taskStatusService;
+  private final TaskStatusServiceRestImpl taskStatusService;
 
   /**
    * Constructor.
    * @param taskStatusService - Inject taskStatusService
    */
-  public TaskStatusController(TaskStatusService taskStatusService) {
+  public TaskStatusController(TaskStatusServiceRestImpl taskStatusService) {
     this.taskStatusService = taskStatusService;
     comparators.put("DESC",
         Comparator.comparingInt(GithubUserDto::getCompletedTasks).reversed());

@@ -18,6 +18,7 @@ import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -35,17 +36,21 @@ public class StatisticsServiceImpl implements StatisticService {
   @Value("${hallOfFameChannel}")
   private String hallOfFameChannel;
   private final Map<String, Comparator<GithubUserDto>> comparators
-          = new HashMap<>();
+      = new HashMap<>();
   private final String[] tableHeadTasks = {"Intro", "Generics", "GameOfLife", "GC"};
-  @Autowired
-  private DiscordService discordService;
-  @Autowired
-  private TaskStatusService taskStatusService;
+  private final DiscordService discordService;
+  private final TaskStatusService taskStatusService;
+
+  public StatisticsServiceImpl(DiscordService discordService,
+      @Qualifier("taskStatusServiceRest") TaskStatusService taskStatusService) {
+    this.discordService = discordService;
+    this.taskStatusService = taskStatusService;
+  }
 
 
   /**
-   * Generates and sends daily statistics to the Discord channel using the provided data.
-   * The statistics include information about completed tasks and their status.
+   * Generates and sends daily statistics to the Discord channel using the provided data. The
+   * statistics include information about completed tasks and their status.
    *
    * @Scheduled annotation specifies the schedule for executing this method.
    */
@@ -64,40 +69,40 @@ public class StatisticsServiceImpl implements StatisticService {
       int toIndex = Math.min(i + userRowsLimit, statisticsList.size());
 
       sendTextMessageToDiscord(createMonoText(createTableBody(statisticsList.subList(i, toIndex),
-              firstColLength, taskNames)));
+          firstColLength, taskNames)));
     }
   }
 
   private void createStatisticsTitle() {
     String tableTitle = "Daily statistics for "
-            + getCurrentFormattedDate("Europe/Kiev");
+        + getCurrentFormattedDate("Europe/Kiev");
     sendTextMessageToDiscord(createH2Text(tableTitle));
   }
 
   private String createTableLegend() {
     return "\n`:white_check_mark:` - DONE, `:red_square:` - DENIED, "
-            + "`:yellow_square:` - IN PROGRESS, `:white_large_square:` - UNDEFINED\n\n\n\n";
+        + "`:yellow_square:` - IN PROGRESS, `:white_large_square:` - UNDEFINED\n\n\n\n";
   }
 
   private List<UserForTaskStatusDto> getStatisticsList() {
     Comparator<GithubUserDto> comparator = comparators.getOrDefault(
-            "DESC".toUpperCase(),
-            Comparator.comparingInt(GithubUserDto::getCompletedTasks).reversed());
+        "DESC".toUpperCase(),
+        Comparator.comparingInt(GithubUserDto::getCompletedTasks).reversed());
 
     return taskStatusService.getTaskStatuses(
-            Period.ofDays(defaultNumberOfDays),
-            defaultUserLimit,
-            comparator);
+        Period.ofDays(defaultNumberOfDays),
+        defaultUserLimit,
+        comparator);
   }
 
   private int getMaxColLength(List<UserForTaskStatusDto> userStatusDtoList) {
     return userStatusDtoList.stream()
-            .mapToInt(userStatusDto -> {
-              String userName = userStatusDto.getGitName();
-              return userName != null ? userName.length() : 0;
-            })
-            .max()
-            .orElse(0);
+        .mapToInt(userStatusDto -> {
+          String userName = userStatusDto.getGitName();
+          return userName != null ? userName.length() : 0;
+        })
+        .max()
+        .orElse(0);
   }
 
   private String createTableHead(int firstColLength) {
@@ -107,16 +112,15 @@ public class StatisticsServiceImpl implements StatisticService {
 
     tableHead.append(createTableLegend());
 
-
     tableHead.append(headFirstCol)
-            .append(StringUtils.repeat(" ",
-                    firstColLength - headFirstCol.length()))
-            .append("  ")
-            .append(getVerticalSeparator());
+        .append(StringUtils.repeat(" ",
+            firstColLength - headFirstCol.length()))
+        .append("  ")
+        .append(getVerticalSeparator());
 
     for (int i = 0; i < tableHeadTasks.length; i++) {
       tableHead.append(tableHeadTasks[i])
-              .append("  ");
+          .append("  ");
       if (i != tableHeadTasks.length - 1) {
         tableHead.append(getVerticalSeparator());
       } else {
@@ -129,15 +133,15 @@ public class StatisticsServiceImpl implements StatisticService {
   }
 
   private String createTableBody(List<UserForTaskStatusDto> userPartList,
-                                 int firstColLength, String[] taskNames) {
+      int firstColLength, String[] taskNames) {
     StringBuilder tableBody = new StringBuilder();
 
     for (UserForTaskStatusDto userData : userPartList) {
       String userName = userData.getGitName();
       tableBody.append(userName)
-              .append(createDiscordLink(createGitHubLink(userName)))
-              .append(StringUtils.repeat(" ", firstColLength - userName.length()))
-              .append(getVerticalSeparator());
+          .append(createDiscordLink(createGitHubLink(userName)))
+          .append(StringUtils.repeat(" ", firstColLength - userName.length()))
+          .append(getVerticalSeparator());
 
       for (int i = 0; i < taskNames.length; i++) {
         String label = getTaskSmileStatus(userData.getTaskStatuses(), taskNames[i]);
@@ -150,7 +154,7 @@ public class StatisticsServiceImpl implements StatisticService {
         }
 
         tableBody.append(StringUtils.repeat(" ",
-                tableHeadTasks[i].length() - 3));
+            tableHeadTasks[i].length() - 3));
 
         if (i != taskNames.length - 1) {
           tableBody.append(getVerticalSeparator());
@@ -223,11 +227,11 @@ public class StatisticsServiceImpl implements StatisticService {
   }
 
   private String getTaskSmileStatus(List<TaskNameAndStatus> taskNameAndStatuses,
-                                    String taskName) {
+      String taskName) {
     String status = taskNameAndStatuses.stream()
-            .filter(task -> taskName.equals(task.getTaskName()))
-            .map(TaskNameAndStatus::getTaskStatus)
-            .findFirst().orElse("undefined");
+        .filter(task -> taskName.equals(task.getTaskName()))
+        .map(TaskNameAndStatus::getTaskStatus)
+        .findFirst().orElse("undefined");
 
     return TaskStatus.getEmojiByDescription(status);
   }
