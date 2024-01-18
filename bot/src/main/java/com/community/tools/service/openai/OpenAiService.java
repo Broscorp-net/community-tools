@@ -10,7 +10,7 @@ import java.io.OutputStreamWriter;
 import java.io.UncheckedIOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.List;
+import java.util.Collections;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -68,7 +68,7 @@ public class OpenAiService {
    */
   private void sendRequest(HttpURLConnection connection, String prompt) throws IOException {
     OpenAiRequestDto requestDto = new OpenAiRequestDto(model,
-            List.of(new OpenAiRequestDto.Message("user", prompt)));
+            Collections.singletonList(new OpenAiRequestDto.Message("user", prompt)));
 
     try (OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream())) {
       String requestBody = objectMapper.writeValueAsString(requestDto);
