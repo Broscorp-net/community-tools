@@ -12,6 +12,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +22,8 @@ import org.springframework.stereotype.Service;
 public class TaskStatusServiceHooksImpl implements TaskStatusService {
 
   private final UserTaskRepository userTaskRepository;
+  @Value("${tasksForUsers}")
+  private String originalTaskNames;
 
   public TaskStatusServiceHooksImpl(UserTaskRepository userTaskRepository) {
     this.userTaskRepository = userTaskRepository;
@@ -46,6 +49,7 @@ public class TaskStatusServiceHooksImpl implements TaskStatusService {
                       task.getTaskStatus())));
 
           final int completedTasksCount = (int) taskNamesAndStatuses.stream()
+              .filter(it -> originalTaskNames.contains(it.getTaskName()))
               .filter(it -> it.getTaskStatus().equals(
                   TaskStatus.DONE.getDescription())).count();
 
