@@ -1,16 +1,10 @@
 package com.community.tools;
 
-import com.community.tools.service.github.event.GithubEventHandler;
-import com.community.tools.service.github.event.stats.GithubWorkflowRunEventHandler;
 import com.community.tools.util.IoUtils;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @EnableScheduling

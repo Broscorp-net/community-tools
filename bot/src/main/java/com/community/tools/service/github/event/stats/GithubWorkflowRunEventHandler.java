@@ -22,17 +22,20 @@ public class GithubWorkflowRunEventHandler implements GithubEventHandler {
   private final UserTaskRepository userTaskRepository;
 
   @Override
-  // repository->name - task name
-  // workflow_run->actor->login - user git name
-  // action key should be "completed"
-  // pull request number pull_requests->(list of objects, get(0), form into json)->number
-  // workflow_run->conclusion - result of the workflow
   public void handleEvent(JSONObject eventJson) {
     if (eventJson.has("action") && eventJson.getString("action").equals("completed")) {
       parseAndSaveWorkflowRun(eventJson);
     }
   }
 
+  /**
+   * Processes JSON data from GitHub workflow_run event, saves it to the configured database.
+   *
+   * @param eventJson - representation of the JSON data from GitHub workflow_run event
+   * @see <a
+   * href="https://docs.github.com/en/webhooks/webhook-events-and-payloads#workflow_run">GitHub docs
+   * about the event</a>
+   */
   private void parseAndSaveWorkflowRun(JSONObject eventJson) {
     JSONObject repo = (JSONObject) eventJson.get("repository");
     JSONObject workflowRun = (JSONObject) eventJson.get("workflow_run");
@@ -51,7 +54,6 @@ public class GithubWorkflowRunEventHandler implements GithubEventHandler {
     } else {
       record = new UserTask();
       record.setGitName(gitName);
-      record.setPullUrl(formPullUrl(pullId, repoFullName));
       record.setTaskName(taskName);
     }
     record.setLastActivity(LocalDate.now());
