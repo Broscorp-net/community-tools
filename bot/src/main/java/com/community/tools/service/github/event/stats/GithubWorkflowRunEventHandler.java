@@ -37,14 +37,14 @@ public class GithubWorkflowRunEventHandler implements GithubEventHandler {
    * about the event</a>
    */
   private void parseAndSaveWorkflowRun(JSONObject eventJson) {
-    JSONObject repo = (JSONObject) eventJson.get("repository");
-    JSONObject workflowRun = (JSONObject) eventJson.get("workflow_run");
-    String gitName = ((JSONObject) workflowRun.get("actor")).getString(
+    final JSONObject repo = (JSONObject) eventJson.get("repository");
+    final JSONObject workflowRun = (JSONObject) eventJson.get("workflow_run");
+    final String gitName = ((JSONObject) workflowRun.get("actor")).getString(
         "login");
-    String taskName = getTaskName(repo.getString("name"), gitName);
-    String repoFullName = repo.getString("full_name");
-    String conclusion = workflowRun.getString("conclusion");
-    int pullId = ((JSONObject) workflowRun.getJSONArray(
+    final String taskName = getTaskName(repo.getString("name"), gitName);
+    final String repoFullName = repo.getString("full_name");
+    final String conclusion = workflowRun.getString("conclusion");
+    final int pullId = ((JSONObject) workflowRun.getJSONArray(
         "pull_requests").get(0)).getInt("number");
     Optional<UserTask> existingUserTaskRecord = userTaskRepository.findById(
         new UserTaskId(gitName, taskName));

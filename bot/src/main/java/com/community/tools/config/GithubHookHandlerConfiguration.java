@@ -11,10 +11,15 @@ import org.springframework.context.annotation.Profile;
 
 @Configuration
 @RequiredArgsConstructor
+@Profile("discord")
 public class GithubHookHandlerConfiguration {
 
   private final GithubWorkflowRunEventHandler githubWorkflowRunEventHandler;
 
+  /**
+   * Creates a bean with a list of webhook handlers to be invoked in no specific order upon
+   * receiving an event from GitHub webhook.
+   */
   @Bean("eventHandlers")
   @Profile("discord")
   public List<GithubEventHandler> githubHookEventHandlers() {

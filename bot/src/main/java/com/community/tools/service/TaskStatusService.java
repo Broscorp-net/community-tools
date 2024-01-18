@@ -1,6 +1,5 @@
 package com.community.tools.service;
 
-import com.community.tools.dto.GithubUserDto;
 import com.community.tools.dto.UserForTaskStatusDto;
 import java.time.Period;
 import java.util.Comparator;
@@ -17,6 +16,6 @@ public interface TaskStatusService {
    * @return - return list of DTO.
    */
   List<UserForTaskStatusDto> getTaskStatuses(Period period, Integer limit,
-      Comparator<GithubUserDto> comparator);
+      Comparator<UserForTaskStatusDto> comparator);
 
 }

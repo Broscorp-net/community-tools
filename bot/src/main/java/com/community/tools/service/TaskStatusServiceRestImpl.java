@@ -35,11 +35,10 @@ public class TaskStatusServiceRestImpl implements TaskStatusService {
    * @return - return list of DTO.
    */
   public List<UserForTaskStatusDto> getTaskStatuses(Period period, Integer limit,
-      Comparator<GithubUserDto> comparator) {
+      Comparator<UserForTaskStatusDto> comparator) {
     log.info("running with period = {}, comparator = {}, limit = {}", period, comparator, limit);
     return classroomService.getAllActiveUsers(period).stream()
         .filter(this::isActiveUser)
-        .sorted(comparator)
         .limit(limit)
         .map(
             githubUserDto ->
@@ -48,6 +47,7 @@ public class TaskStatusServiceRestImpl implements TaskStatusService {
                     githubUserDto.getLastCommit(),
                     githubUserDto.getCompletedTasks(),
                     getAllTaskNameAndStatusesForEachUser(githubUserDto)))
+        .sorted(comparator)
         .collect(Collectors.toList());
   }
 

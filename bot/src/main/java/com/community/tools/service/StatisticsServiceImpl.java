@@ -1,11 +1,9 @@
 package com.community.tools.service;
 
 import com.community.tools.discord.DiscordService;
-import com.community.tools.dto.GithubUserDto;
 import com.community.tools.dto.UserForTaskStatusDto;
 import com.community.tools.model.TaskNameAndStatus;
 import com.community.tools.model.TaskStatus;
-
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneId;
@@ -14,10 +12,8 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -35,7 +31,7 @@ public class StatisticsServiceImpl implements StatisticService {
   private String originalTaskNames;
   @Value("${hallOfFameChannel}")
   private String hallOfFameChannel;
-  private final Map<String, Comparator<GithubUserDto>> comparators
+  private final Map<String, Comparator<UserForTaskStatusDto>> comparators
       = new HashMap<>();
   private final String[] tableHeadTasks = {"Intro", "Generics", "GameOfLife", "GC"};
   private final DiscordService discordService;
@@ -85,9 +81,9 @@ public class StatisticsServiceImpl implements StatisticService {
   }
 
   private List<UserForTaskStatusDto> getStatisticsList() {
-    Comparator<GithubUserDto> comparator = comparators.getOrDefault(
+    Comparator<UserForTaskStatusDto> comparator = comparators.getOrDefault(
         "DESC".toUpperCase(),
-        Comparator.comparingInt(GithubUserDto::getCompletedTasks).reversed());
+        Comparator.comparingInt(UserForTaskStatusDto::getCompletedTasks).reversed());
 
     return taskStatusService.getTaskStatuses(
         Period.ofDays(defaultNumberOfDays),
