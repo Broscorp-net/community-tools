@@ -164,7 +164,7 @@ public class ClassroomServiceImpl implements ClassroomService {
 
     return allUserRepositories
             .entrySet()
-            .stream()
+            .parallelStream()
             .map(entry -> buildGithubUserDto(entry.getKey(), entry.getValue()))
             .collect(Collectors.toList());
   }
@@ -174,7 +174,7 @@ public class ClassroomServiceImpl implements ClassroomService {
     return organization
             .getRepositories()
             .entrySet()
-            .stream()
+            .parallelStream()
             .filter(entry -> repositoryNameService.isPrefixedWithTaskName(entry.getKey()))
             .map(entry -> {
               GHRepository repository = entry.getValue();

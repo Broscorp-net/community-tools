@@ -35,12 +35,15 @@ public class StatisticsServiceImpl implements StatisticService {
       = new HashMap<>();
   private final String[] tableHeadTasks = {"Intro", "Generics", "GameOfLife", "GC"};
   private final DiscordService discordService;
-  private final TaskStatusService taskStatusService;
+  private final TaskStatusService taskStatusServiceHooks;
 
+  /**
+   * Required args constructor, used to inject the necessary dependencies into the Service.
+   */
   public StatisticsServiceImpl(DiscordService discordService,
-      @Qualifier("taskStatusServiceRest") TaskStatusService taskStatusService) {
+      @Qualifier("taskStatusServiceHooks") TaskStatusService taskStatusServiceHooks) {
     this.discordService = discordService;
-    this.taskStatusService = taskStatusService;
+    this.taskStatusServiceHooks = taskStatusServiceHooks;
   }
 
 
@@ -85,7 +88,7 @@ public class StatisticsServiceImpl implements StatisticService {
         "DESC".toUpperCase(),
         Comparator.comparingInt(UserForTaskStatusDto::getCompletedTasks).reversed());
 
-    return taskStatusService.getTaskStatuses(
+    return taskStatusServiceHooks.getTaskStatuses(
         Period.ofDays(defaultNumberOfDays),
         defaultUserLimit,
         comparator);

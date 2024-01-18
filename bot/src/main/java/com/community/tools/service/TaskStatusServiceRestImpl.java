@@ -38,7 +38,6 @@ public class TaskStatusServiceRestImpl implements TaskStatusService {
       Comparator<UserForTaskStatusDto> comparator) {
     log.info("running with period = {}, comparator = {}, limit = {}", period, comparator, limit);
     return classroomService.getAllActiveUsers(period).stream()
-        .filter(this::isActiveUser)
         .limit(limit)
         .map(
             githubUserDto ->
