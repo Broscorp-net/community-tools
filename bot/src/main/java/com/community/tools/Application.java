@@ -42,12 +42,4 @@ public class Application {
     properties.putAll(prop);
     return properties;
   }
-
-  @Bean("eventHandlers")
-  @Profile("discord")
-  private static List<GithubEventHandler> githubHookEventHandlers() {
-    List<GithubEventHandler> githubEventHandlers = new ArrayList<>();
-    githubEventHandlers.add(new GithubWorkflowRunEventHandler());
-    return githubEventHandlers;
-  }
 }

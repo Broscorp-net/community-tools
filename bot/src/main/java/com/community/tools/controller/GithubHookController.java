@@ -26,9 +26,7 @@ public class GithubHookController {
   public void getHookData(@RequestBody String body) {
     log.info("Hit up the endpoint!");
     JSONObject eventJson = new JSONObject(body);
-    if (eventJson.has("action")) {
-      eventsProcessingService.processEvent(eventJson);
-    }
+    eventsProcessingService.processEvent(eventJson);
   }
 
 }
