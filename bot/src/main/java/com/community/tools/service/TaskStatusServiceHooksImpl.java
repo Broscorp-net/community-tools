@@ -10,6 +10,7 @@ import java.time.Period;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -57,10 +58,15 @@ public class TaskStatusServiceHooksImpl implements TaskStatusService {
           if it does not, something went terribly wrong,
           there is no point in trying to recover.
            */
-          final LocalDate lastActive = entry.getValue().stream().max(
-              Comparator.comparing(UserTask::getLastActivity)).get().getLastActivity();
-          return new UserForTaskStatusDto(entry.getKey(),
-              lastActive, completedTasksCount, taskNamesAndStatuses);
+          try {
+            final LocalDate lastActive = entry.getValue().stream().max(
+                Comparator.comparing(UserTask::getLastActivity)).get().getLastActivity();
+            return new UserForTaskStatusDto(entry.getKey(),
+                lastActive, completedTasksCount, taskNamesAndStatuses);
+          } catch (NoSuchElementException e) {
+            log.error("Could not find lastActive time for user " + entry.getKey(), e);
+            throw e;
+          }
         })
         .sorted(comparator)
         .limit(limit)
