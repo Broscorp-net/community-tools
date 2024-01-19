@@ -1,14 +1,15 @@
 package com.community.tools.dto;
 
+import java.util.Collections;
 import java.util.List;
 
 public class OpenAiRequestDto {
   private String model;
   private List<Message> messages;
 
-  public OpenAiRequestDto(String model, List<Message> messages) {
+  public OpenAiRequestDto(String model, String prompt) {
     this.model = model;
-    this.messages = messages;
+    this.messages = Collections.singletonList(new OpenAiRequestDto.Message("user", prompt));
   }
 
   public String getModel() {

@@ -3,16 +3,17 @@ package com.community.tools.service.openai;
 import com.community.tools.dto.OpenAiRequestDto;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.io.UncheckedIOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.Collections;
+import java.net.URI;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.RequestEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 @Service
 public class OpenAiService {
@@ -23,22 +24,34 @@ public class OpenAiService {
   @Value("${openai.model}")
   private String model;
   private final ObjectMapper objectMapper;
+  private final RestTemplate restTemplate;
 
-  public OpenAiService(ObjectMapper objectMapper) {
+  public OpenAiService(ObjectMapper objectMapper, RestTemplate restTemplate) {
     this.objectMapper = objectMapper;
+    this.restTemplate = restTemplate;
   }
 
   /**
    * This is the main method in service which processes prompt.
+   *
    * @param prompt users request to the openai api
    * @return ready-to-use string response from AI
    */
   public String processPrompt(String prompt) {
     try {
-      HttpURLConnection connection = createConnection();
-      sendRequest(connection, prompt);
-      String jsonResponse = readResponse(connection);
-      String raw =  extractMessageFromJsonResponse(jsonResponse);
+      HttpHeaders headers = new HttpHeaders();
+      headers.setBearerAuth(apiKey);
+      headers.setContentType(MediaType.APPLICATION_JSON);
+
+      OpenAiRequestDto requestDto = new OpenAiRequestDto(model, prompt);
+
+      RequestEntity<OpenAiRequestDto> requestEntity =
+              new RequestEntity<>(requestDto, headers, HttpMethod.POST, URI.create(url));
+
+      ResponseEntity<String> responseEntity = restTemplate.exchange(requestEntity, String.class);
+
+      String jsonResponse = responseEntity.getBody();
+      String raw = extractMessageFromJsonResponse(jsonResponse);
       return getStringWithLineSeparators(raw);
     } catch (IOException e) {
       throw new UncheckedIOException("Failed to communicate with OpenAI service", e);
@@ -46,60 +59,9 @@ public class OpenAiService {
   }
 
   /**
-   * This private method creates connection to api.
-   * @return HttpURLConnection object
-   * @throws IOException IOException
-   */
-  private HttpURLConnection createConnection() throws IOException {
-    URL url = new URL(this.url);
-    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-    connection.setRequestMethod("POST");
-    connection.setRequestProperty("Authorization", "Bearer " + apiKey);
-    connection.setRequestProperty("Content-Type", "application/json");
-    connection.setDoOutput(true);
-    return connection;
-  }
-
-  /**
-   * This private method sends request to openai.
-   * @param connection HttpURLConnection object from createConnection()
-   * @param prompt users request to openai
-   * @throws IOException IOException
-   */
-  private void sendRequest(HttpURLConnection connection, String prompt) throws IOException {
-    OpenAiRequestDto requestDto = new OpenAiRequestDto(model,
-            Collections.singletonList(new OpenAiRequestDto.Message("user", prompt)));
-
-    try (OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream())) {
-      String requestBody = objectMapper.writeValueAsString(requestDto);
-      writer.write(requestBody);
-      writer.flush();
-    }
-  }
-
-  /**
-   * This private method gets json response from api.
-   * @param connection HttpURLConnection object from createConnection()
-   * @return json-looking string
-   * @throws IOException IOException
-   */
-  private String readResponse(HttpURLConnection connection) throws IOException {
-    try (BufferedReader bufferedReader = new BufferedReader(
-            new InputStreamReader(connection.getInputStream()))) {
-      StringBuilder response = new StringBuilder();
-      String line;
-      while ((line = bufferedReader.readLine()) != null) {
-        response.append(line);
-      }
-      return response.toString();
-    }
-  }
-
-  /**
    * This private method formatting string form json-looking to normal.
    * @param response json string
    * @return raw string, example: "This is example list//n1)...//n..."
-   * @throws IOException IOException
    */
   private String extractMessageFromJsonResponse(String response) throws IOException {
     JsonNode jsonNode = objectMapper.readTree(response);
