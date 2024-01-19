@@ -6,10 +6,12 @@ import com.community.tools.model.stats.UserTaskId;
 import com.community.tools.repository.stats.UserTaskRepository;
 import com.community.tools.service.github.event.GithubEventHandler;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -18,6 +20,8 @@ import org.springframework.stereotype.Component;
 public class GithubWorkflowRunEventHandler implements GithubEventHandler {
 
   private final UserTaskRepository userTaskRepository;
+  @Value("${tasksForUsers}")
+  private String originalTaskNames;
 
   @Override
   public void handleEvent(JSONObject eventJson) {
@@ -42,8 +46,10 @@ public class GithubWorkflowRunEventHandler implements GithubEventHandler {
     final String taskName = getTaskName(repo.getString("name"), gitName);
     final String repoFullName = repo.getString("full_name");
     final String conclusion = workflowRun.getString("conclusion");
-    final int pullId = ((JSONObject) workflowRun.getJSONArray(
-        "pull_requests").get(0)).getInt("number");
+    if (checkIfEventIsIrrelevant(workflowRun, taskName)) {
+      return;
+    }
+    validateGithubClassroomPullRequestExistence(workflowRun, gitName, taskName);
     Optional<UserTask> existingUserTaskRecord = userTaskRepository.findById(
         new UserTaskId(gitName, taskName));
     UserTask record;
@@ -64,13 +70,35 @@ public class GithubWorkflowRunEventHandler implements GithubEventHandler {
       }
     }
     record.setLastActivity(LocalDate.now());
-    record.setPullUrl(formPullUrl(pullId, repoFullName));
+    record.setPullUrl(formPullUrl(repoFullName));
 
     userTaskRepository.saveAndFlush(record);
   }
 
-  private static String formPullUrl(int pullNumber, String repoFullName) {
-    return "https://github.com/" + repoFullName + "pull/" + pullNumber;
+  private boolean checkIfEventIsIrrelevant(JSONObject workflowRun, String taskName) {
+    if (!workflowRun.getString("head_branch").equals("feedback")) {
+      return true; /* we are only interested in processing changes GitHub Classroom automatically
+      adds to the pull request with head branch "feedback" */
+    }
+    return !originalTaskNames.contains(taskName);
+  }
+
+  private static void validateGithubClassroomPullRequestExistence(JSONObject workflowRun,
+      String gitName, String taskName) {
+    final Optional<HashMap> feedbackPullRequest = (workflowRun.getJSONArray(
+            "pull_requests").toList().stream().map(it -> (HashMap) it)
+        .filter(it -> (Integer) it.get("number") == 1).findFirst());
+    if (!feedbackPullRequest.isPresent()) {
+      String errorMessage =
+          "Could not find Feedback pull request from GitHub classroom for user " + gitName
+              + " doing task " + taskName;
+      log.error(errorMessage);
+      throw new RuntimeException(errorMessage);
+    }
+  }
+
+  private static String formPullUrl(String repoFullName) {
+    return "https://github.com/" + repoFullName + "pull/1";
   }
 
   private static String getTaskName(String repoName, String gitName) {
