@@ -24,11 +24,9 @@ public class OpenAiService {
   @Value("${openai.model}")
   private String model;
   private final ObjectMapper objectMapper;
-  private final RestTemplate restTemplate;
 
-  public OpenAiService(ObjectMapper objectMapper, RestTemplate restTemplate) {
+  public OpenAiService(ObjectMapper objectMapper) {
     this.objectMapper = objectMapper;
-    this.restTemplate = restTemplate;
   }
 
   /**
@@ -39,6 +37,7 @@ public class OpenAiService {
    */
   public String processPrompt(String prompt) {
     try {
+      RestTemplate restTemplate = new RestTemplate();
       HttpHeaders headers = new HttpHeaders();
       headers.setBearerAuth(apiKey);
       headers.setContentType(MediaType.APPLICATION_JSON);
@@ -60,6 +59,7 @@ public class OpenAiService {
 
   /**
    * This private method formatting string form json-looking to normal.
+   *
    * @param response json string
    * @return raw string, example: "This is example list//n1)...//n..."
    */
@@ -72,12 +72,13 @@ public class OpenAiService {
 
   /**
    * This private method replaces //n to /n in string.
+   *
    * @param raw raw string with //n
    * @return ready-to-use string
    */
   private String getStringWithLineSeparators(String raw) {
     final String regex = "\\\\n";
     final String newSeparator = System.lineSeparator();
-    return raw.replaceAll(regex, newSeparator);
+    return raw.replaceAll(regex,newSeparator);
   }
 }
