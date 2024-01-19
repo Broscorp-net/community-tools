@@ -51,18 +51,23 @@ public class GithubWorkflowRunEventHandler implements GithubEventHandler {
     UserTask record;
     if (existingUserTaskRecord.isPresent()) {
       record = existingUserTaskRecord.get();
+      if (!conclusion.equals("success") && !record.getTaskStatus()
+          .equals(TaskStatus.DONE.getDescription())) {
+        record.setTaskStatus(TaskStatus.FAILURE.getDescription());
+      }
     } else {
       record = new UserTask();
       record.setGitName(gitName);
       record.setTaskName(taskName);
+      if (conclusion.equals("success")) {
+        record.setTaskStatus(TaskStatus.NEW.getDescription());
+      } else {
+        record.setTaskStatus(TaskStatus.FAILURE.getDescription());
+      }
     }
     record.setLastActivity(LocalDate.now());
     record.setPullUrl(formPullUrl(pullId, repoFullName));
-    if (conclusion.equals("success")) {
-      record.setTaskStatus(TaskStatus.READY_FOR_REVIEW.getDescription());
-    } else {
-      record.setTaskStatus(TaskStatus.FAILURE.getDescription());
-    }
+
     userTaskRepository.saveAndFlush(record);
   }
 
