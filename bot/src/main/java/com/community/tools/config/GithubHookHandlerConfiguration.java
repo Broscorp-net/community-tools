@@ -16,10 +16,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 
 @Configuration
-@Profile("discord")
 public class GithubHookHandlerConfiguration {
 
   private final GithubWorkflowRunEventHandler githubWorkflowRunEventHandler;
@@ -39,7 +37,6 @@ public class GithubHookHandlerConfiguration {
    * receiving an event from GitHub webhook.
    */
   @Bean("eventHandlers")
-  @Profile("discord")
   public List<GithubEventHandler> githubHookEventHandlers() {
     List<GithubEventHandler> githubEventHandlers = new ArrayList<>();
     githubEventHandlers.add(githubWorkflowRunEventHandler);
@@ -52,7 +49,6 @@ public class GithubHookHandlerConfiguration {
    * events, exists to avoid generating empty stats tables before receiving any relevant events.
    */
   @Bean
-  @Profile("discord")
   public CommandLineRunner statsTableInitializer() {
     return new StatsTableInitializer(taskStatusServiceRest, userTaskRepository);
   }

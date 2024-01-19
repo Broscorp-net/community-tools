@@ -10,13 +10,11 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
-@Profile("discord")
 public class GithubWorkflowRunEventHandler implements GithubEventHandler {
 
   private final UserTaskRepository userTaskRepository;
