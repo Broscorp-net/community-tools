@@ -1,7 +1,7 @@
 package com.community.tools.controller;
 
 import com.community.tools.dto.UserForTaskStatusDto;
-import com.community.tools.service.TaskStatusServiceRestImpl;
+import com.community.tools.service.TaskStatusService;
 import java.time.Period;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -28,14 +28,14 @@ public class TaskStatusController {
   private final Map<String, Comparator<UserForTaskStatusDto>> comparators
       = new HashMap<>();
 
-  private final TaskStatusServiceRestImpl taskStatusService;
+  private final TaskStatusService taskStatusService;
 
   /**
    * Constructor.
    *
    * @param taskStatusService - Inject taskStatusService
    */
-  public TaskStatusController(TaskStatusServiceRestImpl taskStatusService) {
+  public TaskStatusController(TaskStatusService taskStatusService) {
     this.taskStatusService = taskStatusService;
     comparators.put("DESC",
         Comparator.comparingInt(UserForTaskStatusDto::getCompletedTasks).reversed());
