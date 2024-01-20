@@ -84,7 +84,7 @@ public class GitSlackUsersController {
   }
 
   /**
-   * Endpoint /sack/action. Method POST
+   * Endpoint /slack/action. Method POST
    *
    * @param payload JSON of BlockActionPayload
    * @throws Exception Exception
