@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class GithubEventsProcessingService {
 
-  private List<GithubEventHandler> eventHandlers;
+  private final List<GithubEventHandler> eventHandlers;
 
   public void processEvent(JSONObject eventJson) {
     eventHandlers.forEach(eventHandler -> eventHandler.handleEvent(eventJson));
