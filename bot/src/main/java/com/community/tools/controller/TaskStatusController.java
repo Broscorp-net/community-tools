@@ -1,6 +1,5 @@
 package com.community.tools.controller;
 
-import com.community.tools.dto.GithubUserDto;
 import com.community.tools.dto.UserForTaskStatusDto;
 import com.community.tools.service.TaskStatusService;
 import java.time.Period;
@@ -26,28 +25,30 @@ public class TaskStatusController {
   private Integer defaultNumberOfDays;
   @Value("${defaultRowLimit}")
   private Integer defaultUserLimit;
-  private final Map<String, Comparator<GithubUserDto>> comparators
+  private final Map<String, Comparator<UserForTaskStatusDto>> comparators
       = new HashMap<>();
 
   private final TaskStatusService taskStatusService;
 
   /**
    * Constructor.
+   *
    * @param taskStatusService - Inject taskStatusService
    */
   public TaskStatusController(TaskStatusService taskStatusService) {
     this.taskStatusService = taskStatusService;
     comparators.put("DESC",
-        Comparator.comparingInt(GithubUserDto::getCompletedTasks).reversed());
+        Comparator.comparingInt(UserForTaskStatusDto::getCompletedTasks).reversed());
     comparators.put("ASC",
-        Comparator.comparingInt(GithubUserDto::getCompletedTasks));
+        Comparator.comparingInt(UserForTaskStatusDto::getCompletedTasks));
   }
 
   /**
    * Endpoint for task status service.
+   *
    * @param limit - limit of users for view.
-   * @param days - period of days fow view.
-   * @param sort - sort order (DESC, ASC).
+   * @param days  - period of days fow view.
+   * @param sort  - sort order (DESC, ASC).
    * @return - return list of DTO.
    */
   @GetMapping("/taskStatus/getStatuses")
@@ -56,9 +57,9 @@ public class TaskStatusController {
       @RequestParam(required = false) Optional<Integer> days,
       @RequestParam(required = false) Optional<String> sort) {
 
-    Comparator<GithubUserDto> comparator = comparators.getOrDefault(
+    Comparator<UserForTaskStatusDto> comparator = comparators.getOrDefault(
         sort.orElse("DESC").toUpperCase(),
-        Comparator.comparingInt(GithubUserDto::getCompletedTasks).reversed());
+        Comparator.comparingInt(UserForTaskStatusDto::getCompletedTasks).reversed());
 
     return new ResponseEntity<>(
         taskStatusService.getTaskStatuses(
@@ -69,6 +70,7 @@ public class TaskStatusController {
 
   /**
    * Endpoint for receiving task names.
+   *
    * @return - set of names.
    */
   @GetMapping("/taskStatus/getTasks")
