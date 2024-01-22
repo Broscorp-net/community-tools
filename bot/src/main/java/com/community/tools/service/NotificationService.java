@@ -3,7 +3,7 @@ package com.community.tools.service;
 import com.community.tools.discord.DiscordService;
 import com.community.tools.dto.UserForTaskStatusDto;
 import com.community.tools.model.TaskNameAndStatus;
-import com.community.tools.service.github.DiscordGithubService;
+import com.community.tools.service.github.DiscordGitHubMappingService;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -24,7 +24,7 @@ public class NotificationService {
   @Autowired
   private DiscordService discordService;
   @Autowired
-  private DiscordGithubService discordGithubService;
+  private DiscordGitHubMappingService discordGitHubMappingService;
 
   /**
    * Sends a pull request (PR) update notification to the Discord user associated with the given
@@ -39,9 +39,9 @@ public class NotificationService {
    */
   public void sendPullRequestUpdateNotification(String gitHubName,
       List<TaskNameAndStatus> taskNameAndStatusList) {
-    String discordName = discordGithubService.getDiscordName(gitHubName);
+    String discordName = discordGitHubMappingService.getDiscordName(gitHubName);
     Optional<User> userOptional = discordService.getUserByName(discordName);
-    sendNotification(userOptional, discordName, taskNameAndStatusList);
+    checkUserAndSendNotification(userOptional, discordName, taskNameAndStatusList);
   }
 
   /**
@@ -58,12 +58,12 @@ public class NotificationService {
     List<String> gitHubNames = userForTaskStatusDtoList.stream()
         .map(UserForTaskStatusDto::getGitName).collect(
             Collectors.toList());
-    Map<String, String> gitHubDiscordNames = discordGithubService.getDiscordGithubUsernames(
+    Map<String, String> gitHubDiscordNames = discordGitHubMappingService.getDiscordGithubUsernames(
         gitHubNames);
     for (UserForTaskStatusDto dto : userForTaskStatusDtoList) {
       String discordName = gitHubDiscordNames.get(dto.getGitName());
       Optional<User> userOptional = discordService.getUserByName(discordName);
-      sendNotification(userOptional, discordName, dto.getTaskStatuses());
+      checkUserAndSendNotification(userOptional, discordName, dto.getTaskStatuses());
     }
   }
 
@@ -77,7 +77,7 @@ public class NotificationService {
    *                                  not found.
    */
   public void sendNotificationMessage(String gitHubName, String message) {
-    String discordName = discordGithubService.getDiscordName(gitHubName);
+    String discordName = discordGitHubMappingService.getDiscordName(gitHubName);
     Optional<User> userOptional = discordService.getUserByName(discordName);
     if (userOptional.isPresent()) {
       discordService.sendMessageToConversation(textChannelName,
@@ -108,7 +108,17 @@ public class NotificationService {
     return announcementText.toString();
   }
 
-  private void sendNotification(Optional<User> userOptional, String discordName,
+  /**
+   * Checks if a Discord user is present and sends a notification.
+   *
+   * @param userOptional          An Optional of User representing the Discord user to check.
+   * @param discordName           The Discord username associated with the GitHub account.
+   * @param taskNameAndStatusList A list containing TaskNameAndStatus objects representing the
+   *                              updated task statuses.
+   * @throws IllegalArgumentException If the Discord user corresponding to the GitHub username is
+   *                                  not found.
+   */
+  private void checkUserAndSendNotification(Optional<User> userOptional, String discordName,
       List<TaskNameAndStatus> taskNameAndStatusList) {
     if (userOptional.isPresent()) {
       discordService.sendMessageToConversation(textChannelName,

@@ -7,7 +7,7 @@ import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Component;
 
 @Component
-public class DiscordGithubService {
+public class DiscordGitHubMappingService {
 
   public Map<String, String> getDiscordGithubUsernames(List<String> githubUsernames) {
     return Collections.emptyMap();

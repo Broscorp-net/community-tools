@@ -11,7 +11,7 @@ import static org.mockito.Mockito.when;
 import com.community.tools.discord.DiscordService;
 import com.community.tools.dto.UserForTaskStatusDto;
 import com.community.tools.model.TaskNameAndStatus;
-import com.community.tools.service.github.DiscordGithubService;
+import com.community.tools.service.github.DiscordGitHubMappingService;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Optional;
@@ -29,7 +29,7 @@ class NotificationServiceTest {
   private DiscordService discordService;
 
   @Mock
-  private DiscordGithubService discordGithubService;
+  private DiscordGitHubMappingService discordGitHubMappingService;
 
   @InjectMocks
   private NotificationService notificationService;
@@ -39,7 +39,7 @@ class NotificationServiceTest {
 
   @Test
   void shouldSentMessageToConversationWhenSendPrUpdateNotification() {
-    when(discordGithubService.getDiscordName(gitHubName)).thenReturn(discordName);
+    when(discordGitHubMappingService.getDiscordName(gitHubName)).thenReturn(discordName);
     when(discordService.getUserByName(discordName)).thenReturn(Optional.of(mock(User.class)));
 
     notificationService.sendPullRequestUpdateNotification(gitHubName, Collections.emptyList());
@@ -49,7 +49,7 @@ class NotificationServiceTest {
 
   @Test
   void shouldThrowNotificationUserNotFoundExceptionWhenUserNotFoundByDiscordName() {
-    when(discordGithubService.getDiscordName(gitHubName)).thenReturn(discordName);
+    when(discordGitHubMappingService.getDiscordName(gitHubName)).thenReturn(discordName);
     when(discordService.getUserByName(discordName)).thenReturn(Optional.empty());
 
     assertThrows(IllegalArgumentException.class, () -> {
@@ -62,7 +62,7 @@ class NotificationServiceTest {
     UserForTaskStatusDto userDto = new UserForTaskStatusDto(gitHubName, LocalDate.now(), 1,
         Collections.singletonList(new TaskNameAndStatus("Task1", "PullUrl1", "Status1")));
 
-    when(discordGithubService.getDiscordGithubUsernames(anyList())).thenReturn(
+    when(discordGitHubMappingService.getDiscordGithubUsernames(anyList())).thenReturn(
         Collections.singletonMap(gitHubName, discordName));
     when(discordService.getUserByName(discordName)).thenReturn(Optional.of(mock(User.class)));
 
@@ -76,7 +76,7 @@ class NotificationServiceTest {
     UserForTaskStatusDto userDto = new UserForTaskStatusDto(gitHubName, LocalDate.now(), 1,
         Collections.singletonList(new TaskNameAndStatus("Task1", "PullUrl1", "Status1")));
 
-    when(discordGithubService.getDiscordGithubUsernames(anyList())).thenReturn(
+    when(discordGitHubMappingService.getDiscordGithubUsernames(anyList())).thenReturn(
         Collections.singletonMap(gitHubName, discordName));
     when(discordService.getUserByName(discordName)).thenReturn(Optional.empty());
 
@@ -88,7 +88,7 @@ class NotificationServiceTest {
   @Test
   void shouldSentMessageToConversationWhenSendNotificationMessage() {
 
-    when(discordGithubService.getDiscordName(gitHubName)).thenReturn(discordName);
+    when(discordGitHubMappingService.getDiscordName(gitHubName)).thenReturn(discordName);
     when(discordService.getUserByName(discordName)).thenReturn(Optional.of(mock(User.class)));
 
     notificationService.sendNotificationMessage(gitHubName, "Test message");
@@ -98,7 +98,7 @@ class NotificationServiceTest {
 
   @Test
   void shouldThrowNotificationUserNotFoundExceptionWhenSendNotificationMessageNotFoundUser() {
-    when(discordGithubService.getDiscordName(gitHubName)).thenReturn(discordName);
+    when(discordGitHubMappingService.getDiscordName(gitHubName)).thenReturn(discordName);
     when(discordService.getUserByName(discordName)).thenReturn(Optional.empty());
 
     assertThrows(IllegalArgumentException.class, () -> {
