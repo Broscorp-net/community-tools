@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 public class NotificationService {
 
   private static final String NOT_FOUND_DISCORD_USER_MESSAGE = "User with this discord name"
-      + " not found";
+      + " not found: ";
 
   @Value("${text.channel}")
   private String textChannelName;
@@ -41,12 +41,7 @@ public class NotificationService {
       List<TaskNameAndStatus> taskNameAndStatusList) {
     String discordName = discordGithubService.getDiscordName(gitHubName);
     Optional<User> userOptional = discordService.getUserByName(discordName);
-    if (userOptional.isPresent()) {
-      discordService.sendMessageToConversation(textChannelName,
-          buildNotification(userOptional.get(), taskNameAndStatusList));
-    } else {
-      throw new IllegalArgumentException(NOT_FOUND_DISCORD_USER_MESSAGE);
-    }
+    sendNotification(userOptional, discordName, taskNameAndStatusList);
   }
 
   /**
@@ -68,12 +63,7 @@ public class NotificationService {
     for (UserForTaskStatusDto dto : userForTaskStatusDtoList) {
       String discordName = gitHubDiscordNames.get(dto.getGitName());
       Optional<User> userOptional = discordService.getUserByName(discordName);
-      if (userOptional.isPresent()) {
-        discordService.sendMessageToConversation(textChannelName,
-            buildNotification(userOptional.get(), dto.getTaskStatuses()));
-      } else {
-        throw new IllegalArgumentException(NOT_FOUND_DISCORD_USER_MESSAGE);
-      }
+      sendNotification(userOptional, discordName, dto.getTaskStatuses());
     }
   }
 
@@ -93,7 +83,7 @@ public class NotificationService {
       discordService.sendMessageToConversation(textChannelName,
           userOptional.get().getAsMention() + ", " + message);
     } else {
-      throw new IllegalArgumentException(NOT_FOUND_DISCORD_USER_MESSAGE);
+      throw new IllegalArgumentException(NOT_FOUND_DISCORD_USER_MESSAGE + discordName);
     }
   }
 
@@ -116,6 +106,16 @@ public class NotificationService {
           .append(taskNameAndStatus.getTaskStatus());
     }
     return announcementText.toString();
+  }
+
+  private void sendNotification(Optional<User> userOptional, String discordName,
+      List<TaskNameAndStatus> taskNameAndStatusList) {
+    if (userOptional.isPresent()) {
+      discordService.sendMessageToConversation(textChannelName,
+          buildNotification(userOptional.get(), taskNameAndStatusList));
+    } else {
+      throw new IllegalArgumentException(NOT_FOUND_DISCORD_USER_MESSAGE + discordName);
+    }
   }
 
 }
