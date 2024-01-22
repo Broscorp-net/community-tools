@@ -16,7 +16,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class NotificationService {
 
-  private static final String NOT_FOUND_DISCORD_USER_MESSAGE = "User with this discord name not found";
+  private static final String NOT_FOUND_DISCORD_USER_MESSAGE = "User with this discord name"
+      + " not found";
 
   @Value("${text.channel}")
   private String textChannelName;
@@ -36,7 +37,7 @@ public class NotificationService {
    * @throws IllegalArgumentException If the Discord user corresponding to the GitHub username is
    *                                  not found.
    */
-  public void sendPRUpdateNotification(String gitHubName,
+  public void sendPullRequestUpdateNotification(String gitHubName,
       List<TaskNameAndStatus> taskNameAndStatusList) {
     String discordName = discordGithubService.getDiscordName(gitHubName);
     Optional<User> userOptional = discordService.getUserByName(discordName);
@@ -57,7 +58,8 @@ public class NotificationService {
    * @throws IllegalArgumentException If any Discord user corresponding to the GitHub usernames is
    *                                  not found.
    */
-  public void sendPRUpdateNotification(List<UserForTaskStatusDto> userForTaskStatusDtoList) {
+  public void sendPullRequestUpdateNotification(
+      List<UserForTaskStatusDto> userForTaskStatusDtoList) {
     List<String> gitHubNames = userForTaskStatusDtoList.stream()
         .map(UserForTaskStatusDto::getGitName).collect(
             Collectors.toList());

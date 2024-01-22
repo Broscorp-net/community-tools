@@ -23,6 +23,7 @@ import com.community.tools.model.Messages;
 import com.community.tools.model.User;
 import com.community.tools.repository.UserRepository;
 import com.community.tools.service.MessageService;
+import com.community.tools.service.NotificationService;
 import com.community.tools.service.StateMachineService;
 import com.community.tools.service.StatisticsServiceImpl;
 import com.community.tools.service.github.ClassroomService;
@@ -96,6 +97,9 @@ class IntegrationTest {
 
   @MockBean
   private MessageService messageService;
+
+  @MockBean
+  private NotificationService notificationService;
 
   @MockBean
   private GitHubService gitHubService;

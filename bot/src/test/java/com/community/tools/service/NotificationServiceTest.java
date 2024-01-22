@@ -38,11 +38,11 @@ class NotificationServiceTest {
   private final String discordName = "exampleDiscordUser";
 
   @Test
-  void shouldSentMessageToConversationWhenSendPRUpdateNotification() {
+  void shouldSentMessageToConversationWhenSendPrUpdateNotification() {
     when(discordGithubService.getDiscordName(gitHubName)).thenReturn(discordName);
     when(discordService.getUserByName(discordName)).thenReturn(Optional.of(mock(User.class)));
 
-    notificationService.sendPRUpdateNotification(gitHubName, Collections.emptyList());
+    notificationService.sendPullRequestUpdateNotification(gitHubName, Collections.emptyList());
 
     verify(discordService).sendMessageToConversation(isNull(), any(String.class));
   }
@@ -53,12 +53,12 @@ class NotificationServiceTest {
     when(discordService.getUserByName(discordName)).thenReturn(Optional.empty());
 
     assertThrows(IllegalArgumentException.class, () -> {
-      notificationService.sendPRUpdateNotification(gitHubName, Collections.emptyList());
+      notificationService.sendPullRequestUpdateNotification(gitHubName, Collections.emptyList());
     });
   }
 
   @Test
-  void shouldSentMessageToConversationWhenSendPRUpdateNotificationList() {
+  void shouldSentMessageToConversationWhenSendPrUpdateNotificationList() {
     UserForTaskStatusDto userDto = new UserForTaskStatusDto(gitHubName, LocalDate.now(), 1,
         Collections.singletonList(new TaskNameAndStatus("Task1", "PullUrl1", "Status1")));
 
@@ -66,13 +66,13 @@ class NotificationServiceTest {
         Collections.singletonMap(gitHubName, discordName));
     when(discordService.getUserByName(discordName)).thenReturn(Optional.of(mock(User.class)));
 
-    notificationService.sendPRUpdateNotification(Collections.singletonList(userDto));
+    notificationService.sendPullRequestUpdateNotification(Collections.singletonList(userDto));
 
     verify(discordService).sendMessageToConversation(isNull(), any(String.class));
   }
 
   @Test
-  void shouldThrowNotificationUserNotFoundExceptionWhenSendPRUpdateNotificationListUserNotFound() {
+  void shouldThrowNotificationUserNotFoundExceptionWhenSendPrUpdateNotificationListUserNotFound() {
     UserForTaskStatusDto userDto = new UserForTaskStatusDto(gitHubName, LocalDate.now(), 1,
         Collections.singletonList(new TaskNameAndStatus("Task1", "PullUrl1", "Status1")));
 
@@ -81,7 +81,7 @@ class NotificationServiceTest {
     when(discordService.getUserByName(discordName)).thenReturn(Optional.empty());
 
     assertThrows(IllegalArgumentException.class, () -> {
-      notificationService.sendPRUpdateNotification(Collections.singletonList(userDto));
+      notificationService.sendPullRequestUpdateNotification(Collections.singletonList(userDto));
     });
   }
 
