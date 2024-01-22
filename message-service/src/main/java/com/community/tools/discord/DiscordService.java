@@ -173,7 +173,8 @@ public class DiscordService implements MessageService<MessageEmbed> {
   }
 
   /**
-   * Returns Optional of user by discord name
+   * Returns Optional of user by discord name.
+   *
    * @param discordName Discords`s name
    * @return Optional of user
    */
