@@ -3,6 +3,7 @@ package com.community.tools.service;
 import com.community.tools.discord.DiscordService;
 import com.community.tools.dto.UserForTaskStatusDto;
 import com.community.tools.model.TaskNameAndStatus;
+import com.community.tools.service.github.DiscordGithubService;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -14,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class NotificationService {
-
 
   private static final String NOT_FOUND_DISCORD_USER_MESSAGE = "User with this discord name not found";
 
@@ -62,7 +62,7 @@ public class NotificationService {
         .map(UserForTaskStatusDto::getGitName).collect(
             Collectors.toList());
     Map<String, String> gitHubDiscordNames = discordGithubService.getDiscordGithubUsernames(
-        gitHubNames)
+        gitHubNames);
     for (UserForTaskStatusDto dto : userForTaskStatusDtoList) {
       String discordName = gitHubDiscordNames.get(dto.getGitName());
       Optional<User> userOptional = discordService.getUserByName(discordName);
