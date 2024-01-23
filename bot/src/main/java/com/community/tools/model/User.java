@@ -19,6 +19,7 @@ public class User {
 
   @Id
   private String userID;
+  private String guildId;
   private String gitName;
   private LocalDate dateRegistration;
   private LocalDate dateLastActivity;

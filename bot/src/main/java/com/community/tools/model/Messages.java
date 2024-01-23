@@ -2,8 +2,6 @@ package com.community.tools.model;
 
 import com.google.common.base.Splitter;
 import java.util.Map;
-import java.util.stream.Stream;
-import org.springframework.beans.factory.annotation.Value;
 
 public class Messages {
 
@@ -159,4 +157,6 @@ public class Messages {
           + "какие-то вопросы - напишите мне на почту \n"
           + "или в Discord (Dany Mruie#0342). Удачи!</pre>";
 
+  public static final String WELCOME_MENTION =
+      "Greetings, %s! Use /register to complete registration";
 }

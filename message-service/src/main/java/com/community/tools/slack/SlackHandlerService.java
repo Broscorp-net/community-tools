@@ -39,7 +39,7 @@ public class SlackHandlerService {
     @Override
     public void handle(TeamJoinPayload teamJoinPayload) {
       String userId = teamJoinPayload.getEvent().getUser().getId();
-      listener.memberJoin(new Message(userId, ""));
+      //listener.memberJoin(new Message(userId, ""));
     }
   };
 
@@ -52,7 +52,7 @@ public class SlackHandlerService {
         String userId = messageEvent.getUser();
 
         Message message = new Message(userId, messageFromUser);
-        listener.messageReceived(message);
+        //listener.messageReceived(message);
       }
     }
   };

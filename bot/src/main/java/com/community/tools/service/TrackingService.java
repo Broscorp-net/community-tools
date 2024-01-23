@@ -15,7 +15,7 @@ import java.time.LocalDate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import net.dv8tion.jda.api.entities.Message;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.stereotype.Service;
 
@@ -23,48 +23,32 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class TrackingService {
 
-  @Autowired
-  private MessageService messageService;
-
-  @Autowired
-  private StateMachineService stateMachineService;
-
-  @Autowired
-  private UserRepository userRepository;
-
-  @Autowired
-  private EstimateTaskService estimateTaskService;
-
-  @Autowired
-  private MessageConstructor messageConstructor;
-
-  @Autowired
-  private EmailService emailService;
+  private final MessageService<?> messageService;
+  private final StateMachineService stateMachineService;
+  private final UserRepository userRepository;
+  private final EstimateTaskService estimateTaskService;
+  private final EmailService emailService;
 
   /**
    * Method to start the event by state.
    *
-   * @param messageFromUser message from user
-   * @param userId          user id
+   * @param message message from user
    * @throws Exception Exception
    */
-  public void doAction(String messageFromUser, String userId) throws Exception {
+  public void doAction(Message message) throws Exception {
+    String userId = message.getAuthor().getId();
+    String messageFromUser = message.getContentRaw();
 
     StateMachine<State, Event> machine = stateMachineService.restoreMachine(userId);
     String userForQuestion = machine.getExtendedState().getVariables().get("id").toString();
 
-    String message = Messages.DEFAULT_MESSAGE;
+    String messageToSend = Messages.DEFAULT_MESSAGE;
     Event event = null;
     Payload payload = null;
 
     switch (machine.getState().getId()) {
       case NEW_USER:
-        if (messageFromUser.equals(Messages.WELCOME_CHANNEL)) {
-          payload = new SimplePayload(userId);
-          event = Event.GET_RULES;
-        } else {
-          message = Messages.MESSAGE_NOT_WELCOME;
-        }
+        messageToSend = Messages.MESSAGE_NOT_WELCOME;
         break;
 
       case RULES:
@@ -72,7 +56,7 @@ public class TrackingService {
           payload = new SimplePayload(userId);
           event = Event.QUESTION_FIRST;
         } else {
-          message = Messages.NOT_THAT_MESSAGE;
+          messageToSend = Messages.NOT_THAT_MESSAGE;
         }
         break;
 
@@ -98,7 +82,7 @@ public class TrackingService {
         } else if (messageFromUser.equalsIgnoreCase("no")) {
           event = Event.DID_NOT_PASS_VERIFICATION_GIT_LOGIN;
         } else {
-          message = Messages.NOT_THAT_MESSAGE;
+          messageToSend = Messages.NOT_THAT_MESSAGE;
         }
         payload =
             (VerificationPayload) machine.getExtendedState().getVariables().get("dataPayload");
@@ -109,7 +93,7 @@ public class TrackingService {
           event = Event.CONFIRM_ESTIMATE;
           payload = new EstimatePayload(userId, value);
         } else {
-          message = Messages.CHOOSE_AN_ANSWER;
+          messageToSend = Messages.CHOOSE_AN_ANSWER;
         }
         break;
       case GOT_THE_TASK:
@@ -136,7 +120,7 @@ public class TrackingService {
             .text(Messages.EMAIL)
             .build());
       } else {
-        messageService.sendPrivateMessage(messageService.getUserById(userId), message);
+        messageService.sendPrivateMessage(messageService.getUserById(userId), messageToSend);
       }
     } else {
       stateMachineService.doAction(machine, payload, event);
@@ -149,10 +133,11 @@ public class TrackingService {
    * @param userId platform user id
    * @throws Exception Exception
    */
-  public void resetUser(String userId) throws Exception {
+  public void resetUser(String userId, String guildId) throws Exception {
 
     User stateEntity = new User();
     stateEntity.setUserID(userId);
+    stateEntity.setGuildId(guildId);
     stateEntity.setDateRegistration(LocalDate.now());
     String userName = messageService.getUserById(userId);
     userRepository.save(stateEntity);

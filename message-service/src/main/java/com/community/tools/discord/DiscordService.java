@@ -10,7 +10,9 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.components.Button;
@@ -165,6 +167,14 @@ public class DiscordService implements MessageService<MessageEmbed> {
             .get();
     String channelId = channel.getId();
     return channelId;
+  }
+
+  @Override
+  public void addRoleToUser(String guildId, String userId, String roleName) {
+    Guild guild = jda.getGuildById(guildId);
+    assert guild != null;
+    Role role = guild.getRolesByName(roleName, false).get(0);
+    guild.addRoleToMember(userId, role).queue();
   }
 
   @Override
