@@ -1,4 +1,4 @@
-package com.community.tools.model.stats;
+package com.community.tools.model.status;
 
 import java.io.Serializable;
 import lombok.AllArgsConstructor;

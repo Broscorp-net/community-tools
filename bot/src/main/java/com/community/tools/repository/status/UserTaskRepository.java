@@ -1,7 +1,7 @@
-package com.community.tools.repository.stats;
+package com.community.tools.repository.status;
 
-import com.community.tools.model.stats.UserTask;
-import com.community.tools.model.stats.UserTaskId;
+import com.community.tools.model.status.UserTask;
+import com.community.tools.model.status.UserTaskId;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;

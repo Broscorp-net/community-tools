@@ -1,9 +1,9 @@
 package com.community.tools.service.github.event.tasks.status.handlers.jsonobject;
 
 import com.community.tools.model.TaskStatus;
-import com.community.tools.model.stats.UserTask;
-import com.community.tools.model.stats.UserTaskId;
-import com.community.tools.repository.stats.UserTaskRepository;
+import com.community.tools.model.status.UserTask;
+import com.community.tools.model.status.UserTaskId;
+import com.community.tools.repository.status.UserTaskRepository;
 import com.community.tools.service.github.event.EventHandler;
 import java.util.Arrays;
 import java.util.List;

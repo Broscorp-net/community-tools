@@ -1,4 +1,4 @@
-package com.community.tools.model.stats;
+package com.community.tools.model.status;
 
 import java.time.LocalDate;
 import javax.persistence.Entity;

@@ -1,9 +1,9 @@
 package com.community.tools.service.github.event.tasks.status.handlers.jsonobject;
 
 import com.community.tools.model.TaskStatus;
-import com.community.tools.model.stats.UserTask;
-import com.community.tools.model.stats.UserTaskId;
-import com.community.tools.repository.stats.UserTaskRepository;
+import com.community.tools.model.status.UserTask;
+import com.community.tools.model.status.UserTaskId;
+import com.community.tools.repository.status.UserTaskRepository;
 import com.community.tools.service.github.event.EventHandler;
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -98,7 +98,7 @@ public class GithubWorkflowRunEventHandler implements EventHandler<JSONObject> {
   }
 
   private static String formPullUrl(String repoFullName) {
-    return "https://github.com/" + repoFullName + "pull/1";
+    return "https://github.com/" + repoFullName + "/pull/1";
   }
 
   private static String getTaskName(String repoName, String gitName) {

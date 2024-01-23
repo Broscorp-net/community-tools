@@ -1,5 +1,6 @@
 package com.community.tools.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -16,8 +17,11 @@ public class Mentors {
 
   @Id
   private String gitNick;
+  @Column(unique = true)
+  private String discordName;
   private String slackId;
 
-  public Mentors() {}
+  public Mentors() {
+  }
 
 }
