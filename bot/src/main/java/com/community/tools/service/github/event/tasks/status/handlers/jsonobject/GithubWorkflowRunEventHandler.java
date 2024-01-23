@@ -1,14 +1,12 @@
 package com.community.tools.service.github.event.tasks.status.handlers.jsonobject;
 
-import com.community.tools.dto.events.tasks.TaskHasNewChangesEventDto;
+import com.community.tools.dto.events.tasks.TaskStatusEventDto;
 import com.community.tools.model.TaskStatus;
 import com.community.tools.model.status.UserTask;
 import com.community.tools.model.status.UserTaskId;
 import com.community.tools.repository.status.UserTaskRepository;
-import com.community.tools.service.AbstractEventProcessingService;
 import com.community.tools.service.github.event.EventHandler;
-import com.community.tools.service.github.event.tasks.status.TaskHasNewChangesEventProcessingService;
-import com.community.tools.service.github.event.tasks.status.TaskReadyForReviewEventProcessingService;
+import com.community.tools.service.github.event.tasks.status.TaskStatusEventProcessingService;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Optional;
@@ -24,8 +22,7 @@ import org.springframework.stereotype.Component;
 public class GithubWorkflowRunEventHandler implements EventHandler<JSONObject> {
 
   private final UserTaskRepository userTaskRepository;
-  private final TaskReadyForReviewEventProcessingService taskReadyForReviewEventProcessingService;
-  private final TaskHasNewChangesEventProcessingService taskHasNewChangesEventProcessingService;
+  private final TaskStatusEventProcessingService taskStatusEventProcessingService;
   @Value("${tasksForUsers}")
   private String originalTaskNames;
 
@@ -89,13 +86,33 @@ public class GithubWorkflowRunEventHandler implements EventHandler<JSONObject> {
 
     userTaskRepository.saveAndFlush(record);
     //Invoking event processing services after we are sure to have saved the event
+    invokeEventHandlers(hasNewChanges, gitName, taskName, pullUrl, isSubmittedFirstTime);
+  }
+
+  private void invokeEventHandlers(boolean hasNewChanges, String gitName, String taskName,
+      String pullUrl,
+      boolean isSubmittedFirstTime) {
     if (hasNewChanges) {
-      TaskHasNewChangesEventDto dto = new TaskHasNewChangesEventDto(taskName, gitName, pullUrl);
-      taskHasNewChangesEventProcessingService.processEvent(dto);
+      TaskStatusEventDto dto = TaskStatusEventDto
+          .builder()
+          .taskStatus(TaskStatus.READY_FOR_REVIEW)
+          .withNewChanges(true)
+          .traineeGitName(gitName)
+          .taskName(taskName)
+          .pullUrl(pullUrl)
+          .build();
+      taskStatusEventProcessingService.processEvent(dto);
     }
     if (isSubmittedFirstTime) {
-      //TODO pass a valid event
-      taskReadyForReviewEventProcessingService.processEvent(null);
+      TaskStatusEventDto dto = TaskStatusEventDto
+          .builder()
+          .taskStatus(TaskStatus.READY_FOR_REVIEW)
+          .withNewChanges(false)
+          .traineeGitName(gitName)
+          .taskName(taskName)
+          .pullUrl(pullUrl)
+          .build();
+      taskStatusEventProcessingService.processEvent(dto);
     }
   }
 

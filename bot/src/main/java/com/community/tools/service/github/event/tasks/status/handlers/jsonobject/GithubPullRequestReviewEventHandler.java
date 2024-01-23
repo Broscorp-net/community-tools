@@ -1,10 +1,12 @@
 package com.community.tools.service.github.event.tasks.status.handlers.jsonobject;
 
+import com.community.tools.dto.events.tasks.TaskStatusEventDto;
 import com.community.tools.model.TaskStatus;
 import com.community.tools.model.status.UserTask;
 import com.community.tools.model.status.UserTaskId;
 import com.community.tools.repository.status.UserTaskRepository;
 import com.community.tools.service.github.event.EventHandler;
+import com.community.tools.service.github.event.tasks.status.TaskStatusEventProcessingService;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -23,6 +25,7 @@ public class GithubPullRequestReviewEventHandler implements EventHandler<JSONObj
   private final UserTaskRepository userTaskRepository;
   @Value("${tasksForUsers}")
   private String originalTaskNames;
+  private final TaskStatusEventProcessingService taskStatusEventProcessingService;
 
   @Override
   public void handleEvent(JSONObject eventJson) {
@@ -41,14 +44,23 @@ public class GithubPullRequestReviewEventHandler implements EventHandler<JSONObj
    * docs about the event</a>
    */
   private void handlePullRequestReview(JSONObject eventJson) {
+    boolean wereChangesRequested = false;
     final JSONObject review = eventJson.getJSONObject("review");
+    final JSONObject reviewerUser = review.getJSONObject("user");
+    String reviewerGitName = null;
+    if (reviewerUser != null) {
+      reviewerGitName = reviewerUser.getString("login");
+    }
     final String state = review.getString("state");
     final String pullUrl = review.getString("pull_request_url");
     final Optional<String> maybeTaskName = getTaskNameFromPullUrl(pullUrl);
     if (!maybeTaskName.isPresent()) {
-      return; //This event is for a pull request unrelated to traineeship in this case
+      //TODO return; //This event is for a pull request unrelated to traineeship in this case
+
     }
-    final String taskName = maybeTaskName.get();
+    //final String taskName = maybeTaskName.get();
+    final String taskName = "test-repo";
+    //TODO return to normal
     final String traineeGitName = getTraineeNameFromPullUrl(pullUrl, taskName);
     final Optional<UserTask> maybeUserTask = userTaskRepository.findById(
         new UserTaskId(traineeGitName, taskName));
@@ -64,8 +76,25 @@ public class GithubPullRequestReviewEventHandler implements EventHandler<JSONObj
       userTask.setTaskStatus(TaskStatus.DONE.getDescription());
     } else if (state.equals("changes_requested") || state.equals("commented")) {
       userTask.setTaskStatus(TaskStatus.CHANGES_REQUESTED.getDescription());
+      wereChangesRequested = true;
     }
     userTaskRepository.saveAndFlush(userTask);
+    if (wereChangesRequested) {
+      invokeEventHandlers(traineeGitName, taskName, reviewerGitName, pullUrl);
+    }
+  }
+
+  private void invokeEventHandlers(String traineeGitName, String taskName, String reviewerGitName,
+      String pullUrl) {
+    taskStatusEventProcessingService.processEvent(TaskStatusEventDto
+        .builder()
+        .taskStatus(TaskStatus.CHANGES_REQUESTED)
+        .withNewChanges(false)
+        .traineeGitName(traineeGitName)
+        .taskName(taskName)
+        .reviewerGitName(reviewerGitName)
+        .pullUrl(pullUrl)
+        .build());
   }
 
   private Optional<String> getTaskNameFromPullUrl(final String pullUrl) {

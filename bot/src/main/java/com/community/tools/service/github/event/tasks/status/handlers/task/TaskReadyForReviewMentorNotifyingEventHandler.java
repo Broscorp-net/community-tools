@@ -11,14 +11,14 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class TaskHasNewChangesMentorNotifyingEventHandler implements
+public class TaskReadyForReviewMentorNotifyingEventHandler implements
     EventHandler<TaskStatusEventDto> {
 
   private final MentorNotificationService mentorNotificationService;
 
   @Override
   public void handleEvent(TaskStatusEventDto eventDto) {
-    if (eventDto.isWithNewChanges() && eventDto.getTaskStatus()
+    if (!eventDto.isWithNewChanges() && eventDto.getTaskStatus()
         .equals(TaskStatus.READY_FOR_REVIEW)) {
       mentorNotificationService.notifyAllTraineeMentors(eventDto.getTraineeGitName(),
           formNotificationString(eventDto));
@@ -27,6 +27,6 @@ public class TaskHasNewChangesMentorNotifyingEventHandler implements
 
   private String formNotificationString(TaskStatusEventDto eventDto) {
     return "Task " + eventDto.getTaskName() + " by " + eventDto.getTraineeGitName() + " at "
-        + eventDto.getPullUrl() + " has New Changes to Review!";
+        + eventDto.getPullUrl() + " is Ready For Review!";
   }
 }
