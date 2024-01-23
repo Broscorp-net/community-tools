@@ -8,8 +8,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @EqualsAndHashCode
 @NoArgsConstructor
-public class StudentMentorRelationId implements Serializable {
+public class TraineeMentorRelationId implements Serializable {
 
   private String gitNameMentor;
-  private String gitNameStudent;
+  private String gitNameTrainee;
 }

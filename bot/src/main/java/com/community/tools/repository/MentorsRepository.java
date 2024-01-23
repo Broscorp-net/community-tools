@@ -11,6 +11,4 @@ import org.springframework.stereotype.Repository;
 public interface MentorsRepository extends JpaRepository<Mentors, Long> {
 
   Optional<Mentors> findByGitNick(String gitNick);
-
-  Optional<Mentors> findByDiscordName(String discordName);
 }

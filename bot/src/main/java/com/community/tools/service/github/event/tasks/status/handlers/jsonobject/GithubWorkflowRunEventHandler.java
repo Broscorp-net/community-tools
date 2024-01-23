@@ -82,16 +82,16 @@ public class GithubWorkflowRunEventHandler implements EventHandler<JSONObject> {
         record.setTaskStatus(TaskStatus.FAILURE.getDescription());
       }
     }
+    final String pullUrl = formPullUrl(repoFullName);
     record.setLastActivity(LocalDate.now());
-    record.setPullUrl(formPullUrl(repoFullName));
+    record.setPullUrl(pullUrl);
     record.setHeadCommitId(headCommitId);
 
     userTaskRepository.saveAndFlush(record);
     //Invoking event processing services after we are sure to have saved the event
-    log.info("" + hasNewChanges);
     if (hasNewChanges) {
-      //TODO pass a valid event
-      taskHasNewChangesEventProcessingService.processEvent(null);
+      TaskHasNewChangesEventDto dto = new TaskHasNewChangesEventDto(taskName, gitName, pullUrl);
+      taskHasNewChangesEventProcessingService.processEvent(dto);
     }
     if (isSubmittedFirstTime) {
       //TODO pass a valid event

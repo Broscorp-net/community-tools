@@ -11,11 +11,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Getter
 @Entity
-@IdClass(StudentMentorRelationId.class)
-public class StudentMentorRelation {
+@IdClass(TraineeMentorRelationId.class)
+public class TraineeMentorRelation {
 
   @Id
   private String gitNameMentor;
   @Id
-  private String gitNameStudent;
+  private String gitNameTrainee;
 }
