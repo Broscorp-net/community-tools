@@ -36,10 +36,10 @@ public class TaskReviewMentorAddingEventHandler implements EventHandler<TaskStat
         if (!maybeRelation.isPresent()) {
           traineeMentorRelationRepository.saveAndFlush(new TraineeMentorRelation(it.getGitNick(),
               eventDto.getTraineeGitName()));
+          mentorNotificationService.notifyMentor(eventDto.getReviewerGitName(),
+              formNotificationString(eventDto));
         }
       });
-      mentorNotificationService.notifyAllTraineeMentors(eventDto.getTraineeGitName(),
-          formNotificationString(eventDto));
     }
   }
 

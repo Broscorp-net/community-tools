@@ -121,9 +121,7 @@ public class GithubWorkflowRunEventHandler implements EventHandler<JSONObject> {
       return true; /* we are only interested in processing changes GitHub Classroom automatically
       adds to the pull request with head branch "feedback" */
     }
-    return false;
-    //TODO RETURN TO NORMAL
-    //return !originalTaskNames.contains(taskName);
+    return !originalTaskNames.contains(taskName);
   }
 
   private static boolean containsNewChanges(JSONObject workflowRun, String headCommitId) {
@@ -136,8 +134,7 @@ public class GithubWorkflowRunEventHandler implements EventHandler<JSONObject> {
     final Optional<HashMap> feedbackPullRequest = (workflowRun.getJSONArray(
             "pull_requests").toList().stream().map(it -> (HashMap) it)
         .filter(it -> (Integer) it.get("number") == 1).findFirst());
-    //TODO RETURN TO NORMAL
-    if (!feedbackPullRequest.isPresent() && false) {
+    if (!feedbackPullRequest.isPresent()) {
       String errorMessage =
           "Could not find Feedback pull request from GitHub classroom for user " + gitName
               + " doing task " + taskName;

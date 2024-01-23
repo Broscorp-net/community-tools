@@ -55,12 +55,9 @@ public class GithubPullRequestReviewEventHandler implements EventHandler<JSONObj
     final String pullUrl = review.getString("pull_request_url");
     final Optional<String> maybeTaskName = getTaskNameFromPullUrl(pullUrl);
     if (!maybeTaskName.isPresent()) {
-      //TODO return; //This event is for a pull request unrelated to traineeship in this case
-
+      return; //This event is for a pull request unrelated to traineeship in this case
     }
-    //final String taskName = maybeTaskName.get();
-    final String taskName = "test-repo";
-    //TODO return to normal
+    final String taskName = maybeTaskName.get();
     final String traineeGitName = getTraineeNameFromPullUrl(pullUrl, taskName);
     final Optional<UserTask> maybeUserTask = userTaskRepository.findById(
         new UserTaskId(traineeGitName, taskName));
