@@ -45,6 +45,7 @@ public class GithubPullRequestReviewEventHandler implements EventHandler<JSONObj
    */
   private void handlePullRequestReview(JSONObject eventJson) {
     boolean wereChangesRequested = false;
+    boolean isTaskDoneNow = false;
     final JSONObject review = eventJson.getJSONObject("review");
     final JSONObject reviewerUser = review.getJSONObject("user");
     String reviewerGitName = null;
@@ -71,27 +72,40 @@ public class GithubPullRequestReviewEventHandler implements EventHandler<JSONObj
       return;
     } else if (state.equals("approved")) {
       userTask.setTaskStatus(TaskStatus.DONE.getDescription());
+      isTaskDoneNow = true;
     } else if (state.equals("changes_requested") || state.equals("commented")) {
       userTask.setTaskStatus(TaskStatus.CHANGES_REQUESTED.getDescription());
       wereChangesRequested = true;
     }
     userTaskRepository.saveAndFlush(userTask);
-    if (wereChangesRequested) {
-      invokeEventHandlers(traineeGitName, taskName, reviewerGitName, pullUrl);
-    }
+    invokeEventHandlers(traineeGitName, taskName, reviewerGitName, pullUrl, wereChangesRequested,
+        isTaskDoneNow);
   }
 
   private void invokeEventHandlers(String traineeGitName, String taskName, String reviewerGitName,
-      String pullUrl) {
-    taskStatusEventProcessingService.processEvent(TaskStatusEventDto
-        .builder()
-        .taskStatus(TaskStatus.CHANGES_REQUESTED)
-        .withNewChanges(false)
-        .traineeGitName(traineeGitName)
-        .taskName(taskName)
-        .reviewerGitName(reviewerGitName)
-        .pullUrl(pullUrl)
-        .build());
+      String pullUrl, boolean wereChangesRequested, boolean isTaskDoneNow) {
+    if (wereChangesRequested) {
+      taskStatusEventProcessingService.processEvent(TaskStatusEventDto
+          .builder()
+          .taskStatus(TaskStatus.CHANGES_REQUESTED)
+          .withNewChanges(false)
+          .traineeGitName(traineeGitName)
+          .taskName(taskName)
+          .reviewerGitName(reviewerGitName)
+          .pullUrl(pullUrl)
+          .build());
+    }
+    if (isTaskDoneNow) {
+      taskStatusEventProcessingService.processEvent(TaskStatusEventDto
+          .builder()
+          .taskStatus(TaskStatus.DONE)
+          .withNewChanges(false)
+          .traineeGitName(traineeGitName)
+          .taskName(taskName)
+          .reviewerGitName(reviewerGitName)
+          .pullUrl(pullUrl)
+          .build());
+    }
   }
 
   private Optional<String> getTaskNameFromPullUrl(final String pullUrl) {
