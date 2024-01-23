@@ -2,6 +2,7 @@ package com.community.tools.dto;
 
 import java.util.Collections;
 import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,6 +16,13 @@ public class OpenAiRequestDto {
   private List<Message> messages;
   private double temperature;
 
+  /**
+   * Constructor for DTO.
+   *
+   * @param model model that is intended to be used
+   * @param prompt prompt to work with
+   * @param temperature ai temperature
+   */
   public OpenAiRequestDto(String model, String prompt, double temperature) {
     this.model = model;
     this.messages = Collections.singletonList(new Message("user", prompt));

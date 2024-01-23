@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CommitFileDTO {
-    private String filename;
-    private String code;
+public class CommitFileDto {
+  private String filename;
+  private String code;
 }
