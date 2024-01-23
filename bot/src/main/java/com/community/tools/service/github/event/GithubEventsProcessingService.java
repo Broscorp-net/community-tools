@@ -1,17 +1,14 @@
 package com.community.tools.service.github.event;
 
+import com.community.tools.service.AbstractEventProcessingService;
 import java.util.List;
-import lombok.AllArgsConstructor;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
-@AllArgsConstructor
 @Service
-public class GithubEventsProcessingService {
+public class GithubEventsProcessingService extends AbstractEventProcessingService<JSONObject> {
 
-  private final List<GithubEventHandler> eventHandlers;
-
-  public void processEvent(JSONObject eventJson) {
-    eventHandlers.forEach(eventHandler -> eventHandler.handleEvent(eventJson));
+  public GithubEventsProcessingService(List<EventHandler<JSONObject>> eventHandlers) {
+    super(eventHandlers);
   }
 }

@@ -1,10 +1,10 @@
-package com.community.tools.service.github.event.stats;
+package com.community.tools.service.github.event.tasks.status.handlers.jsonobject;
 
 import com.community.tools.model.TaskStatus;
 import com.community.tools.model.stats.UserTask;
 import com.community.tools.model.stats.UserTaskId;
 import com.community.tools.repository.stats.UserTaskRepository;
-import com.community.tools.service.github.event.GithubEventHandler;
+import com.community.tools.service.github.event.EventHandler;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class GithubPullRequestReviewEventHandler implements GithubEventHandler {
+public class GithubPullRequestReviewEventHandler implements EventHandler<JSONObject> {
 
   private final UserTaskRepository userTaskRepository;
   @Value("${tasksForUsers}")
