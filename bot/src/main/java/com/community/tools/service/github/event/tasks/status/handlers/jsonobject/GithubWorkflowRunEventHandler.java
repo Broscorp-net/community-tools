@@ -1,10 +1,14 @@
 package com.community.tools.service.github.event.tasks.status.handlers.jsonobject;
 
+import com.community.tools.dto.events.tasks.TaskHasNewChangesEventDto;
 import com.community.tools.model.TaskStatus;
 import com.community.tools.model.status.UserTask;
 import com.community.tools.model.status.UserTaskId;
 import com.community.tools.repository.status.UserTaskRepository;
+import com.community.tools.service.AbstractEventProcessingService;
 import com.community.tools.service.github.event.EventHandler;
+import com.community.tools.service.github.event.tasks.status.TaskHasNewChangesEventProcessingService;
+import com.community.tools.service.github.event.tasks.status.TaskReadyForReviewEventProcessingService;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Optional;
@@ -20,6 +24,8 @@ import org.springframework.stereotype.Component;
 public class GithubWorkflowRunEventHandler implements EventHandler<JSONObject> {
 
   private final UserTaskRepository userTaskRepository;
+  private final TaskReadyForReviewEventProcessingService taskReadyForReviewEventProcessingService;
+  private final TaskHasNewChangesEventProcessingService taskHasNewChangesEventProcessingService;
   @Value("${tasksForUsers}")
   private String originalTaskNames;
 
@@ -39,13 +45,16 @@ public class GithubWorkflowRunEventHandler implements EventHandler<JSONObject> {
    * about the event</a>
    */
   private void parseAndSaveWorkflowRun(JSONObject eventJson) {
-    final JSONObject repo = (JSONObject) eventJson.get("repository");
-    final JSONObject workflowRun = (JSONObject) eventJson.get("workflow_run");
-    final String gitName = ((JSONObject) workflowRun.get("actor")).getString(
+    boolean hasNewChanges = false;
+    boolean isSubmittedFirstTime = false;
+    final JSONObject repo = eventJson.getJSONObject("repository");
+    final JSONObject workflowRun = eventJson.getJSONObject("workflow_run");
+    final String gitName = (workflowRun.getJSONObject("actor")).getString(
         "login");
     final String taskName = getTaskName(repo.getString("name"), gitName);
     final String repoFullName = repo.getString("full_name");
     final String conclusion = workflowRun.getString("conclusion");
+    final String headCommitId = workflowRun.getJSONObject("head_commit").getString("id");
     if (checkIfEventIsIrrelevant(workflowRun, taskName)) {
       return;
     }
@@ -58,21 +67,36 @@ public class GithubWorkflowRunEventHandler implements EventHandler<JSONObject> {
       if (!conclusion.equals("success") && !record.getTaskStatus()
           .equals(TaskStatus.DONE.getDescription())) {
         record.setTaskStatus(TaskStatus.FAILURE.getDescription());
+      } else if (conclusion.equals("success") && !record.getTaskStatus()
+          .equals(TaskStatus.DONE.getDescription())) {
+        hasNewChanges = containsNewChanges(workflowRun, headCommitId);
       }
     } else {
       record = new UserTask();
       record.setGitName(gitName);
       record.setTaskName(taskName);
       if (conclusion.equals("success")) {
-        record.setTaskStatus(TaskStatus.NEW.getDescription());
+        record.setTaskStatus(TaskStatus.READY_FOR_REVIEW.getDescription());
+        isSubmittedFirstTime = true;
       } else {
         record.setTaskStatus(TaskStatus.FAILURE.getDescription());
       }
     }
     record.setLastActivity(LocalDate.now());
     record.setPullUrl(formPullUrl(repoFullName));
+    record.setHeadCommitId(headCommitId);
 
     userTaskRepository.saveAndFlush(record);
+    //Invoking event processing services after we are sure to have saved the event
+    log.info("" + hasNewChanges);
+    if (hasNewChanges) {
+      //TODO pass a valid event
+      taskHasNewChangesEventProcessingService.processEvent(null);
+    }
+    if (isSubmittedFirstTime) {
+      //TODO pass a valid event
+      taskReadyForReviewEventProcessingService.processEvent(null);
+    }
   }
 
   private boolean checkIfEventIsIrrelevant(JSONObject workflowRun, String taskName) {
@@ -80,7 +104,14 @@ public class GithubWorkflowRunEventHandler implements EventHandler<JSONObject> {
       return true; /* we are only interested in processing changes GitHub Classroom automatically
       adds to the pull request with head branch "feedback" */
     }
-    return !originalTaskNames.contains(taskName);
+    return false;
+    //TODO RETURN TO NORMAL
+    //return !originalTaskNames.contains(taskName);
+  }
+
+  private static boolean containsNewChanges(JSONObject workflowRun, String headCommitId) {
+    return workflowRun.getJSONObject("head_commit").getString("id")
+        .equals(headCommitId);
   }
 
   private static void validateGithubClassroomPullRequestExistence(JSONObject workflowRun,
@@ -88,7 +119,8 @@ public class GithubWorkflowRunEventHandler implements EventHandler<JSONObject> {
     final Optional<HashMap> feedbackPullRequest = (workflowRun.getJSONArray(
             "pull_requests").toList().stream().map(it -> (HashMap) it)
         .filter(it -> (Integer) it.get("number") == 1).findFirst());
-    if (!feedbackPullRequest.isPresent()) {
+    //TODO RETURN TO NORMAL
+    if (!feedbackPullRequest.isPresent() && false) {
       String errorMessage =
           "Could not find Feedback pull request from GitHub classroom for user " + gitName
               + " doing task " + taskName;

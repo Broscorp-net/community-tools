@@ -1,5 +1,6 @@
 package com.community.tools.service.github.event.tasks.status;
 
+import com.community.tools.dto.events.tasks.TaskHasNewChangesEventDto;
 import com.community.tools.service.AbstractEventProcessingService;
 import com.community.tools.service.github.event.EventHandler;
 import com.community.tools.service.github.event.tasks.status.handlers.task.TaskHasNewChangesEventHandler;
@@ -8,10 +9,10 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class TaskHasNewChangesEventProcessingService extends
-    AbstractEventProcessingService<TaskHasNewChangesEventHandler> {
+    AbstractEventProcessingService<TaskHasNewChangesEventDto> {
 
   public TaskHasNewChangesEventProcessingService(
-      List<EventHandler<TaskHasNewChangesEventHandler>> eventHandlers) {
+      List<EventHandler<TaskHasNewChangesEventDto>> eventHandlers) {
     super(eventHandlers);
   }
 }

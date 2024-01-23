@@ -22,4 +22,5 @@ public class UserTask {
   private LocalDate lastActivity;
   private String pullUrl;
   private String taskStatus;
+  private String headCommitId;
 }
