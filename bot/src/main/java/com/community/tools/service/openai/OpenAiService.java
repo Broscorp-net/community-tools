@@ -23,6 +23,8 @@ public class OpenAiService {
   private String apiKey;
   @Value("${openai.model}")
   private String model;
+  @Value("${openai.temperature}")
+  private double temperature;
   private final ObjectMapper objectMapper;
 
   public OpenAiService(ObjectMapper objectMapper) {
@@ -42,7 +44,7 @@ public class OpenAiService {
       headers.setBearerAuth(apiKey);
       headers.setContentType(MediaType.APPLICATION_JSON);
 
-      OpenAiRequestDto requestDto = new OpenAiRequestDto(model, prompt);
+      OpenAiRequestDto requestDto = new OpenAiRequestDto(model, prompt, temperature);
 
       RequestEntity<OpenAiRequestDto> requestEntity =
               new RequestEntity<>(requestDto, headers, HttpMethod.POST, URI.create(url));
