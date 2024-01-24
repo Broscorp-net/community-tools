@@ -15,31 +15,17 @@ import java.time.LocalDate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class TrackingService {
-
-  @Autowired
-  private MessageService messageService;
-
-  @Autowired
-  private StateMachineService stateMachineService;
-
-  @Autowired
-  private UserRepository userRepository;
-
-  @Autowired
-  private EstimateTaskService estimateTaskService;
-
-  @Autowired
-  private MessageConstructor messageConstructor;
-
-  @Autowired
-  private EmailService emailService;
+  private final MessageService messageService;
+  private final StateMachineService stateMachineService;
+  private final UserRepository userRepository;
+  private final EstimateTaskService estimateTaskService;
+  private final EmailService emailService;
 
   /**
    * Method to start the event by state.

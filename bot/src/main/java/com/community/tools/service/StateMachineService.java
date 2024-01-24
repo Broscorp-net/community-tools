@@ -18,7 +18,6 @@ public class StateMachineService {
   private final UserRepository userRepository;
   private final StateMachineFactory<State, Event> factory;
   private final StateMachinePersister<State, Event, String> persister;
-  private final MessageService messageService;
 
   /**
    * Restore machine by Slack`s userId.
