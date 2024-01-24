@@ -30,6 +30,25 @@ public class PullRequestValidationService {
   private final ObjectMapper objectMapper;
   private final OpenAiService openAiService;
   private final Queue<QueuedValidationProcessDto> requests = new LinkedList<>();
+  private static final String PROMPT_TEMPLATE = "Provide me with the code review where you "
+          + "point out lines of code that have some issues and make an comment "
+          + "what are they and why. Then rate me the code on the scale from 1 to 10 "
+          + "where 1 is the poorest. Rate code considering it's trainee developer."
+          + "The code will be provided in JSON format as "
+          + "[{filename: ${filename}, code: ${code}}]. Ignore git patch headers. "
+          + "The code to rate is: %s"
+          + ". Return me response in the JSON format of {"
+          + "  rating: ${rating_integer},"
+          + "  files: ["
+          + "    filename: ${filename},"
+          + "    comments: ["
+          + "      {"
+          + "        line: ${line_number_integer},"
+          + "        comment: ${comment}"
+          + "      }"
+          + "    ]"
+          + "  ]"
+          + "} return only strictly json response.";
 
   /**
    * Constructor for the service.
@@ -69,26 +88,7 @@ public class PullRequestValidationService {
                 .stream().filter(Objects::nonNull).collect(Collectors.toList())) {
           fileList.add(new CommitFileDto(file.getFileName(), file.getPatch()));
         }
-        String prompt = "Provide me with the code review where you point out lines of code "
-                + "that have some issues and make an comment what are they and why. "
-                + "Then rate me the code on the scale from 1 to 10 "
-                + "where 1 is the poorest. Rate code considering it's trainee developer."
-                + "The code will be provided in JSON format as "
-                + "[{filename: ${filename}, code: ${code}}]. Ignore git patch headers. "
-                + "The code to rate is:"
-                + objectMapper.writeValueAsString(fileList)
-                + ". Return me response in the JSON format of {"
-                + "  rating: ${rating_integer},"
-                + "  files: ["
-                + "    filename: ${filename},"
-                + "    comments: ["
-                + "      {"
-                + "        line: ${line_number_integer},"
-                + "        comment: ${comment}"
-                + "      }"
-                + "    ]"
-                + "  ]"
-                + "} return only strictly json response.";
+        String prompt = String.format(PROMPT_TEMPLATE, objectMapper.writeValueAsString(fileList));
 
         requests.add(QueuedValidationProcessDto.builder()
                 .prompt(prompt)
@@ -140,7 +140,7 @@ public class PullRequestValidationService {
               }
             });
           });
-          if (openAiResponse.getRating() > 7) {
+          if (openAiResponse.getRating() >= 7) {
             review.event(GHPullRequestReviewEvent.COMMENT);
           } else {
             review.event(GHPullRequestReviewEvent.REQUEST_CHANGES);

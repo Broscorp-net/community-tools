@@ -44,13 +44,10 @@ public class GitHubConnectService {
    * @return GHRepository
    */
   public GHRepository getGitHubRepositoryByName(String repositoryName) {
-    GHRepository repository;
     try {
-      repository = getGitHubConnection().getRepository(repositoryName);
+      return getGitHubConnection().getRepository(repositoryName);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
-    return repository;
   }
-
 }
