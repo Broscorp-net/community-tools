@@ -3,46 +3,34 @@ package com.community.tools.util.statemachine.actions.transitions.verifications;
 import com.community.tools.model.Messages;
 import com.community.tools.model.User;
 import com.community.tools.repository.UserRepository;
-import com.community.tools.service.MessageConstructor;
 import com.community.tools.service.MessageService;
 import com.community.tools.service.github.ClassroomService;
 import com.community.tools.service.payload.VerificationPayload;
 import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
 import com.community.tools.util.statemachine.actions.Transition;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.kohsuke.github.GHUser;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.action.Action;
 import org.springframework.statemachine.annotation.WithStateMachine;
 import org.springframework.statemachine.config.builders.StateMachineTransitionConfigurer;
 
-@NoArgsConstructor
-@AllArgsConstructor
 @WithStateMachine
+@Slf4j
+@RequiredArgsConstructor
 public class AddGitNameActionTransition implements Transition {
 
-  @Autowired
-  private Action<State, Event> errorAction;
+  private final Action<State, Event> errorAction;
+  private final UserRepository userRepository;
+  private final ClassroomService classroomService;
+  private final MessageService<?> messageService;
 
-  @Value("${generalInformationChannel}")
-  private String channel;
-
-  @Autowired
-  private UserRepository userRepository;
-
-  @Autowired
-  private ClassroomService classroomService;
-
-  @Autowired
-  private MessageService messageService;
-
-  @Autowired
-  private MessageConstructor messageConstructor;
+  @Value("${newbieRole:newbie}")
+  private String newbieRoleName;
 
   @Override
   public void configure(StateMachineTransitionConfigurer<State, Event> transitions)
@@ -60,46 +48,24 @@ public class AddGitNameActionTransition implements Transition {
   public void execute(StateContext<State, Event> stateContext) {
     VerificationPayload payload =
         (VerificationPayload) stateContext.getExtendedState().getVariables().get("dataPayload");
-    String user = payload.getId();
+    String userId = payload.getId();
     String nickname = payload.getGitNick();
 
-    User stateEntity = userRepository.findByUserID(user).get();
+    User stateEntity = userRepository.findByUserID(userId)
+        .orElseThrow(() -> new RuntimeException("User with id = [" + userId + "] was not found"));
     stateEntity.setGitName(nickname);
-    String firstAnswer = stateEntity.getFirstAnswerAboutRules();
-    String secondAnswer = stateEntity.getSecondAnswerAboutRules();
-    String thirdAnswer = stateEntity.getThirdAnswerAboutRules();
     GHUser userGitLogin = new GHUser();
     try {
       classroomService.addUserToTraineesTeam(nickname);
       stateEntity.setEmail(userGitLogin.getEmail());
     } catch (Exception e) {
-      messageService.sendBlocksMessage(
-          messageService.getUserById(user),
-          messageConstructor.createErrorWithAddingGitNameMessage(
-              Messages.ERROR_WITH_ADDING_GIT_NAME));
+      log.error("Failed to add a user with nickname = [{}] to a team", nickname);
     }
     userRepository.save(stateEntity);
-    messageService.sendMessageToConversation(
-        channel,
-        generalInformationAboutUserToChannel(user, userGitLogin)
-            + "\n"
-            + sendUserAnswersToChannel(firstAnswer, secondAnswer, thirdAnswer));
-    messageService.sendBlocksMessage(
-        messageService.getUserById(user),
-        messageConstructor.createGetFirstTaskMessage(
-            Messages.CONGRATS_AVAILABLE_NICK, Messages.GET_FIRST_TASK, Messages.LINK_FIRST_TASK));
+    messageService.sendPrivateMessage(messageService.getUserById(userId),
+        Messages.REGISTRATION_COMPLETED);
     stateContext.getExtendedState().getVariables().put("gitNick", nickname);
+    messageService.removeRole(stateEntity.getGuildId(), userId, newbieRoleName);
   }
 
-  private String generalInformationAboutUserToChannel(String slackName, GHUser user) {
-    return messageService.getUserById(slackName) + " - " + user.getLogin();
-  }
-
-  private String sendUserAnswersToChannel(
-      String firstAnswer, String secondAnswer, String thirdAnswer) {
-    return "Answer on questions : \n"
-        + "1. " + firstAnswer + ";\n"
-        + "2. " + secondAnswer + ";\n"
-        + "3. " + thirdAnswer + ".";
-  }
 }

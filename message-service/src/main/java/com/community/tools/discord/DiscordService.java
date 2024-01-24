@@ -169,12 +169,32 @@ public class DiscordService implements MessageService<MessageEmbed> {
     return channelId;
   }
 
+  /**
+   * Adds a role to a user within a guild.
+   * @param guildId id of a guild
+   * @param userId id of a user
+   * @param roleName role's name
+   */
   @Override
   public void addRoleToUser(String guildId, String userId, String roleName) {
     Guild guild = jda.getGuildById(guildId);
     assert guild != null;
     Role role = guild.getRolesByName(roleName, false).get(0);
     guild.addRoleToMember(userId, role).queue();
+  }
+
+  /**
+   * Removes a role from a user within a guild.
+   * @param guildId id of a guild
+   * @param userId id of a user
+   * @param roleName role's name
+   */
+  @Override
+  public void removeRole(String guildId, String userId, String roleName) {
+    Guild guild = jda.getGuildById(guildId);
+    assert guild != null;
+    Role role = guild.getRolesByName(roleName, false).get(0);
+    guild.removeRoleFromMember(userId, role).queue();
   }
 
   @Override

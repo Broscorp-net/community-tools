@@ -25,4 +25,6 @@ public interface MessageService<T> extends UserService {
   String getIdByChannelName(String channelName);
 
   void addRoleToUser(String guildId, String userId, String newbieRoleName);
+
+  void removeRole(String guildId, String userId, String newbieRoleName);
 }

@@ -1,6 +1,8 @@
 package com.community.tools.util.statemachine.actions.verifications;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -70,38 +72,40 @@ public class AddGitNameActionTest {
     this.machine = Mockito.mock(StateMachine.class);
     this.extendedState = Mockito.mock(ExtendedState.class);
 
-    this.addGitNameAction = new AddGitNameActionTransition(null, "test_3",
-        repository, classroomService, messageService, messageConstructor);
+    this.addGitNameAction = new AddGitNameActionTransition(null,
+        repository, classroomService, messageService);
   }
 
   @Test
   public void executeTest() throws Exception {
     Map<Object, Object> mockData = new HashMap<>();
 
-    VerificationPayload payload = new VerificationPayload("U0191K2V20K", "likeRewca");
+    String userId = "U0191K2V20K";
+    VerificationPayload payload = new VerificationPayload(userId, "likeRewca");
     mockData.put("dataPayload", payload);
 
     User entity = new User();
+    String guildId = "213876";
+    entity.setGuildId(guildId);
 
     when(stateContext.getExtendedState()).thenReturn(extendedState);
     when(extendedState.getVariables()).thenReturn(mockData);
-    when(repository.findByUserID("U0191K2V20K")).thenReturn(Optional.of(entity));
+    when(repository.findByUserID(userId)).thenReturn(Optional.of(entity));
 
     when(messageConstructor.createErrorWithAddingGitNameMessage(errorWithAddingGitName))
         .thenReturn(errorWithAddingGitName);
     when(messageConstructor.createGetFirstTaskMessage(anyString(), anyString(), anyString()))
         .thenReturn(getFirstTask);
-    when(messageService.getUserById("U0191K2V20K")).thenReturn("Горб Юра");
+    when(messageService.getUserById(userId)).thenReturn("Горб Юра");
 
     addGitNameAction.execute(stateContext);
 
     verify(stateContext, times(2)).getExtendedState();
-    verify(classroomService, times(1)).addUserToTraineesTeam(payload.getGitNick());
-    verify(messageService, times(2)).getUserById("U0191K2V20K");
-    verify(messageService, times(1)).sendMessageToConversation(anyString(), anyString());
+    verify(classroomService, times(1))
+        .addUserToTraineesTeam(payload.getGitNick());
+    verify(messageService, times(1)).getUserById(userId);
     verify(messageService, times(1))
-        .sendBlocksMessage("Горб Юра",
-            getFirstTask);
+        .removeRole(eq(guildId), eq(userId), any());
   }
 
 
@@ -130,15 +134,7 @@ public class AddGitNameActionTest {
 
     verify(stateContext, times(2)).getExtendedState();
     verify(classroomService, times(1)).addUserToTraineesTeam("likeRewca");
-    verify(messageService, times(3)).getUserById("U0191K2V20K");
-    verify(messageService, times(1))
-        .sendBlocksMessage("Горб Юра",
-            errorWithAddingGitName);
-    verify(messageService, times(1)).sendMessageToConversation(anyString(), anyString());
-
-    verify(messageService, times(1))
-        .sendBlocksMessage("Горб Юра",
-            getFirstTask);
+    verify(messageService, times(1)).getUserById("U0191K2V20K");
 
   }
 }

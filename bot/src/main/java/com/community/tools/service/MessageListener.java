@@ -54,18 +54,16 @@ public class MessageListener implements EventListener {
 
   @Override
   public void guildMessageReceived(GuildMessageReceivedEvent event) {
-    messageReceived(event.getMessage());
+    messageReceived(event.getMessage(), event.getGuild().getId());
   }
 
   @Override
   public void privateMessageReceived(PrivateMessageReceivedEvent event) {
-    messageReceived(event.getMessage());
+    messageReceived(event.getMessage(), null);
   }
 
-  private void messageReceived(Message message) {
-    String guildId = message.getGuild().getId();
+  private void messageReceived(Message message, String guildId) {
     String userId = message.getAuthor().getId();
-
     try {
       if (message.getContentRaw().equalsIgnoreCase("reset")
           && testModeSwitcher) {

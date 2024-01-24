@@ -184,6 +184,11 @@ public class SlackService implements MessageService<String> {
 
   }
 
+  @Override
+  public void removeRole(String guildId, String userId, String newbieRoleName) {
+
+  }
+
   /**
    * Get user by Slack`s id.
    *

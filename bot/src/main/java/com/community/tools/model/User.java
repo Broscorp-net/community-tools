@@ -27,9 +27,6 @@ public class User {
   private byte[] stateMachine;
   private Integer karma = 0;
   private Integer pointByTask = 0;
-  private String firstAnswerAboutRules;
-  private String secondAnswerAboutRules;
-  private String thirdAnswerAboutRules;
 
   @Transient
   private String platformName;

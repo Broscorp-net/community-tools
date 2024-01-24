@@ -48,7 +48,7 @@ public class TrackingService {
 
     switch (machine.getState().getId()) {
       case NEW_USER:
-        messageToSend = Messages.MESSAGE_NOT_WELCOME;
+        messageToSend = Messages.USE_REGISTER_COMMAND;
         break;
 
       case RULES:
@@ -134,17 +134,11 @@ public class TrackingService {
    * @throws Exception Exception
    */
   public void resetUser(String userId, String guildId) throws Exception {
-
     User stateEntity = new User();
     stateEntity.setUserID(userId);
     stateEntity.setGuildId(guildId);
     stateEntity.setDateRegistration(LocalDate.now());
-    String userName = messageService.getUserById(userId);
     userRepository.save(stateEntity);
     stateMachineService.persistMachineForNewUser(userId);
-
-    messageService.sendPrivateMessage(userName, Messages.WELCOME);
-
-
   }
 }
