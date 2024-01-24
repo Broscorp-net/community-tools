@@ -15,18 +15,16 @@ public class TaskReadyForReviewMentorNotifyingEventHandler implements
     EventHandler<TaskStatusEventDto> {
 
   private final MentorNotificationService mentorNotificationService;
+  private static final String NOTIFICATION_TEMPLATE = "Task %s by %s at %s is Ready For Review!";
 
   @Override
   public void handleEvent(TaskStatusEventDto eventDto) {
     if (!eventDto.isWithNewChanges() && eventDto.getTaskStatus()
         .equals(TaskStatus.READY_FOR_REVIEW)) {
       mentorNotificationService.notifyAllTraineeMentors(eventDto.getTraineeGitName(),
-          formNotificationString(eventDto));
+          String.format(NOTIFICATION_TEMPLATE, eventDto.getTaskName(),
+              eventDto.getTraineeGitName(),
+              eventDto.getPullUrl()));
     }
-  }
-
-  private String formNotificationString(TaskStatusEventDto eventDto) {
-    return "Task " + eventDto.getTaskName() + " by " + eventDto.getTraineeGitName() + " at "
-        + eventDto.getPullUrl() + " is Ready For Review!";
   }
 }

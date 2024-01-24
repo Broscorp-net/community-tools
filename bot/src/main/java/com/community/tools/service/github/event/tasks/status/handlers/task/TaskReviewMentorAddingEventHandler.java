@@ -22,6 +22,9 @@ public class TaskReviewMentorAddingEventHandler implements EventHandler<TaskStat
   private final MentorNotificationService mentorNotificationService;
   private final MentorsRepository mentorsRepository;
   private final TraineeMentorRelationRepository traineeMentorRelationRepository;
+  private static final String NOTIFICATION_TEMPLATE =
+      "You have been added as a mentor of trainee %s because you reviewed their "
+          + "pull request %s of the task %s";
 
   @Override
   public void handleEvent(TaskStatusEventDto eventDto) {
@@ -37,15 +40,10 @@ public class TaskReviewMentorAddingEventHandler implements EventHandler<TaskStat
           traineeMentorRelationRepository.saveAndFlush(new TraineeMentorRelation(it.getGitNick(),
               eventDto.getTraineeGitName()));
           mentorNotificationService.notifyMentor(eventDto.getReviewerGitName(),
-              formNotificationString(eventDto));
+              String.format(NOTIFICATION_TEMPLATE, eventDto.getTraineeGitName(),
+                  eventDto.getPullUrl(), eventDto.getTaskName()));
         }
       });
     }
-  }
-
-  private String formNotificationString(TaskStatusEventDto eventDto) {
-    return "You have been added as a mentor of trainee " + eventDto.getTraineeGitName()
-        + " because you reviewed their pull request " + eventDto.getPullUrl() + " of the task "
-        + eventDto.getTaskName();
   }
 }
