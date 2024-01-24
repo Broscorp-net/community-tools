@@ -36,9 +36,6 @@ public class TrackingService {
   private EstimateTaskService estimateTaskService;
 
   @Autowired
-  private MessageConstructor messageConstructor;
-
-  @Autowired
   private EmailService emailService;
 
   /**
