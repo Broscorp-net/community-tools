@@ -189,6 +189,11 @@ public class SlackService implements MessageService<String> {
 
   }
 
+  @Override
+  public String retrieveById(String userID) {
+    return "";
+  }
+
   /**
    * Get user by Slack`s id.
    *

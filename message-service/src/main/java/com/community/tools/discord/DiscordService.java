@@ -5,6 +5,7 @@ import com.community.tools.service.MessageService;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -195,6 +196,20 @@ public class DiscordService implements MessageService<MessageEmbed> {
     assert guild != null;
     Role role = guild.getRolesByName(roleName, false).get(0);
     guild.removeRoleFromMember(userId, role).queue();
+  }
+
+  /**
+   * Calls JDA and retrieves user's name by id.
+   * @param userID id of a user
+   * @return user's discord name
+   */
+  @Override
+  public String retrieveById(String userID) {
+    try {
+      return jda.retrieveUserById(userID).submit().thenApply(User::getName).get();
+    } catch (InterruptedException | ExecutionException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   @Override
