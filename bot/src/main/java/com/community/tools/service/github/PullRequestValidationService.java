@@ -77,15 +77,21 @@ public class PullRequestValidationService {
     try {
       GHPullRequest pullRequest = repository.getPullRequest(1);
 
-      for (GHPullRequestCommitDetail commitDetail :
-              pullRequest.listCommits().toList()
-                      .stream().filter(commit -> !commit.getCommit()
-                              .getAuthor().getName().equals("github-classroom[bot]"))
-                      .collect(Collectors.toList())) {
+      List<GHPullRequestCommitDetail> userCommits = pullRequest
+              .listCommits().toList()
+              .stream()
+              .filter(commit ->
+                      !commit.getCommit().getAuthor().getName().equals("github-classroom[bot]")
+              )
+              .collect(Collectors.toList());
+
+      for (GHPullRequestCommitDetail commitDetail : userCommits) {
         List<CommitFileDto> fileList = new ArrayList<>();
-        for (GHCommit.File file :
-                repository.getCommit(commitDetail.getSha()).getFiles()
-                .stream().filter(Objects::nonNull).collect(Collectors.toList())) {
+        List<GHCommit.File> commitFiles = repository
+                .getCommit(commitDetail.getSha()).getFiles()
+                .stream().filter(Objects::nonNull).collect(Collectors.toList());
+
+        for (GHCommit.File file : commitFiles) {
           fileList.add(new CommitFileDto(file.getFileName(), file.getPatch()));
         }
         String prompt = String.format(PROMPT_TEMPLATE, objectMapper.writeValueAsString(fileList));
@@ -115,6 +121,9 @@ public class PullRequestValidationService {
    * sends it to OpenAI Api, so it could validate it
    * and leave a review in the PR based on the AI response.
    * Method is scheduled to be called each 21 seconds to prevent quota violation.
+   * In the case of invalid response from the OpenAI there is a
+   * JsonProcessingException catch statement that returns
+   * request back to the queue to be processed again.
    *
    * @throws RuntimeException If github api doesn't find requested objects
    */
