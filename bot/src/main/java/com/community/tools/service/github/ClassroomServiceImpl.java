@@ -421,7 +421,7 @@ public class ClassroomServiceImpl implements ClassroomService {
   private int getCompletedTasks(List<GithubRepositoryDto> repositories) {
     return (int) repositories
             .stream()
-            .flatMap(repository -> repository.getLabels().stream())
+            .flatMap(repository -> repository.labels().stream())
             .map(String::toLowerCase)
             .filter(label -> label.equals(completedTaskLabel))
             .count();
@@ -430,7 +430,7 @@ public class ClassroomServiceImpl implements ClassroomService {
   private int getTotalPoints(List<GithubRepositoryDto> repositories) {
     return repositories
             .stream()
-            .map(GithubRepositoryDto::getPoints)
+            .map(GithubRepositoryDto::points)
             .filter(points -> points >= 0)
             .reduce(0, Integer::sum);
   }

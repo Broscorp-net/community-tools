@@ -93,7 +93,7 @@ public class StatisticsServiceImpl implements StatisticService {
   private int getMaxColLength(List<UserForTaskStatusDto> userStatusDtoList) {
     return userStatusDtoList.stream()
             .mapToInt(userStatusDto -> {
-              String userName = userStatusDto.getGitName();
+              String userName = userStatusDto.gitName();
               return userName != null ? userName.length() : 0;
             })
             .max()
@@ -133,15 +133,15 @@ public class StatisticsServiceImpl implements StatisticService {
     StringBuilder tableBody = new StringBuilder();
 
     for (UserForTaskStatusDto userData : userPartList) {
-      String userName = userData.getGitName();
+      String userName = userData.gitName();
       tableBody.append(userName)
               .append(createDiscordLink(createGitHubLink(userName)))
               .append(StringUtils.repeat(" ", firstColLength - userName.length()))
               .append(getVerticalSeparator());
 
       for (int i = 0; i < taskNames.length; i++) {
-        String label = getTaskSmileStatus(userData.getTaskStatuses(), taskNames[i]);
-        String pullUrl = getTaskPullUrl(userData.getTaskStatuses(), taskNames[i]);
+        String label = getTaskSmileStatus(userData.taskStatuses(), taskNames[i]);
+        String pullUrl = getTaskPullUrl(userData.taskStatuses(), taskNames[i]);
 
         if (!label.equals(TaskStatus.UNDEFINED.getEmoji()) && pullUrl != null) {
           tableBody.append(createEmojiDiscordLink(pullUrl, label));
@@ -215,8 +215,8 @@ public class StatisticsServiceImpl implements StatisticService {
 
   private String getTaskPullUrl(List<TaskNameAndStatus> taskNameAndStatuses, String taskName) {
     for (TaskNameAndStatus task : taskNameAndStatuses) {
-      if (taskName.equals(task.getTaskName())) {
-        return task.getPullUrl();
+      if (taskName.equals(task.taskName())) {
+        return task.pullUrl();
       }
     }
     return null;
@@ -225,8 +225,8 @@ public class StatisticsServiceImpl implements StatisticService {
   private String getTaskSmileStatus(List<TaskNameAndStatus> taskNameAndStatuses,
                                     String taskName) {
     String status = taskNameAndStatuses.stream()
-            .filter(task -> taskName.equals(task.getTaskName()))
-            .map(TaskNameAndStatus::getTaskStatus)
+            .filter(task -> taskName.equals(task.taskName()))
+            .map(TaskNameAndStatus::taskStatus)
             .findFirst().orElse("undefined");
 
     return TaskStatus.getEmojiByDescription(status);

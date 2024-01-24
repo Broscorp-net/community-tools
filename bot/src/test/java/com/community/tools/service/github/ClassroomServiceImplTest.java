@@ -6,10 +6,11 @@ import static org.mockito.Mockito.when;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import lombok.SneakyThrows;
-import org.junit.Test;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.kohsuke.github.GHOrganization;
 import org.kohsuke.github.GHTeam;
 import org.kohsuke.github.GHUser;
@@ -18,14 +19,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @DirtiesContext
 @TestPropertySource(locations = "classpath:application-test.properties")
-@RunWith(SpringRunner.class)
-@SpringBootTest
+@ExtendWith(SpringExtension.class)
+@SpringBootTest(classes = ClassroomServiceImplTest.TestConfig.class)
 public class ClassroomServiceImplTest {
 
   @MockBean
@@ -63,5 +65,9 @@ public class ClassroomServiceImplTest {
     classroomService.addUserToTraineesTeam(userGitName);
 
     verify(ghTeamMock).add(ghUserMock);
+  }
+
+  @Configuration
+  static class TestConfig {
   }
 }

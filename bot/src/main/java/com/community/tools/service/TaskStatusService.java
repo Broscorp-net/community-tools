@@ -59,14 +59,14 @@ public class TaskStatusService {
   private List<TaskNameAndStatus> getAllTaskNameAndStatusesForEachUser(GithubUserDto user) {
     return user.getRepositories().stream().map(repo -> {
       String currentStatus;
-      if (repo.getLabels().size() > 1) {
+      if (repo.labels().size() > 1) {
         currentStatus = TaskStatus.UNDEFINED.getDescription();
-      } else if (repo.getLabels().isEmpty()) {
+      } else if (repo.labels().isEmpty()) {
         currentStatus = TaskStatus.NEW.getDescription();
       } else {
-        currentStatus = repo.getLabels().get(0);
+        currentStatus = repo.labels().get(0);
       }
-      return new TaskNameAndStatus(repo.getTaskName(), repo.getPullUrl(),
+      return new TaskNameAndStatus(repo.taskName(), repo.pullUrl(),
               currentStatus);
     }).collect(Collectors.toList());
   }
@@ -98,7 +98,7 @@ public class TaskStatusService {
     List<TaskNameAndStatus> taskStatuses = getAllTaskNameAndStatusesForEachUser(user);
 
     for (TaskNameAndStatus taskStatus : taskStatuses) {
-      String status = taskStatus.getTaskStatus();
+      String status = taskStatus.taskStatus();
       if (status.equals(TaskStatus.UNDEFINED.getDescription())) {
         return false;
       }
@@ -137,7 +137,7 @@ public class TaskStatusService {
    * @return true if the task matches the repository, otherwise false.
    */
   private boolean isMatchingTask(GithubRepositoryDto repository, TaskNameAndStatus taskStatus) {
-    return repository.getTaskName().equals(taskStatus.getTaskName());
+    return repository.taskName().equals(taskStatus.taskName());
   }
 
   /**
@@ -147,7 +147,7 @@ public class TaskStatusService {
    * @return true if the repository has a label not containing "failure", otherwise false.
    */
   private boolean hasReviewLabel(GithubRepositoryDto repository) {
-    List<String> labels = repository.getLabels();
+    List<String> labels = repository.labels();
     if (labels != null && !labels.isEmpty()) {
       for (String label : labels) {
         if (!label.contains("failure")) {

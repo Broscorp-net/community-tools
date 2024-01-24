@@ -1,9 +1,8 @@
 package com.community.tools.model;
 
 import com.google.common.base.Splitter;
+
 import java.util.Map;
-import java.util.stream.Stream;
-import org.springframework.beans.factory.annotation.Value;
 
 public class Messages {
 

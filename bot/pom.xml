@@ -39,13 +39,13 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
-      <version>2.2.1.RELEASE</version>
+      <version>3.2.0</version>
     </dependency>
 
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
-      <version>2.2.1.RELEASE</version>
+      <version>3.2.0</version>
       <scope>test</scope>
       <exclusions>
         <exclusion>
@@ -62,7 +62,7 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-data-jpa</artifactId>
-      <version>2.2.1.RELEASE</version>
+      <version>3.2.0</version>
     </dependency>
 
     <!--Jackson - Json-->
@@ -113,14 +113,14 @@
     <dependency>
       <groupId>org.springframework.statemachine</groupId>
       <artifactId>spring-statemachine-core</artifactId>
-      <version>2.2.0.RELEASE</version>
+      <version>3.2.0</version>
     </dependency>
 
     <!-- https://mvnrepository.com/artifact/org.springframework.statemachine/spring-statemachine-test -->
     <dependency>
       <groupId>org.springframework.statemachine</groupId>
       <artifactId>spring-statemachine-test</artifactId>
-      <version>2.2.0.RELEASE</version>
+      <version>3.2.0</version>
       <scope>test</scope>
     </dependency>
 
@@ -128,7 +128,7 @@
     <dependency>
       <groupId>org.springframework.statemachine</groupId>
       <artifactId>spring-statemachine-data-jpa</artifactId>
-      <version>2.2.0.RELEASE</version>
+      <version>3.2.0</version>
     </dependency>
 
     <!-- Swagger -->
@@ -154,7 +154,7 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-mail</artifactId>
-      <version>2.2.0.RELEASE</version>
+      <version>3.0.4</version>
     </dependency>
 
     <!-- Httpclient -->
