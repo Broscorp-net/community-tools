@@ -86,7 +86,7 @@ public class StatisticsServiceImpl implements StatisticService {
   private List<UserForTaskStatusDto> getStatisticsList() {
     Comparator<UserForTaskStatusDto> comparator = comparators.getOrDefault(
         "DESC".toUpperCase(),
-        Comparator.comparingInt(UserForTaskStatusDto::getCompletedTasks).reversed());
+        Comparator.comparingInt(UserForTaskStatusDto::completedTasks).reversed());
 
     return taskStatusServiceHooks.getTaskStatuses(
         Period.ofDays(defaultNumberOfDays),

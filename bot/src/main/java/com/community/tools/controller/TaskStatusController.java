@@ -38,9 +38,9 @@ public class TaskStatusController {
   public TaskStatusController(TaskStatusService taskStatusService) {
     this.taskStatusService = taskStatusService;
     comparators.put("DESC",
-        Comparator.comparingInt(UserForTaskStatusDto::getCompletedTasks).reversed());
+        Comparator.comparingInt(UserForTaskStatusDto::completedTasks).reversed());
     comparators.put("ASC",
-        Comparator.comparingInt(UserForTaskStatusDto::getCompletedTasks));
+        Comparator.comparingInt(UserForTaskStatusDto::completedTasks));
   }
 
   /**
@@ -59,7 +59,7 @@ public class TaskStatusController {
 
     Comparator<UserForTaskStatusDto> comparator = comparators.getOrDefault(
         sort.orElse("DESC").toUpperCase(),
-        Comparator.comparingInt(UserForTaskStatusDto::getCompletedTasks).reversed());
+        Comparator.comparingInt(UserForTaskStatusDto::completedTasks).reversed());
 
     return new ResponseEntity<>(
         taskStatusService.getTaskStatuses(
