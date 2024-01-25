@@ -9,7 +9,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,17 +23,21 @@ public class LeaderboardController {
 
   @Value("${defaultNumberOfDaysForStatistic}")
   private Integer defaultNumberOfDays;
+
   @Value("${defaultRowLimit}")
   private Integer defaultUserLimit;
-  private final Map<String, Comparator<GithubUserDto>> comparators
-      = new HashMap<>();
+
+  private final Map<String, Comparator<GithubUserDto>> comparators = new HashMap<>();
   private final LeaderboardService leaderBoardService;
 
+  /**
+   * Setter for leaderBoardService.
+   *
+   * @param leaderBoardService - Inject leaderBoardService
+   */
 
   /**
    * Constructor.
-   *
-   * @param leaderBoardService - Inject leaderBoardService
    */
   public LeaderboardController(LeaderboardService leaderBoardService) {
     this.leaderBoardService = leaderBoardService;
@@ -45,7 +51,7 @@ public class LeaderboardController {
    * Endpoint for leaderboard service.
    *
    * @param limit - limit of users for view.
-   * @param days - period of days fow view.
+   * @param days - period of days for view.
    * @param sort - sort order (DESC, ASC).
    * @return - return list of DTO.
    */
@@ -65,5 +71,4 @@ public class LeaderboardController {
             Period.ofDays(days.orElse(defaultNumberOfDays)),
             comparator), HttpStatus.OK);
   }
-
 }

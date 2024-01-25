@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -40,7 +41,7 @@ public class StatisticsServiceImpl implements StatisticService {
   /**
    * Required args constructor, used to inject the necessary dependencies into the Service.
    */
-  public StatisticsServiceImpl(DiscordService discordService,
+  public StatisticsServiceImpl(@Lazy DiscordService discordService,
       @Qualifier("taskStatusServiceHooks") TaskStatusService taskStatusServiceHooks) {
     this.discordService = discordService;
     this.taskStatusServiceHooks = taskStatusServiceHooks;

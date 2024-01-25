@@ -7,6 +7,7 @@ import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
 import com.community.tools.util.statemachine.actions.Transition;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.action.Action;
 import org.springframework.statemachine.annotation.WithStateMachine;
@@ -14,12 +15,14 @@ import org.springframework.statemachine.config.builders.StateMachineTransitionCo
 
 @WithStateMachine
 public class DidNotPassVerificationGitLoginTrans implements Transition {
-
-  @Autowired
   private Action<State, Event> errorAction;
-
-  @Autowired
   private MessageService messageService;
+
+  public DidNotPassVerificationGitLoginTrans(Action<State, Event> errorAction,
+                                             @Lazy MessageService messageService) {
+    this.errorAction = errorAction;
+    this.messageService = messageService;
+  }
 
   @Override
   public void configure(

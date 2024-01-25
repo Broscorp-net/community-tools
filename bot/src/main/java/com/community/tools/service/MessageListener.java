@@ -7,12 +7,15 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class MessageListener implements EventListener {
-
-  @Autowired
   private TrackingService trackingService;
 
   @Value("${testModeSwitcher}")
   private Boolean testModeSwitcher;
+
+  @Autowired
+  public void setTrackingService(TrackingService trackingService) {
+    this.trackingService = trackingService;
+  }
 
   @Override
   public void memberJoin(Message message) {

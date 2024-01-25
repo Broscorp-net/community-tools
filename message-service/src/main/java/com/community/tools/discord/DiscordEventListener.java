@@ -23,12 +23,18 @@ import org.springframework.stereotype.Component;
 public class DiscordEventListener extends ListenerAdapter {
 
   private final String showStat = "stat";
-
-  @Autowired
   private EventListener listener;
+  private StatisticService statisticService;
 
   @Autowired
-  private StatisticService statisticService;
+  public void setListener(EventListener listener) {
+    this.listener = listener;
+  }
+
+  @Autowired
+  public void setStatisticService(StatisticService statisticService) {
+    this.statisticService = statisticService;
+  }
 
   @Override
   public void onGuildMemberJoin(@NotNull GuildMemberJoinEvent event) {

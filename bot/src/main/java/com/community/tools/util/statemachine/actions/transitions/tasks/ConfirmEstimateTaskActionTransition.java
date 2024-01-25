@@ -8,18 +8,21 @@ import com.community.tools.util.statemachine.State;
 import com.community.tools.util.statemachine.actions.Transition;
 import com.community.tools.util.statemachine.actions.error.ErrorAction;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.annotation.WithStateMachine;
 import org.springframework.statemachine.config.builders.StateMachineTransitionConfigurer;
 
 @WithStateMachine
 public class ConfirmEstimateTaskActionTransition implements Transition {
+  private final MessageService messageService;
+  private final ErrorAction errorAction;
 
-  @Autowired
-  private MessageService messageService;
-
-  @Autowired
-  ErrorAction errorAction;
+  public ConfirmEstimateTaskActionTransition(@Lazy MessageService messageService,
+                                             ErrorAction errorAction) {
+    this.messageService = messageService;
+    this.errorAction = errorAction;
+  }
 
   @Override
   public void configure(StateMachineTransitionConfigurer<State, Event> transitions)

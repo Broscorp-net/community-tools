@@ -16,6 +16,7 @@ import lombok.SneakyThrows;
 import org.kohsuke.github.GHUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.action.Action;
 import org.springframework.statemachine.annotation.WithStateMachine;
@@ -25,24 +26,25 @@ import org.springframework.statemachine.config.builders.StateMachineTransitionCo
 @AllArgsConstructor
 @WithStateMachine
 public class AddGitNameActionTransition implements Transition {
-
-  @Autowired
-  private Action<State, Event> errorAction;
-
   @Value("${generalInformationChannel}")
   private String channel;
-
-  @Autowired
+  private Action<State, Event> errorAction;
   private UserRepository userRepository;
-
-  @Autowired
   private ClassroomService classroomService;
-
-  @Autowired
   private MessageService messageService;
-
-  @Autowired
   private MessageConstructor messageConstructor;
+
+  public AddGitNameActionTransition(Action<State, Event> errorAction,
+                                    UserRepository userRepository,
+                                    @Lazy ClassroomService classroomService,
+                                    @Lazy MessageService messageService,
+                                    MessageConstructor messageConstructor) {
+    this.errorAction = errorAction;
+    this.userRepository = userRepository;
+    this.classroomService = classroomService;
+    this.messageService = messageService;
+    this.messageConstructor = messageConstructor;
+  }
 
   @Override
   public void configure(StateMachineTransitionConfigurer<State, Event> transitions)

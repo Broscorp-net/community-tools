@@ -10,6 +10,7 @@ import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
 import com.community.tools.util.statemachine.actions.Transition;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.action.Action;
 import org.springframework.statemachine.annotation.WithStateMachine;
@@ -17,18 +18,19 @@ import org.springframework.statemachine.config.builders.StateMachineTransitionCo
 
 @WithStateMachine
 public class ThirdQuestionActionTransition implements Transition {
+  private final MessageService messageService;
+  private final Action<State, Event> errorAction;
+  private final UserRepository userRepository;
+  private final MessageConstructor messageConstructor;
 
-  @Autowired
-  private MessageService messageService;
-
-  @Autowired
-  private Action<State, Event> errorAction;
-
-  @Autowired
-  private UserRepository userRepository;
-
-  @Autowired
-  private MessageConstructor messageConstructor;
+  public ThirdQuestionActionTransition(@Lazy MessageService messageService,
+                                       Action<State, Event> errorAction,
+                                       UserRepository userRepository, MessageConstructor messageConstructor) {
+    this.messageService = messageService;
+    this.errorAction = errorAction;
+    this.userRepository = userRepository;
+    this.messageConstructor = messageConstructor;
+  }
 
   @Override
   public void configure(

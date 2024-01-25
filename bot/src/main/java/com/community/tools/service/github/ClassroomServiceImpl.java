@@ -76,8 +76,13 @@ public class ClassroomServiceImpl implements ClassroomService {
   @Value("${email.notification.enabled}")
   private boolean isEmailEnabled;
 
-  @Autowired
   private DiscordService discordService;
+
+  @Autowired
+  public void setDiscordService(DiscordService discordService) {
+    this.discordService = discordService;
+  }
+
   @Autowired
   private EmailService emailService;
 

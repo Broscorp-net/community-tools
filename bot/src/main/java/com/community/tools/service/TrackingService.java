@@ -14,18 +14,26 @@ import com.community.tools.util.statemachine.State;
 import java.time.LocalDate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
 public class TrackingService {
   private final MessageService messageService;
   private final StateMachineService stateMachineService;
   private final UserRepository userRepository;
   private final EstimateTaskService estimateTaskService;
   private final EmailService emailService;
+
+  public TrackingService(@Lazy MessageService messageService, StateMachineService stateMachineService, UserRepository userRepository, EstimateTaskService estimateTaskService, EmailService emailService) {
+    this.messageService = messageService;
+    this.stateMachineService = stateMachineService;
+    this.userRepository = userRepository;
+    this.estimateTaskService = estimateTaskService;
+    this.emailService = emailService;
+  }
 
   /**
    * Method to start the event by state.

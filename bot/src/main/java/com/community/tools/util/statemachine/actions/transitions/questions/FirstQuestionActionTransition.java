@@ -8,6 +8,7 @@ import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
 import com.community.tools.util.statemachine.actions.Transition;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.action.Action;
 import org.springframework.statemachine.annotation.WithStateMachine;
@@ -15,15 +16,16 @@ import org.springframework.statemachine.config.builders.StateMachineTransitionCo
 
 @WithStateMachine
 public class FirstQuestionActionTransition implements Transition {
+  private final MessageService messageService;
+  private final MessageConstructor messageConstructor;
+  private final Action<State, Event> errorAction;
 
-  @Autowired
-  private MessageService messageService;
-
-  @Autowired
-  private MessageConstructor messageConstructor;
-
-  @Autowired
-  private Action<State, Event> errorAction;
+  public FirstQuestionActionTransition(@Lazy MessageService messageService,
+                                       MessageConstructor messageConstructor, Action<State, Event> errorAction) {
+    this.messageService = messageService;
+    this.messageConstructor = messageConstructor;
+    this.errorAction = errorAction;
+  }
 
   @Override
   public void execute(StateContext<State, Event> stateContext) {

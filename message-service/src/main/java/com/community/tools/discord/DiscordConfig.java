@@ -23,9 +23,12 @@ public class DiscordConfig {
 
   @Value("${discord.token}")
   private String token;
+  private DiscordEventListener discordEventListener;
 
   @Autowired
-  private DiscordEventListener discordEventListener;
+  public void setDiscordEventListener(DiscordEventListener discordEventListener) {
+    this.discordEventListener = discordEventListener;
+  }
 
   /**
    * Created and configure object JDA.

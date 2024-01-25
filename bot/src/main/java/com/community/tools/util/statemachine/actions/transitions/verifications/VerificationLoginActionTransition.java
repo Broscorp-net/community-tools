@@ -10,6 +10,7 @@ import com.community.tools.util.statemachine.actions.Transition;
 import java.io.IOException;
 import org.kohsuke.github.GHUser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.action.Action;
 import org.springframework.statemachine.annotation.WithStateMachine;
@@ -17,15 +18,17 @@ import org.springframework.statemachine.config.builders.StateMachineTransitionCo
 
 @WithStateMachine
 public class VerificationLoginActionTransition implements Transition {
-
-  @Autowired
   private Action<State, Event> errorAction;
-
-  @Autowired
   private GitHubService gitHubService;
-
-  @Autowired
   private MessageService messageService;
+
+  public VerificationLoginActionTransition(Action<State, Event> errorAction,
+                                           GitHubService gitHubService,
+                                           @Lazy MessageService messageService) {
+    this.errorAction = errorAction;
+    this.gitHubService = gitHubService;
+    this.messageService = messageService;
+  }
 
   @Override
   public void configure(
