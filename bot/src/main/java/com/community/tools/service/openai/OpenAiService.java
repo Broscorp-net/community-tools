@@ -23,11 +23,6 @@ public class OpenAiService {
   private String apiKey;
   @Value("${openai.model}")
   private String model;
-  private final ObjectMapper objectMapper;
-
-  public OpenAiService(ObjectMapper objectMapper) {
-    this.objectMapper = objectMapper;
-  }
 
   /**
    * This is the main method in service which processes prompt.
@@ -64,6 +59,7 @@ public class OpenAiService {
    * @return raw string, example: "This is example list//n1)...//n..."
    */
   private String extractMessageFromJsonResponse(String response) throws IOException {
+    ObjectMapper objectMapper = new ObjectMapper();
     JsonNode jsonNode = objectMapper.readTree(response);
     return jsonNode
             .get("choices").get(0)
