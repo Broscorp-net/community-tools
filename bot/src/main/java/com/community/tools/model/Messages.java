@@ -164,4 +164,5 @@ public class Messages {
   public static final String REGISTRATION_COMPLETED =
       "Registration completed! Now you should see more channels available.";
   public static final String USE_REGISTER_COMMAND = "Use /register to complete registration";
+  public static final String USERNAME_UPDATED = "Username updated successfully!";
 }

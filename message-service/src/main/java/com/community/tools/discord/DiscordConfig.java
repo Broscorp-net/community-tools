@@ -1,7 +1,6 @@
 package com.community.tools.discord;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.security.auth.login.LoginException;
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.JDA;
@@ -28,7 +27,7 @@ public class DiscordConfig {
   private String token;
 
   private final DiscordEventListener discordEventListener;
-  private final List<Command> commands;
+  private final CommandHandler commandHandler;
 
   /**
    * Created and configure object JDA.
@@ -47,9 +46,7 @@ public class DiscordConfig {
           .setActivity(Activity.playing("Discord"))
           .addEventListeners(discordEventListener)
           .build();
-      List<CommandData> commandData = commands.stream()
-          .map(Command::getCommandData)
-          .collect(Collectors.toList());
+      List<CommandData> commandData = commandHandler.getCommandsData();
       jda.updateCommands()
               .addCommands(commandData)
               .queue();

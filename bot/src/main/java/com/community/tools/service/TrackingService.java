@@ -48,7 +48,7 @@ public class TrackingService {
 
     switch (machine.getState().getId()) {
       case NEW_USER:
-        messageToSend = Messages.USE_REGISTER_COMMAND;
+        messageToSend = Messages.DEFAULT_MESSAGE;
         break;
 
       case RULES:

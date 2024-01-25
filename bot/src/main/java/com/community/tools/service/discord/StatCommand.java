@@ -3,23 +3,21 @@ package com.community.tools.service.discord;
 import com.community.tools.discord.Command;
 import com.community.tools.service.StatisticService;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import org.springframework.stereotype.Component;
 
-@Component
-public class StatCommand extends Command {
+@Command(name = "stat", description = "Receive stats")
+@RequiredArgsConstructor
+public class StatCommand {
 
   private final StatisticService statisticService;
 
-  protected StatCommand(StatisticService statisticService) {
-    super(new CommandData("stat", "Receive stats"));
-    this.statisticService = statisticService;
-  }
-
-  @Override
+  /**
+   * Gets statistics from {@link StatisticService} and send a result to user.
+   * @param command received event from Discord
+   */
   public void run(SlashCommandEvent command) {
     Member member = command.getMember();
     if (member == null) {

@@ -1,55 +1,57 @@
 package com.community.tools.service.discord;
 
 import com.community.tools.discord.Command;
-import com.community.tools.service.StateMachineService;
-import com.community.tools.service.payload.VerificationPayload;
-import com.community.tools.util.statemachine.Event;
-import com.community.tools.util.statemachine.State;
+import com.community.tools.model.Messages;
+import com.community.tools.model.User;
+import com.community.tools.repository.UserRepository;
+import com.community.tools.service.MessageService;
+import com.community.tools.service.github.GitHubService;
+import java.io.IOException;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.interactions.commands.build.OptionData;
-import org.springframework.statemachine.StateMachine;
-import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Value;
 
-@Component
-public class RegisterCommand extends Command {
+@Slf4j
+@Command(name = "register", description = "Saves your GitHub username",
+    options = "username", optionTypes = OptionType.STRING,
+    optionsDescriptions = "Your GitHub username", optionsRequirements = true)
+@RequiredArgsConstructor
+public class RegisterCommand {
 
   private static final String OPTION_NAME = "username";
-  private final StateMachineService stateMachineService;
+  private final GitHubService gitHubService;
+  private final UserRepository userRepository;
+  private final MessageService<?> messageService;
 
-  protected RegisterCommand(StateMachineService stateMachineService) {
-    super(new CommandData("register", "Saves your GitHub username"),
-        new OptionData(OptionType.STRING, OPTION_NAME, "Your GitHub username", true));
-    this.stateMachineService = stateMachineService;
-  }
+  @Value("${newbieRole}")
+  private String newbieRoleName;
 
-  @Override
+  /**
+   * Saves user's GitHub username to database and removes newbie role.
+   * @param command received event from Discord
+   */
   public void run(SlashCommandEvent command) {
     String userId = command.getUser().getId();
-    StateMachine<State, Event> machine = getStateMachine(userId);
-    String content;
-    if (machine.getState().getId() != State.NEW_USER) {
-      content = "You are already registered!";
-    } else if (command.isFromGuild()) {
-      content = "Searching... Check your private messages";
-    } else {
-      content = "Searching...";
-    }
-    command.reply(content).queue();
     String username = command.getOptionsByName(OPTION_NAME).get(0).getAsString();
-    VerificationPayload payload = new VerificationPayload(userId, username);
-    stateMachineService.doAction(machine, payload, Event.LOGIN_CONFIRMATION);
-  }
-
-  private StateMachine<State, Event> getStateMachine(String userId) {
-    StateMachine<State, Event> machine;
     try {
-      machine = stateMachineService.restoreMachine(userId);
-    } catch (Exception e) {
-      throw new RuntimeException(e);
+      gitHubService.getUserByLoginInGitHub(username);
+    } catch (IOException e) {
+      log.error("GitHub account with username {} was not found", username, e);
+      command.reply(Messages.GITHUB_ACCOUNT_NOT_FOUND).queue();
+      return;
     }
-    return machine;
+    User user = userRepository.findByUserID(userId)
+        .orElseThrow(() -> new RuntimeException("User with id = [" + userId + "] was not found"));
+    if (user.getGitName() == null) {
+      messageService.removeRole(user.getGuildId(), userId, newbieRoleName);
+      command.reply(Messages.REGISTRATION_COMPLETED).queue();
+    } else {
+      command.reply(Messages.USERNAME_UPDATED).queue();
+    }
+    user.setGitName(username);
+    userRepository.save(user);
   }
 
 }
