@@ -25,10 +25,7 @@ public class GithubHookController {
   @PostMapping
   public void getHookData(@RequestBody String body) {
     JSONObject eventJson = new JSONObject(body);
-    gitHookDataService.saveDataIntoDb(eventJson);
-    if (eventJson.has("action")) {
-      eventsProcessingService.processEvent(eventJson);
-    }
+    eventsProcessingService.processEvent(eventJson);
   }
 
 }
