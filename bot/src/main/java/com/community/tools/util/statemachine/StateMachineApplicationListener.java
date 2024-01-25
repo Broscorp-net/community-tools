@@ -1,7 +1,6 @@
 package com.community.tools.util.statemachine;
 
 import java.util.logging.Logger;
-
 import org.springframework.messaging.Message;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.statemachine.listener.StateMachineListenerAdapter;

@@ -4,15 +4,12 @@ import com.community.tools.model.GitHubComment;
 import com.community.tools.model.User;
 import com.community.tools.repository.MentorsRepository;
 import com.community.tools.repository.UserRepository;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import lombok.extern.slf4j.Slf4j;
-
 import org.kohsuke.github.GHIssueComment;
 import org.kohsuke.github.GHPullRequest;
 import org.kohsuke.github.GHPullRequestReviewComment;
@@ -86,7 +83,7 @@ public class KarmaService {
             .filter(c -> c.getBody().toLowerCase().trim().equals("approved"))
             .collect(Collectors.toList());
     List<GitHubComment> comments = new ArrayList<>();
-    for (GHIssueComment issueComment: issueCommentList) {
+    for (GHIssueComment issueComment : issueCommentList) {
       GitHubComment comment = new GitHubComment();
       comment.setAuthorComment(issueComment.getUser().getLogin());
       comment.setCreatedAt(issueComment.getCreatedAt());
@@ -102,7 +99,7 @@ public class KarmaService {
             .filter(c -> c.getBody().toLowerCase().trim().equals("approved"))
             .collect(Collectors.toList());
     List<GitHubComment> comments = new ArrayList<>();
-    for (GHPullRequestReviewComment reviewComment: reviewCommentsList) {
+    for (GHPullRequestReviewComment reviewComment : reviewCommentsList) {
       GitHubComment comment = new GitHubComment();
       comment.setAuthorComment(reviewComment.getUser().getLogin());
       comment.setCreatedAt(reviewComment.getCreatedAt());

@@ -6,7 +6,6 @@ import com.community.tools.dto.UserForTaskStatusDto;
 import com.community.tools.model.TaskNameAndStatus;
 import com.community.tools.model.TaskStatus;
 import com.community.tools.service.github.ClassroomService;
-
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.temporal.ChronoUnit;
@@ -28,6 +27,7 @@ public class TaskStatusService {
 
   /**
    * Service for sorting, limiting and creating DTO.
+   *
    * @param limit - limit of users for view.
    * @param period - period of days fow view.
    * @param comparator - sort order (DESC, ASC).
@@ -53,6 +53,7 @@ public class TaskStatusService {
   /**
    * Getting List of task, and status of this task, for each user,
    *  based on labels.
+   *
    * @param user - user DTO.
    * @return - list of task, and status of this task, for each user.
    */

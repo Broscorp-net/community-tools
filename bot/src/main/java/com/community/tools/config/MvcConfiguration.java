@@ -13,6 +13,7 @@ public class MvcConfiguration implements WebMvcConfigurer {
 
   /**
    * Redirects request handing to index.html (angular routing).
+   *
    * @param registry autowired resource handler.
    */
   @Override

@@ -20,6 +20,7 @@ public class EmailService {
 
   /**
    * This method send email.
+   *
    * @param builder email recipient/subject/text.
   */
   public void sendEmail(EmailBuild builder) {

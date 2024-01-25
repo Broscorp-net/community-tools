@@ -79,6 +79,6 @@ public class OpenAiService {
   private String getStringWithLineSeparators(String raw) {
     final String regex = "\\\\n";
     final String newSeparator = System.lineSeparator();
-    return raw.replaceAll(regex,newSeparator);
+    return raw.replaceAll(regex, newSeparator);
   }
 }

@@ -2,7 +2,6 @@ package com.community.tools.discord;
 
 import com.community.tools.model.ServiceUser;
 import com.community.tools.service.MessageService;
-
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;

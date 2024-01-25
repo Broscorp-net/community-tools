@@ -6,10 +6,7 @@ import javax.sql.DataSource;
 import org.json.JSONObject;
 import org.postgresql.util.PGobject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.SingleConnectionDataSource;
-
 import org.springframework.stereotype.Service;
 
 @Service
@@ -26,9 +23,10 @@ public class GitHookDataService {
 
   /**
    * Save JSON from GitHub to GitHookData table into Database.
+   *
    * @param json Json from GitHub
    */
-  public void saveDataIntoDB(JSONObject json) {
+  public void saveDataIntoDb(JSONObject json) {
     Date date = new Date();
     PGobject out = new PGobject();
     out.setType("json");

@@ -1,7 +1,6 @@
 package com.community.tools.model;
 
 import com.google.common.base.Splitter;
-
 import java.util.Map;
 
 public class Messages {

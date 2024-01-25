@@ -33,6 +33,7 @@ public class TaskStatusController {
 
   /**
    * Constructor.
+   *
    * @param taskStatusService - Inject taskStatusService
    */
   public TaskStatusController(TaskStatusService taskStatusService) {
@@ -45,6 +46,7 @@ public class TaskStatusController {
 
   /**
    * Endpoint for task status service.
+   *
    * @param limit - limit of users for view.
    * @param days - period of days fow view.
    * @param sort - sort order (DESC, ASC).
@@ -69,6 +71,7 @@ public class TaskStatusController {
 
   /**
    * Endpoint for receiving task names.
+   *
    * @return - set of names.
    */
   @GetMapping("/taskStatus/getTasks")

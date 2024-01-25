@@ -138,7 +138,7 @@ public class TrackingService {
   public void resetUser(String userId) throws Exception {
 
     User stateEntity = new User();
-    stateEntity.setUserID(userId);
+    stateEntity.setUserId(userId);
     stateEntity.setDateRegistration(LocalDate.now());
     String userName = messageService.getUserById(userId);
     userRepository.save(stateEntity);

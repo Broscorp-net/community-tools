@@ -17,6 +17,7 @@ public class GitHubConnectService {
 
   /**
    * Get GitHub connection.
+   *
    * @return GitHub
    */
   public GitHub getGitHubConnection() {
@@ -31,6 +32,7 @@ public class GitHubConnectService {
 
   /**
    * Get GitHub repository.
+   *
    * @return GHRepository
    */
   public GHRepository getGitHubRepository() {

@@ -30,6 +30,7 @@ public class LeaderboardController {
 
   /**
    * Constructor.
+   *
    * @param leaderBoardService - Inject leaderBoardService
    */
   public LeaderboardController(LeaderboardService leaderBoardService) {
@@ -42,6 +43,7 @@ public class LeaderboardController {
 
   /**
    * Endpoint for leaderboard service.
+   *
    * @param limit - limit of users for view.
    * @param days - period of days fow view.
    * @param sort - sort order (DESC, ASC).

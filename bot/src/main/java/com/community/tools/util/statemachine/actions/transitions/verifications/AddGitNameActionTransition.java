@@ -63,7 +63,7 @@ public class AddGitNameActionTransition implements Transition {
     String user = payload.getId();
     String nickname = payload.getGitNick();
 
-    User stateEntity = userRepository.findByUserID(user).get();
+    User stateEntity = userRepository.findByUserId(user).get();
     stateEntity.setGitName(nickname);
     String firstAnswer = stateEntity.getFirstAnswerAboutRules();
     String secondAnswer = stateEntity.getSecondAnswerAboutRules();
