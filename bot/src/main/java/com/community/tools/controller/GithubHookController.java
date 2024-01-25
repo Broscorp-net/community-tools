@@ -1,6 +1,5 @@
 package com.community.tools.controller;
 
-import com.community.tools.service.github.GitHookDataService;
 import com.community.tools.service.github.event.GithubEventsProcessingService;
 import lombok.AllArgsConstructor;
 import org.json.JSONObject;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class GithubHookController {
 
   private final GithubEventsProcessingService eventsProcessingService;
-  private final GitHookDataService gitHookDataService;
 
   /**
    * Method receive webhook data from GitHub.
