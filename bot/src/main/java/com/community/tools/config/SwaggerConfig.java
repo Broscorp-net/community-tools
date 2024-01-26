@@ -22,8 +22,8 @@ public class SwaggerConfig {
           "contact@broscorp.net");
 
   private final ApiInfo apiInfo = new ApiInfo(
-          "REST API for Slack Brobot",
-          "This page documents REST Slack Brobot endpoints",
+          "REST API for Brobot",
+          "This page documents REST Brobot endpoints",
           "@Brobot",
           "1.0",
           contact,

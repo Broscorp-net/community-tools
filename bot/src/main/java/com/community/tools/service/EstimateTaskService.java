@@ -5,25 +5,19 @@ import com.community.tools.repository.EstimateRepository;
 import com.community.tools.repository.TaskRepository;
 import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class EstimateTaskService {
-
-  @Autowired
-  TaskRepository taskRepository;
-
-  @Autowired
-  EstimateRepository estimateRepository;
-
-  @Autowired
-  StateMachineService stateMachineService;
-
-  @Autowired
-  GiveNewTaskService giveNewTaskService;
+  private final TaskRepository taskRepository;
+  private final EstimateRepository estimateRepository;
+  private final StateMachineService stateMachineService;
+  private final GiveNewTaskService giveNewTaskService;
 
   /**
    * Save estimate task in database.

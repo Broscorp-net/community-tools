@@ -9,9 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,12 +27,6 @@ public class LeaderboardController {
 
   private final Map<String, Comparator<GithubUserDto>> comparators = new HashMap<>();
   private final LeaderboardService leaderBoardService;
-
-  /**
-   * Setter for leaderBoardService.
-   *
-   * @param leaderBoardService - Inject leaderBoardService
-   */
 
   /**
    * Constructor.

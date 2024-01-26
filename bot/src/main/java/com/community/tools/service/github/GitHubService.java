@@ -6,7 +6,6 @@ import static com.community.tools.model.Event.PULL_REQUEST_CLOSED;
 import static com.community.tools.model.Event.PULL_REQUEST_CREATED;
 import static java.util.Comparator.comparing;
 import static org.kohsuke.github.GHIssueState.CLOSED;
-
 import com.community.tools.model.EventData;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -14,7 +13,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-import lombok.RequiredArgsConstructor;
 import org.kohsuke.github.GHIssueState;
 import org.kohsuke.github.GHPullRequest;
 import org.kohsuke.github.GHPullRequestCommitDetail;
@@ -22,14 +20,15 @@ import org.kohsuke.github.GHPullRequestReviewComment;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GHUser;
 import org.kohsuke.github.PagedIterable;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
 public class GitHubService {
-  @Autowired
   private final GitHubConnectService service;
+
+  public GitHubService(GitHubConnectService service) {
+    this.service = service;
+  }
 
   /**
    * Get all events by the date interval.

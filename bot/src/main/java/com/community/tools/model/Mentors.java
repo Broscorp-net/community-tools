@@ -16,6 +16,7 @@ public class Mentors {
 
   @Id
   private String gitNick;
+  //replace too discord
   private String slackId;
 
   public Mentors() {}

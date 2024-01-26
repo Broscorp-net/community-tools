@@ -5,25 +5,20 @@ import com.community.tools.service.MessageService;
 import com.community.tools.service.StateMachineService;
 import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
-import com.github.seratch.jslack.api.methods.SlackApiException;
-import java.io.IOException;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class AddMentorService {
 
   @Value("${generalInformationChannel}")
   private String channel;
-  @Autowired
-  private StateMachineService stateMachineService;
-  @Autowired
-  private MentorsRepository mentorsRepository;
-
-  @Autowired
-  private MessageService messageService;
+  private final StateMachineService stateMachineService;
+  private final MentorsRepository mentorsRepository;
+  private final MessageService messageService;
 
   /**
    * Add Mentor to the trainee, which make pull request.
@@ -52,7 +47,7 @@ public class AddMentorService {
    * @param user GitHub login of trainee
    * @param url  Url of pull request
    */
-  public void sendNotifyWithMentor(String user, String url) throws IOException, SlackApiException {
+  public void sendNotifyWithMentor(String user, String url) {
     messageService
         .sendMessageToConversation(channel, "User " + user
             + " created a pull request \n url: " + url

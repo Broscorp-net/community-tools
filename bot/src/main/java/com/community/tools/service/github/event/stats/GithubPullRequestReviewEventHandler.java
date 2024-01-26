@@ -8,7 +8,6 @@ import com.community.tools.service.github.event.GithubEventHandler;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
@@ -45,14 +44,14 @@ public class GithubPullRequestReviewEventHandler implements GithubEventHandler {
     final String state = review.getString("state");
     final String pullUrl = review.getString("pull_request_url");
     final Optional<String> maybeTaskName = getTaskNameFromPullUrl(pullUrl);
-    if (!maybeTaskName.isPresent()) {
+    if (maybeTaskName.isEmpty()) {
       return; //This event is for a pull request unrelated to traineeship in this case
     }
     final String taskName = maybeTaskName.get();
     final String traineeGitName = getTraineeNameFromPullUrl(pullUrl, taskName);
     final Optional<UserTask> maybeUserTask = userTaskRepository.findById(
         new UserTaskId(traineeGitName, taskName));
-    if (!maybeUserTask.isPresent()) {
+    if (maybeUserTask.isEmpty()) {
       log.error("Record for a valid task could not be found, recommend user " + traineeGitName
           + " to make another commit or manually re-trigger a workflow on task " + taskName);
       return;
@@ -72,7 +71,7 @@ public class GithubPullRequestReviewEventHandler implements GithubEventHandler {
     List<String> splitTaskNames = Arrays.stream(originalTaskNames.split(","))
         .map(String::trim)
         .filter(it -> !it.isEmpty())
-        .collect(Collectors.toList());
+        .toList();
     return splitTaskNames.stream().filter(pullUrl::contains)
         .findFirst();
   }

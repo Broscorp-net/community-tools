@@ -88,7 +88,7 @@ public class GithubWorkflowRunEventHandler implements GithubEventHandler {
     final Optional<HashMap> feedbackPullRequest = (workflowRun.getJSONArray(
             "pull_requests").toList().stream().map(it -> (HashMap) it)
         .filter(it -> (Integer) it.get("number") == 1).findFirst());
-    if (!feedbackPullRequest.isPresent()) {
+    if (feedbackPullRequest.isEmpty()) {
       String errorMessage =
           "Could not find Feedback pull request from GitHub classroom for user " + gitName
               + " doing task " + taskName;
