@@ -25,7 +25,8 @@ public class ThirdQuestionActionTransition implements Transition {
 
   public ThirdQuestionActionTransition(@Lazy MessageService messageService,
                                        Action<State, Event> errorAction,
-                                       UserRepository userRepository, MessageConstructor messageConstructor) {
+                                       UserRepository userRepository,
+                                       MessageConstructor messageConstructor) {
     this.messageService = messageService;
     this.errorAction = errorAction;
     this.userRepository = userRepository;

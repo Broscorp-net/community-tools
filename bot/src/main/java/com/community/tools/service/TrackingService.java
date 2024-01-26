@@ -27,7 +27,11 @@ public class TrackingService {
   private final EstimateTaskService estimateTaskService;
   private final EmailService emailService;
 
-  public TrackingService(@Lazy MessageService messageService, StateMachineService stateMachineService, UserRepository userRepository, EstimateTaskService estimateTaskService, EmailService emailService) {
+  public TrackingService(@Lazy MessageService messageService,
+                         StateMachineService stateMachineService,
+                         UserRepository userRepository,
+                         EstimateTaskService estimateTaskService,
+                         EmailService emailService) {
     this.messageService = messageService;
     this.stateMachineService = stateMachineService;
     this.userRepository = userRepository;

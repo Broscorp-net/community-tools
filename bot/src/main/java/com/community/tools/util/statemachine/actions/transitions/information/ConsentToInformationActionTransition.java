@@ -23,7 +23,8 @@ public class ConsentToInformationActionTransition implements Transition {
   private final MessageService messageService;
   private final MessageConstructor messageConstructor;
 
-  public ConsentToInformationActionTransition(Action<State, Event> errorAction, UserRepository userRepository,
+  public ConsentToInformationActionTransition(Action<State, Event> errorAction,
+                                              UserRepository userRepository,
                                               @Lazy MessageService messageService,
                                               MessageConstructor messageConstructor) {
     this.errorAction = errorAction;

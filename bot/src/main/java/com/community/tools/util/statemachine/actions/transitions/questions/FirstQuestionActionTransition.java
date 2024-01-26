@@ -21,7 +21,8 @@ public class FirstQuestionActionTransition implements Transition {
   private final Action<State, Event> errorAction;
 
   public FirstQuestionActionTransition(@Lazy MessageService messageService,
-                                       MessageConstructor messageConstructor, Action<State, Event> errorAction) {
+                                       MessageConstructor messageConstructor,
+                                       Action<State, Event> errorAction) {
     this.messageService = messageService;
     this.messageConstructor = messageConstructor;
     this.errorAction = errorAction;
