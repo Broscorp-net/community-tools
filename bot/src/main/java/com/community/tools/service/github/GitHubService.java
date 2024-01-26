@@ -6,6 +6,7 @@ import static com.community.tools.model.Event.PULL_REQUEST_CLOSED;
 import static com.community.tools.model.Event.PULL_REQUEST_CREATED;
 import static java.util.Comparator.comparing;
 import static org.kohsuke.github.GHIssueState.CLOSED;
+
 import com.community.tools.model.EventData;
 import java.io.IOException;
 import java.util.ArrayList;
