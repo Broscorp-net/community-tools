@@ -2,13 +2,13 @@ package com.community.tools.service.discord;
 
 import com.community.tools.discord.Command;
 import com.community.tools.service.StatisticService;
+import java.util.List;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 
 @Component
 public class StatCommand extends Command {
