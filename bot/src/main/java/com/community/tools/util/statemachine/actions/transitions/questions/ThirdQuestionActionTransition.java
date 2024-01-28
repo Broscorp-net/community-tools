@@ -47,7 +47,6 @@ public class ThirdQuestionActionTransition implements Transition {
         .getVariables().get("dataPayload");
     String id = payloadSecondAnswer.getUser();
     User stateEntity = userRepository.findByUserID(id).get();
-    //stateEntity.setSecondAnswerAboutRules(payloadSecondAnswer.getAnswer());
     userRepository.save(stateEntity);
     messageService.sendBlocksMessage(
         messageService.getUserById(id),

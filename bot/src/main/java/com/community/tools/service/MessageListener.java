@@ -1,10 +1,13 @@
 package com.community.tools.service;
 
-import com.community.tools.discord.CommandHandler;
+import com.community.tools.discord.Command;
 import com.community.tools.model.Messages;
 import com.community.tools.model.User;
 import com.community.tools.repository.UserRepository;
+
 import java.time.LocalDate;
+import java.util.List;
+
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.entities.MessageType;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
@@ -20,7 +23,7 @@ public class MessageListener implements EventListener {
 
   private final UserRepository userRepository;
   private final MessageService<?> messageService;
-  private final CommandHandler commandHandler;
+  private final List<Command> commands;
 
   @Value("${welcomeChannel}")
   private String welcomeChannelName;
@@ -40,7 +43,12 @@ public class MessageListener implements EventListener {
 
   @Override
   public void commandReceived(SlashCommandEvent event) {
-    commandHandler.runCommand(event);
+    commands.stream()
+        .filter(c -> c.getCommandData().getName().equals(event.getName()))
+        .findAny()
+        .orElseThrow(() -> new RuntimeException("No matching command found for event = ["
+            + event.getName() + "]"))
+        .run(event);
   }
 
   @Override
