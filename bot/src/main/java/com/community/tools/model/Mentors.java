@@ -6,12 +6,14 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
 @Entity
 @AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "mentors")
 public class Mentors {
 
@@ -20,8 +22,5 @@ public class Mentors {
   @Column(unique = true)
   private String discordName;
   private String slackId;
-
-  public Mentors() {
-  }
 
 }

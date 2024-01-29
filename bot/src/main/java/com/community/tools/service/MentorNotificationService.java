@@ -1,9 +1,14 @@
 package com.community.tools.service;
 
+import com.community.tools.model.Mentors;
 import com.community.tools.model.TraineeMentorRelation;
+import com.community.tools.model.User;
 import com.community.tools.repository.MentorsRepository;
 import com.community.tools.repository.TraineeMentorRelationRepository;
+import com.community.tools.repository.UserRepository;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.springframework.stereotype.Service;
@@ -14,7 +19,7 @@ public class MentorNotificationService {
 
   private final MessageService<MessageEmbed> messageService;
   private final MentorsRepository mentorsRepository;
-  private final TraineeMentorRelationRepository traineeMentorRelationRepository;
+  private final UserRepository userRepository;
 
   /**
    * Sends notifications to all mentors of the trainee identified by the given git name. If no
@@ -25,16 +30,16 @@ public class MentorNotificationService {
    * @param message        message to be sent to mentors associated with the trainee.
    */
   public void notifyAllTraineeMentors(String traineeGitName, String message) {
-    List<TraineeMentorRelation> traineeMentorRelations =
-        traineeMentorRelationRepository.findAllByGitNameTrainee(
-            traineeGitName);
-    if (traineeMentorRelations.isEmpty()) {
-      notifyAllMentors(message);
-    } else {
-      traineeMentorRelations.forEach(
-          mentor -> mentorsRepository.findByGitNick(mentor.getGitNameMentor())
-              .ifPresent(it -> messageService.sendPrivateMessage(it.getDiscordName(), message)));
-    }
+    Optional<User> maybeTrainee = userRepository.findByGitName(traineeGitName);
+    maybeTrainee.ifPresent(trainee -> {
+      if (trainee.getMentors().isEmpty()) {
+        notifyAllMentors(message);
+      } else {
+        trainee.getMentors().forEach(
+            mentor -> mentorsRepository.findByGitNick(mentor.getGitNick())
+                .ifPresent(it -> messageService.sendPrivateMessage(it.getDiscordName(), message)));
+      }
+    });
   }
 
   /**

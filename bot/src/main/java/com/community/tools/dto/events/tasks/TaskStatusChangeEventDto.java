@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @Builder
-public class TaskStatusEventDto {
+public class TaskStatusChangeEventDto {
 
   @NonNull
   private String taskName;

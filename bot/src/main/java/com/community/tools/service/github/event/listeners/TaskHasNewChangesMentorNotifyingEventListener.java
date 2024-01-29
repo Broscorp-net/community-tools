@@ -1,9 +1,8 @@
-package com.community.tools.service.github.event.tasks.status.handlers.task;
+package com.community.tools.service.github.event.listeners;
 
-import com.community.tools.dto.events.tasks.TaskStatusEventDto;
+import com.community.tools.dto.events.tasks.TaskStatusChangeEventDto;
 import com.community.tools.model.TaskStatus;
 import com.community.tools.service.MentorNotificationService;
-import com.community.tools.service.github.event.EventHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -11,15 +10,15 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class TaskHasNewChangesMentorNotifyingEventHandler implements
-    EventHandler<TaskStatusEventDto> {
+public class TaskHasNewChangesMentorNotifyingEventListener implements
+    TaskStatusChangeEventListener {
 
   private final MentorNotificationService mentorNotificationService;
   private static final String NOTIFICATION_TEMPLATE = "Task %s by %s at %s "
       + "has New Changes to Review!";
 
   @Override
-  public void handleEvent(TaskStatusEventDto eventDto) {
+  public void handleEvent(TaskStatusChangeEventDto eventDto) {
     if (eventDto.isWithNewChanges() && eventDto.getTaskStatus()
         .equals(TaskStatus.READY_FOR_REVIEW)) {
       mentorNotificationService.notifyAllTraineeMentors(eventDto.getTraineeGitName(),
