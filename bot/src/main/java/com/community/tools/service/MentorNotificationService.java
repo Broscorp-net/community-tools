@@ -1,14 +1,9 @@
 package com.community.tools.service;
 
-import com.community.tools.model.Mentors;
-import com.community.tools.model.TraineeMentorRelation;
 import com.community.tools.model.User;
 import com.community.tools.repository.MentorsRepository;
-import com.community.tools.repository.TraineeMentorRelationRepository;
 import com.community.tools.repository.UserRepository;
-import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.springframework.stereotype.Service;
