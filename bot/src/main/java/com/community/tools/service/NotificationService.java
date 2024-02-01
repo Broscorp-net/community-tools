@@ -21,10 +21,14 @@ public class NotificationService {
 
   @Value("${text.channel}")
   private String textChannelName;
-  @Autowired
-  private DiscordService discordService;
-  @Autowired
-  private DiscordGitHubMappingService discordGitHubMappingService;
+  private final DiscordService discordService;
+  private final DiscordGitHubMappingService discordGitHubMappingService;
+
+  public NotificationService(DiscordService discordService,
+      DiscordGitHubMappingService discordGitHubMappingService) {
+    this.discordService = discordService;
+    this.discordGitHubMappingService = discordGitHubMappingService;
+  }
 
   /**
    * Sends a pull request (PR) update notification to the Discord user associated with the given
