@@ -1,4 +1,4 @@
-package com.community.tools.model.stats;
+package com.community.tools.model.status;
 
 import java.time.LocalDate;
 import javax.persistence.Entity;
@@ -22,4 +22,5 @@ public class UserTask {
   private LocalDate lastActivity;
   private String pullUrl;
   private String taskStatus;
+  private String headCommitId;
 }
