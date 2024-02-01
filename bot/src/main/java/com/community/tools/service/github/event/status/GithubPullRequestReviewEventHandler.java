@@ -1,4 +1,4 @@
-package com.community.tools.service.github.event.stats;
+package com.community.tools.service.github.event.status;
 
 import com.community.tools.model.TaskStatus;
 import com.community.tools.model.stats.UserTask;

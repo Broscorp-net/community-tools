@@ -147,17 +147,13 @@ public class TrackingService {
    * @param userId platform user id
    * @throws Exception Exception
    */
-  public void resetUser(String userId) throws Exception {
+  public void resetUser(String userId, String guildId) throws Exception {
 
     User stateEntity = new User();
-    stateEntity.setUserId(userId);
+    stateEntity.setUserID(userId);
+    stateEntity.setGuildId(guildId);
     stateEntity.setDateRegistration(LocalDate.now());
-    String userName = messageService.getUserById(userId);
     userRepository.save(stateEntity);
     stateMachineService.persistMachineForNewUser(userId);
-
-    messageService.sendPrivateMessage(userName, Messages.WELCOME);
-
-
   }
 }
