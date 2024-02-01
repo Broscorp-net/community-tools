@@ -36,5 +36,4 @@ public class Application {
     properties.putAll(prop);
     return properties;
   }
-
 }

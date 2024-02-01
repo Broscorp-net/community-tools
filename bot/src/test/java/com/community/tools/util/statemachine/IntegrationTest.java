@@ -1,7 +1,6 @@
 package com.community.tools.util.statemachine;
 
 import static com.community.tools.util.statemachine.State.ADDED_GIT;
-import static com.community.tools.util.statemachine.State.AGREED_LICENSE;
 import static com.community.tools.util.statemachine.State.CHECK_FOR_NEW_TASK;
 import static com.community.tools.util.statemachine.State.CHECK_LOGIN;
 import static com.community.tools.util.statemachine.State.ESTIMATE_THE_TASK;
@@ -23,6 +22,7 @@ import com.community.tools.model.Messages;
 import com.community.tools.model.User;
 import com.community.tools.repository.UserRepository;
 import com.community.tools.service.MessageService;
+import com.community.tools.service.NotificationService;
 import com.community.tools.service.StateMachineService;
 import com.community.tools.service.StatisticsServiceImpl;
 import com.community.tools.service.github.ClassroomService;
@@ -96,6 +96,9 @@ class IntegrationTest {
 
   @MockBean
   private MessageService messageService;
+
+  @MockBean
+  private NotificationService notificationService;
 
   @MockBean
   private GitHubService gitHubService;
@@ -248,7 +251,7 @@ class IntegrationTest {
   @Test
   void verificationLoginActionTest() {
     machine.getStateMachineAccessor().doWithAllRegions(access -> access
-        .resetStateMachine(new DefaultStateMachineContext<>(AGREED_LICENSE,
+        .resetStateMachine(new DefaultStateMachineContext<>(NEW_USER,
             null, null, null)));
     VerificationPayload payload = new VerificationPayload(USER_ID, USER_NAME);
 
@@ -259,9 +262,6 @@ class IntegrationTest {
 
     stateMachineService.doAction(machine, payload, Event.LOGIN_CONFIRMATION);
 
-    verify(messageService, times(1)).getUserById(firstArg.capture());
-    assertEquals(USER_ID, firstArg.getValue());
-    ;
     verify(messageService, times(1)).sendPrivateMessage(firstArg.capture(), secondArg.capture());
     assertEquals(USER_NAME, firstArg.getValue());
     assertEquals(askAboutProfile + "\n" + url, secondArg.getValue());
@@ -280,10 +280,10 @@ class IntegrationTest {
 
     verify(classroomService, times(1)).addUserToTraineesTeam(firstArg.capture());
     assertEquals(USER_NAME, firstArg.getValue());
-    verify(messageService, times(2)).getUserById(firstArg.capture());
+    verify(messageService, times(1)).getUserById(firstArg.capture());
     assertEquals(USER_ID, firstArg.getValue());
-    verify(messageService, times(1)).sendMessageToConversation(firstArg.capture(), anyString());
-    assertEquals(channel, firstArg.getValue());
+    verify(messageService, times(1)).sendPrivateMessage(firstArg.capture(), anyString());
+    assertEquals(USER_NAME, firstArg.getValue());
   }
 
   @SneakyThrows
