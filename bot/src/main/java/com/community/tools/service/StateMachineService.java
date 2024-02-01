@@ -44,7 +44,7 @@ public class StateMachineService {
     StateMachine<State, Event> machine = factory.getStateMachine();
     machine.start();
     try {
-      persister.restore(machine, user.getUserId());
+      persister.restore(machine, user.getUserID());
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
@@ -52,7 +52,7 @@ public class StateMachineService {
   }
 
   public String getIdByNick(String nick) {
-    return userRepository.findByGitName(nick).get().getUserId();
+    return userRepository.findByGitName(nick).get().getUserID();
   }
 
   /**

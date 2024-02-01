@@ -8,25 +8,39 @@ import com.community.tools.service.MessageService;
 import com.community.tools.service.github.GitHubService;
 import java.io.IOException;
 
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
+@NoArgsConstructor
 public class RegisterCommand extends Command {
 
   private static final String OPTION_NAME = "username";
-  private final GitHubService gitHubService;
-  private final UserRepository userRepository;
-  private final MessageService<?> messageService;
+  private GitHubService gitHubService;
+  private UserRepository userRepository;
+  private MessageService<?> messageService;
 
   @Value("${newbieRole}")
   private String newbieRoleName;
+
+  public RegisterCommand(CommandData commandData,
+                         GitHubService gitHubService,
+                         UserRepository userRepository,
+                         @Lazy MessageService<?> messageService,
+                         OptionData... options) {
+    super(commandData, options);
+    this.gitHubService = gitHubService;
+    this.userRepository = userRepository;
+    this.messageService = messageService;
+  }
 
   /**
    * Basic constructor for the class, specifies command data and injects required beans.

@@ -60,14 +60,14 @@ public class NotificationService {
   public void sendPullRequestUpdateNotification(
       List<UserForTaskStatusDto> userForTaskStatusDtoList) {
     List<String> gitHubNames = userForTaskStatusDtoList.stream()
-        .map(UserForTaskStatusDto::getGitName).collect(
+        .map(UserForTaskStatusDto::gitName).collect(
             Collectors.toList());
     Map<String, String> gitHubDiscordNames = discordGitHubMappingService.getDiscordGithubUsernames(
         gitHubNames);
     for (UserForTaskStatusDto dto : userForTaskStatusDtoList) {
-      String discordName = gitHubDiscordNames.get(dto.getGitName());
+      String discordName = gitHubDiscordNames.get(dto.gitName());
       Optional<User> userOptional = discordService.getUserByName(discordName);
-      checkUserAndSendNotification(userOptional, discordName, dto.getTaskStatuses());
+      checkUserAndSendNotification(userOptional, discordName, dto.taskStatuses());
     }
   }
 
@@ -106,8 +106,8 @@ public class NotificationService {
         .append("! Your PR statuses updated on: ");
     for (TaskNameAndStatus taskNameAndStatus : taskNameAndStatusList) {
       announcementText.append(System.lineSeparator());
-      announcementText.append(taskNameAndStatus.getTaskName()).append(" :")
-          .append(taskNameAndStatus.getTaskStatus());
+      announcementText.append(taskNameAndStatus.taskName()).append(" :")
+          .append(taskNameAndStatus.taskStatus());
     }
     return announcementText.toString();
   }
