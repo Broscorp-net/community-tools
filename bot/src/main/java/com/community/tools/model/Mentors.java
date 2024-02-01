@@ -21,7 +21,6 @@ public class Mentors {
   private String gitNick;
   @Column(unique = true)
   private String discordName;
-  //replace too discord
   private String slackId;
 
 }
