@@ -2,8 +2,8 @@ package com.community.tools.discord;
 
 import com.community.tools.model.ServiceUser;
 import com.community.tools.service.MessageService;
-
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -38,7 +38,7 @@ public class DiscordService implements MessageService<MessageEmbed> {
   /**
    * Send private message with messageText to username.
    *
-   * @param username Discord login
+   * @param username    Discord login
    * @param messageText Text of message
    */
   @Override
@@ -55,7 +55,7 @@ public class DiscordService implements MessageService<MessageEmbed> {
    * Sends a message with embedded content to a user's private channel.
    *
    * @param username The username of the recipient.
-   * @param message The MessageEmbed content to be sent.
+   * @param message  The MessageEmbed content to be sent.
    */
   @Override
   public void sendBlocksMessage(String username, MessageEmbed message) {
@@ -70,7 +70,7 @@ public class DiscordService implements MessageService<MessageEmbed> {
   /**
    * Sends a message with embedded content using an EmbedBuilder to a user's private channel.
    *
-   * @param username The username of the recipient.
+   * @param username     The username of the recipient.
    * @param embedBuilder The EmbedBuilder containing the message's embedded content.
    */
   @Override
@@ -88,7 +88,7 @@ public class DiscordService implements MessageService<MessageEmbed> {
    * Sends a message with embedded content and attachments to a user's private channel.
    *
    * @param username The username of the recipient.
-   * @param message The MessageEmbed content to be sent.
+   * @param message  The MessageEmbed content to be sent.
    */
   @Override
   public void sendAttachmentsMessage(String username, MessageEmbed message) {
@@ -104,7 +104,7 @@ public class DiscordService implements MessageService<MessageEmbed> {
    * Sends a message with embedded content and attachments using an EmbedBuilder to a user's private
    * channel.
    *
-   * @param username The username of the recipient.
+   * @param username     The username of the recipient.
    * @param embedBuilder The EmbedBuilder containing the message's embedded content.
    */
   @Override
@@ -133,7 +133,7 @@ public class DiscordService implements MessageService<MessageEmbed> {
    * Sends a message with embedded content to a specific text channel in a conversation.
    *
    * @param channelName The name of the target text channel.
-   * @param message The MessageEmbed content to be sent.
+   * @param message     The MessageEmbed content to be sent.
    */
   @Override
   public void sendBlockMessageToConversation(String channelName, MessageEmbed message) {
@@ -144,7 +144,7 @@ public class DiscordService implements MessageService<MessageEmbed> {
    * Sends a message with embedded content using an EmbedBuilder to a specific text channel in a
    * conversation.
    *
-   * @param channelName The name of the target text channel.
+   * @param channelName  The name of the target text channel.
    * @param embedBuilder The EmbedBuilder containing the message's embedded content.
    */
   @Override
@@ -215,6 +215,16 @@ public class DiscordService implements MessageService<MessageEmbed> {
   @Override
   public void sendAnnouncement(String message) {
     throw new NotImplementedException("This functionality is not implemented in this release.");
+  }
+
+  /**
+   * Returns Optional of user by discord name.
+   *
+   * @param discordName Discords`s name
+   * @return Optional of user
+   */
+  public Optional<User> getUserByName(String discordName) {
+    return jda.getUsersByName(discordName, true).stream().findFirst();
   }
 
   /**
