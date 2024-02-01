@@ -6,20 +6,18 @@ import com.community.tools.service.payload.VerificationPayload;
 import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
 import com.community.tools.util.statemachine.actions.Transition;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.action.Action;
 import org.springframework.statemachine.annotation.WithStateMachine;
 import org.springframework.statemachine.config.builders.StateMachineTransitionConfigurer;
 
 @WithStateMachine
+@RequiredArgsConstructor
 public class DidNotPassVerificationGitLoginTrans implements Transition {
 
-  @Autowired
-  private Action<State, Event> errorAction;
-
-  @Autowired
-  private MessageService messageService;
+  private final Action<State, Event> errorAction;
+  private final MessageService<?> messageService;
 
   @Override
   public void configure(
@@ -27,7 +25,7 @@ public class DidNotPassVerificationGitLoginTrans implements Transition {
     transitions
         .withExternal()
         .source(State.CHECK_LOGIN)
-        .target(State.AGREED_LICENSE)
+        .target(State.NEW_USER)
         .event(Event.DID_NOT_PASS_VERIFICATION_GIT_LOGIN)
         .action(this, errorAction);
   }

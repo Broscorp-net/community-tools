@@ -1,8 +1,8 @@
 package com.community.tools.discord;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.security.auth.login.LoginException;
-
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -13,7 +13,6 @@ import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.Compression;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,13 +21,14 @@ import org.springframework.context.annotation.Profile;
 
 @Configuration
 @Profile("discord")
+@RequiredArgsConstructor
 public class DiscordConfig {
 
   @Value("${discord.token}")
   private String token;
 
-  @Autowired
-  private DiscordEventListener discordEventListener;
+  private final DiscordEventListener discordEventListener;
+  private final List<Command> commands;
 
   /**
    * Created and configure object JDA.
@@ -47,8 +47,11 @@ public class DiscordConfig {
           .setActivity(Activity.playing("Discord"))
           .addEventListeners(discordEventListener)
           .build();
+      List<CommandData> commandData = commands.stream()
+          .map(Command::getCommandData)
+          .collect(Collectors.toList());
       jda.updateCommands()
-              .addCommands(new CommandData("stat", "Показать статистику"))
+              .addCommands(commandData)
               .queue();
       jda.awaitReady();
       return jda;

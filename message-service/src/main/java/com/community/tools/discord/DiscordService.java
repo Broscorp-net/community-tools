@@ -5,12 +5,15 @@ import com.community.tools.service.MessageService;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.components.Button;
@@ -165,6 +168,48 @@ public class DiscordService implements MessageService<MessageEmbed> {
             .get();
     String channelId = channel.getId();
     return channelId;
+  }
+
+  /**
+   * Adds a role to a user within a guild.
+   * @param guildId id of a guild
+   * @param userId id of a user
+   * @param roleName role's name
+   */
+  @Override
+  public void addRoleToUser(String guildId, String userId, String roleName) {
+    Guild guild = jda.getGuildById(guildId);
+    assert guild != null;
+    Role role = guild.getRolesByName(roleName, false).get(0);
+    guild.addRoleToMember(userId, role).queue();
+  }
+
+  /**
+   * Removes a role from a user within a guild.
+   * @param guildId id of a guild
+   * @param userId id of a user
+   * @param roleName role's name
+   */
+  @Override
+  public void removeRole(String guildId, String userId, String roleName) {
+    Guild guild = jda.getGuildById(guildId);
+    assert guild != null;
+    Role role = guild.getRolesByName(roleName, false).get(0);
+    guild.removeRoleFromMember(userId, role).queue();
+  }
+
+  /**
+   * Calls JDA and retrieves user's name by id.
+   * @param userID id of a user
+   * @return user's discord name
+   */
+  @Override
+  public String retrieveById(String userID) {
+    try {
+      return jda.retrieveUserById(userID).submit().thenApply(User::getName).get();
+    } catch (InterruptedException | ExecutionException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   @Override
