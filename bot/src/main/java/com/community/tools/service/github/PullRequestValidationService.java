@@ -3,6 +3,7 @@ package com.community.tools.service.github;
 import com.community.tools.dto.CommitFileDto;
 import com.community.tools.dto.OpenAiValidationResponseDto;
 import com.community.tools.dto.QueuedValidationProcessDto;
+import com.community.tools.service.NotificationService;
 import com.community.tools.service.openai.OpenAiService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,6 +30,7 @@ public class PullRequestValidationService {
   private final GitHubConnectService gitService;
   private final ObjectMapper objectMapper;
   private final OpenAiService openAiService;
+  private final NotificationService notificationService;
   private final Queue<QueuedValidationProcessDto> requests = new LinkedList<>();
   private static final String PROMPT_TEMPLATE = "Provide me with the code review where you "
           + "point out lines of code that have some issues and make an comment "
@@ -49,19 +51,24 @@ public class PullRequestValidationService {
           + "    ]"
           + "  ]"
           + "} return only strictly json response.";
+  private static final String NOTIFICATION_MESSAGE_TEMPLATE
+          = "The commit %s was reviewed. Please check it out.";
 
   /**
    * Constructor for the service.
    *
-   * @param gitService git service to get repositories
-   * @param objectMapper mapper to map responses to desired object
-   * @param openAiService ai service to validate PRs
+   * @param gitService          git service to get repositories
+   * @param objectMapper        mapper to map responses to desired object
+   * @param openAiService       ai service to validate PRs
+   * @param notificationService service to notification users after pr validation
    */
   public PullRequestValidationService(GitHubConnectService gitService,
-                                      ObjectMapper objectMapper, OpenAiService openAiService) {
+                                      ObjectMapper objectMapper, OpenAiService openAiService,
+                                      NotificationService notificationService) {
     this.gitService = gitService;
     this.objectMapper = objectMapper;
     this.openAiService = openAiService;
+    this.notificationService = notificationService;
   }
 
   /**
@@ -98,6 +105,7 @@ public class PullRequestValidationService {
 
         requests.add(QueuedValidationProcessDto.builder()
                 .prompt(prompt)
+                .committer(repository.getCommit(commitDetail.getSha()).getAuthor().getLogin())
                 .pullRequest(pullRequest)
                 .commitDetail(commitDetail)
                 .fileCodeLines(fileList.stream()
@@ -159,6 +167,10 @@ public class PullRequestValidationService {
                   + openAiResponse.getRating() + "/10.");
 
           review.create();
+          notificationService.sendNotificationMessage(
+                 process.getCommitter(),
+                 String.format(NOTIFICATION_MESSAGE_TEMPLATE, commitDetail.getSha())
+          );
         } catch (IOException e) {
           throw new RuntimeException(e);
         }
