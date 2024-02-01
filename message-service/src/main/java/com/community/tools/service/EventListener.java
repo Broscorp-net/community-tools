@@ -1,11 +1,17 @@
 package com.community.tools.service;
 
-import com.community.tools.model.Message;
+import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent;
 
 public interface EventListener {
 
-  void memberJoin(Message message);
+  void memberJoin(GuildMemberJoinEvent message);
 
-  void messageReceived(Message message);
+  void commandReceived(SlashCommandEvent event);
 
+  void guildMessageReceived(GuildMessageReceivedEvent event);
+
+  void privateMessageReceived(PrivateMessageReceivedEvent event);
 }

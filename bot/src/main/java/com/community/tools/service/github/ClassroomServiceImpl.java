@@ -466,7 +466,6 @@ public class ClassroomServiceImpl implements ClassroomService {
 
   private Optional<GHWorkflowRun> getWorkflowRun(GHRepository repository) {
     try {
-      log.info(repository.getName());
       Iterator<GHWorkflowRun> workflowRunIterator = repository
           .getWorkflow(classroomWorkflow)
           .listRuns()
