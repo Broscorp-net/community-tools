@@ -28,5 +28,5 @@ public interface MessageService<T> extends UserService {
 
   void removeRole(String guildId, String userId, String newbieRoleName);
 
-  String retrieveById(String userID);
+  String retrieveById(String userId);
 }

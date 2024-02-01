@@ -14,7 +14,6 @@ import com.community.tools.util.statemachine.State;
 import java.time.LocalDate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.stereotype.Service;
@@ -150,7 +149,7 @@ public class TrackingService {
   public void resetUser(String userId, String guildId) throws Exception {
 
     User stateEntity = new User();
-    stateEntity.setUserID(userId);
+    stateEntity.setUserId(userId);
     stateEntity.setGuildId(guildId);
     stateEntity.setDateRegistration(LocalDate.now());
     userRepository.save(stateEntity);

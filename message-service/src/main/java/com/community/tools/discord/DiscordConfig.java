@@ -32,6 +32,7 @@ public class DiscordConfig {
 
   /**
    * Created and configure object JDA.
+   *
    * @return object JDA
    */
   @Bean
@@ -51,8 +52,8 @@ public class DiscordConfig {
           .map(Command::getCommandData)
           .collect(Collectors.toList());
       jda.updateCommands()
-              .addCommands(commandData)
-              .queue();
+          .addCommands(commandData)
+          .queue();
       jda.awaitReady();
       return jda;
     } catch (LoginException | InterruptedException exception) {

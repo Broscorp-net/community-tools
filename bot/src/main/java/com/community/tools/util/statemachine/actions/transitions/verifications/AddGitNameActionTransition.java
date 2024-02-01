@@ -51,7 +51,7 @@ public class AddGitNameActionTransition implements Transition {
     String userId = payload.getId();
     String nickname = payload.getGitNick();
 
-    User stateEntity = userRepository.findByUserID(userId)
+    User stateEntity = userRepository.findByUserId(userId)
         .orElseThrow(() -> new RuntimeException("User with id = [" + userId + "] was not found"));
     stateEntity.setGitName(nickname);
     GHUser userGitLogin = new GHUser();

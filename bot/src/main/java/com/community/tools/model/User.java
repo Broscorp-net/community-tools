@@ -1,14 +1,14 @@
 package com.community.tools.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.time.LocalDate;
-import java.util.Date;
-import java.util.Set;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+import java.time.LocalDate;
+import java.util.Date;
+import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -20,7 +20,7 @@ import lombok.Setter;
 public class User {
 
   @Id
-  private String userID;
+  private String userId;
   private String guildId;
   private String gitName;
   private LocalDate dateRegistration;
