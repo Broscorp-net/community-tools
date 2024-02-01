@@ -9,18 +9,24 @@ import com.community.tools.util.statemachine.State;
 import com.community.tools.util.statemachine.actions.Transition;
 import com.community.tools.util.statemachine.actions.error.ErrorAction;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.annotation.WithStateMachine;
 import org.springframework.statemachine.config.builders.StateMachineTransitionConfigurer;
 
 @WithStateMachine
 public class SendEstimateTaskActionTransition implements Transition {
+  private ErrorAction errorAction;
+  private MessageService messageService;
+  private MessageConstructor messageConstructor;
 
-  @Autowired ErrorAction errorAction;
-
-  @Autowired MessageService messageService;
-
-  @Autowired MessageConstructor messageConstructor;
+  public SendEstimateTaskActionTransition(ErrorAction errorAction,
+                                          @Lazy MessageService messageService,
+                                          MessageConstructor messageConstructor) {
+    this.errorAction = errorAction;
+    this.messageService = messageService;
+    this.messageConstructor = messageConstructor;
+  }
 
   @Override
   public void configure(StateMachineTransitionConfigurer<State, Event> transitions)

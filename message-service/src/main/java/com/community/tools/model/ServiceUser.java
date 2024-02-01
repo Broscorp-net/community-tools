@@ -26,6 +26,7 @@ public class ServiceUser {
 
   /**
    * Convert an SlackUser object into an ServiceUser object.
+   *
    * @param slackUser - SlackUser object.
    * @return a new ServiceUser object.
    */

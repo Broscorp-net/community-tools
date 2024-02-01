@@ -17,6 +17,7 @@ public class UserForLeaderboardDto {
 
   /**
    * Constructor for DTO.
+   *
    * @param gitName - gitName
    * @param dateLastActivity - dateLastActivity
    * @param completedTasks - completedTasks

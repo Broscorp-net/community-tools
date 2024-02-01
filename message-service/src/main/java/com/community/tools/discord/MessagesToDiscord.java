@@ -3,7 +3,6 @@ package com.community.tools.discord;
 import com.community.tools.model.Event;
 import com.community.tools.model.EventData;
 import com.community.tools.service.MessageConstructor;
-
 import com.community.tools.util.MessageUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
-
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.springframework.context.annotation.Profile;
@@ -178,7 +176,7 @@ public class MessagesToDiscord implements MessageConstructor<MessageEmbed> {
   @Override
   public MessageEmbed createNextTaskMessage(List<String> tasksList, int numberTask) {
     return new EmbedBuilder()
-      .addField("", NEXT_TASK + tasksList.get(numberTask).replace('.','/') + ") :link:", false)
+      .addField("", NEXT_TASK + tasksList.get(numberTask).replace('.', '/') + ") :link:", false)
       .build();
   }
 

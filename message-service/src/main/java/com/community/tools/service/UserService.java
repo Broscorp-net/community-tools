@@ -1,7 +1,6 @@
 package com.community.tools.service;
 
 import com.community.tools.model.ServiceUser;
-
 import java.util.Map;
 import java.util.Set;
 

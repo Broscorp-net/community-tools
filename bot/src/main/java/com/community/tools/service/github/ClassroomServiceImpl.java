@@ -76,8 +76,13 @@ public class ClassroomServiceImpl implements ClassroomService {
   @Value("${email.notification.enabled}")
   private boolean isEmailEnabled;
 
-  @Autowired
   private DiscordService discordService;
+
+  @Autowired
+  public void setDiscordService(DiscordService discordService) {
+    this.discordService = discordService;
+  }
+
   @Autowired
   private EmailService emailService;
 
@@ -413,19 +418,19 @@ public class ClassroomServiceImpl implements ClassroomService {
 
   private int getCompletedTasks(List<GithubRepositoryDto> repositories) {
     return (int) repositories
-        .stream()
-        .flatMap(repository -> repository.getLabels().stream())
-        .map(String::toLowerCase)
-        .filter(label -> label.equals(completedTaskLabel))
-        .count();
+            .stream()
+            .flatMap(repository -> repository.labels().stream())
+            .map(String::toLowerCase)
+            .filter(label -> label.equals(completedTaskLabel))
+            .count();
   }
 
   private int getTotalPoints(List<GithubRepositoryDto> repositories) {
     return repositories
-        .stream()
-        .map(GithubRepositoryDto::getPoints)
-        .filter(points -> points >= 0)
-        .reduce(0, Integer::sum);
+            .stream()
+            .map(GithubRepositoryDto::points)
+            .filter(points -> points >= 0)
+            .reduce(0, Integer::sum);
   }
 
   private GithubRepositoryDto buildGithubRepositoryDto(FetchedRepository fetchedRepository) {

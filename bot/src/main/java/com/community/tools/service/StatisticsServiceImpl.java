@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -40,7 +41,7 @@ public class StatisticsServiceImpl implements StatisticService {
   /**
    * Required args constructor, used to inject the necessary dependencies into the Service.
    */
-  public StatisticsServiceImpl(DiscordService discordService,
+  public StatisticsServiceImpl(@Lazy DiscordService discordService,
       @Qualifier("taskStatusServiceHooks") TaskStatusService taskStatusServiceHooks) {
     this.discordService = discordService;
     this.taskStatusServiceHooks = taskStatusServiceHooks;
@@ -86,7 +87,7 @@ public class StatisticsServiceImpl implements StatisticService {
   private List<UserForTaskStatusDto> getStatisticsList() {
     Comparator<UserForTaskStatusDto> comparator = comparators.getOrDefault(
         "DESC".toUpperCase(),
-        Comparator.comparingInt(UserForTaskStatusDto::getCompletedTasks).reversed());
+        Comparator.comparingInt(UserForTaskStatusDto::completedTasks).reversed());
 
     return taskStatusServiceHooks.getTaskStatuses(
         Period.ofDays(defaultNumberOfDays),
@@ -96,12 +97,12 @@ public class StatisticsServiceImpl implements StatisticService {
 
   private int getMaxColLength(List<UserForTaskStatusDto> userStatusDtoList) {
     return userStatusDtoList.stream()
-        .mapToInt(userStatusDto -> {
-          String userName = userStatusDto.getGitName();
-          return userName != null ? userName.length() : 0;
-        })
-        .max()
-        .orElse(0);
+            .mapToInt(userStatusDto -> {
+              String userName = userStatusDto.gitName();
+              return userName != null ? userName.length() : 0;
+            })
+            .max()
+            .orElse(0);
   }
 
   private String createTableHead(int firstColLength) {
@@ -136,15 +137,15 @@ public class StatisticsServiceImpl implements StatisticService {
     StringBuilder tableBody = new StringBuilder();
 
     for (UserForTaskStatusDto userData : userPartList) {
-      String userName = userData.getGitName();
+      String userName = userData.gitName();
       tableBody.append(userName)
           .append(createDiscordLink(createGitHubLink(userName)))
           .append(StringUtils.repeat(" ", firstColLength - userName.length()))
           .append(getVerticalSeparator());
 
       for (int i = 0; i < taskNames.length; i++) {
-        String label = getTaskSmileStatus(userData.getTaskStatuses(), taskNames[i]);
-        String pullUrl = getTaskPullUrl(userData.getTaskStatuses(), taskNames[i]);
+        String label = getTaskSmileStatus(userData.taskStatuses(), taskNames[i]);
+        String pullUrl = getTaskPullUrl(userData.taskStatuses(), taskNames[i]);
 
         if (!label.equals(TaskStatus.UNDEFINED.getEmoji()) && pullUrl != null) {
           tableBody.append(createEmojiDiscordLink(pullUrl, label));
@@ -218,8 +219,8 @@ public class StatisticsServiceImpl implements StatisticService {
 
   private String getTaskPullUrl(List<TaskNameAndStatus> taskNameAndStatuses, String taskName) {
     for (TaskNameAndStatus task : taskNameAndStatuses) {
-      if (taskName.equals(task.getTaskName())) {
-        return task.getPullUrl();
+      if (taskName.equals(task.taskName())) {
+        return task.pullUrl();
       }
     }
     return null;
@@ -228,10 +229,9 @@ public class StatisticsServiceImpl implements StatisticService {
   private String getTaskSmileStatus(List<TaskNameAndStatus> taskNameAndStatuses,
       String taskName) {
     String status = taskNameAndStatuses.stream()
-        .filter(task -> taskName.equals(task.getTaskName()))
-        .map(TaskNameAndStatus::getTaskStatus)
-        .findFirst().orElse("undefined");
-
+            .filter(task -> taskName.equals(task.taskName()))
+            .map(TaskNameAndStatus::taskStatus)
+            .findFirst().orElse("undefined");
     return TaskStatus.getEmojiByDescription(status);
   }
 }

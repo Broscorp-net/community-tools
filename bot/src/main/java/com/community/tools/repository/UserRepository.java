@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserRepository extends JpaRepository<User, String> {
 
-  Optional<User> findByUserID(String userID);
+  Optional<User> findByUserId(String userId);
 
   Optional<User> findByGitName(String gitName);
 
