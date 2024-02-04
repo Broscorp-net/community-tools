@@ -35,7 +35,7 @@ public class ConsentToInformationActionTransition implements Transition {
     QuestionPayload payloadThirdAnswer = (QuestionPayload) stateContext.getExtendedState()
         .getVariables().get("dataPayload");
     String id = payloadThirdAnswer.getUser();
-    User stateEntity = userRepository.findByUserID(id).get();
+    User stateEntity = userRepository.findByUserId(id).get();
     userRepository.save(stateEntity);
     messageService.sendBlocksMessage(
         messageService.getUserById(id),

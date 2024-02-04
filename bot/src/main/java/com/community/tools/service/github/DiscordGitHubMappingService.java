@@ -29,7 +29,7 @@ public class DiscordGitHubMappingService {
   public Map<String, String> getDiscordGithubUsernames(List<String> githubUsernames) {
     return userRepository.findByGitNameIn(githubUsernames).stream()
       .collect(Collectors.toMap(User::getGitName, u -> Objects.requireNonNull(
-        messageService.retrieveById(u.getUserID()))));
+        messageService.retrieveById(u.getUserId()))));
   }
 
   /**
@@ -42,7 +42,7 @@ public class DiscordGitHubMappingService {
   public String getDiscordName(String githubName) {
     String userId = userRepository.findByGitName(githubName)
         .orElseThrow(() -> new NoSuchElementException("User with GitHub name = ["
-            + githubName + "] was not found")).getUserID();
+            + githubName + "] was not found")).getUserId();
     return messageService.getUserById(userId);
   }
 

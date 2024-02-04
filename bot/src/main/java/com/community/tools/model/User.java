@@ -20,7 +20,7 @@ import lombok.Setter;
 public class User {
 
   @Id
-  private String userID;
+  private String userId;
   private String guildId;
   private String gitName;
   private LocalDate dateRegistration;

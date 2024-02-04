@@ -32,10 +32,10 @@ public class StateMachinePersister implements
   public void write(StateMachineContext<State, Event> context, String userId) {
     User user = null;
     try {
-      user = userRepository.findByUserID(userId).get();
+      user = userRepository.findByUserId(userId).get();
     } catch (NoSuchElementException e) {
       user = new User();
-      user.setUserID(userId);
+      user.setUserId(userId);
     }
 
     byte[] data = serialize(context);
@@ -46,7 +46,7 @@ public class StateMachinePersister implements
   @Override
   public StateMachineContext<State, Event> read(String s) {
 
-    User user = userRepository.findByUserID(s).get();
+    User user = userRepository.findByUserId(s).get();
     byte[] arr = user.getStateMachine();
 
     return deserialize(arr);

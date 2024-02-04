@@ -150,7 +150,7 @@ public class TrackingService {
   public void resetUser(String userId, String guildId) throws Exception {
 
     User stateEntity = new User();
-    stateEntity.setUserID(userId);
+    stateEntity.setUserId(userId);
     stateEntity.setGuildId(guildId);
     stateEntity.setDateRegistration(LocalDate.now());
     userRepository.save(stateEntity);

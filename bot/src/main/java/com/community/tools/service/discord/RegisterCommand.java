@@ -7,7 +7,6 @@ import com.community.tools.repository.UserRepository;
 import com.community.tools.service.MessageService;
 import com.community.tools.service.github.GitHubService;
 import java.io.IOException;
-
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
@@ -75,7 +74,7 @@ public class RegisterCommand extends Command {
       command.reply(Messages.GITHUB_ACCOUNT_NOT_FOUND).queue();
       return;
     }
-    User user = userRepository.findByUserID(userId)
+    User user = userRepository.findByUserId(userId)
         .orElseThrow(() -> new RuntimeException("User with id = [" + userId + "] was not found"));
     if (user.getGitName() == null) {
       messageService.removeRole(user.getGuildId(), userId, newbieRoleName);
