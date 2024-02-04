@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Queue;
 import java.util.stream.Collectors;
-
 import org.kohsuke.github.GHCommit;
 import org.kohsuke.github.GHPullRequest;
 import org.kohsuke.github.GHPullRequestCommitDetail;

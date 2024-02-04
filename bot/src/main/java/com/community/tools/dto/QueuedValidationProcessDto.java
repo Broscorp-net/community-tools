@@ -1,7 +1,6 @@
 package com.community.tools.dto;
 
 import java.util.Map;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
