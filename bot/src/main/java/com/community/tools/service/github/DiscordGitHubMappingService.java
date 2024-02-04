@@ -21,7 +21,9 @@ public class DiscordGitHubMappingService {
   /**
    * Searches for users within provided GitHub usernames
    * and returns map of GitHub-Discord usernames.
+   *
    * @param githubUsernames List of GitHub usernames
+   *
    * @return Map of GitHub-Discord usernames
    */
   public Map<String, String> getDiscordGithubUsernames(List<String> githubUsernames) {
@@ -32,7 +34,9 @@ public class DiscordGitHubMappingService {
 
   /**
    * Searches for a user with a provided GitHub username and returns Discord username.
+   *
    * @param githubName GitHub username
+   *
    * @return Discord username
    */
   public String getDiscordName(String githubName) {

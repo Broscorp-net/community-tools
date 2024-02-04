@@ -44,6 +44,7 @@ public class RegisterCommand extends Command {
 
   /**
    * Basic constructor for the class, specifies command data and injects required beans.
+   *
    * @param gitHubService checks if provided username is correct
    * @param userRepository repository for access to user's entity
    * @param messageService messaging in discord
@@ -60,6 +61,7 @@ public class RegisterCommand extends Command {
 
   /**
    * Saves user's GitHub username to database and removes newbie role.
+   *
    * @param command received event from Discord
    */
   @Override
