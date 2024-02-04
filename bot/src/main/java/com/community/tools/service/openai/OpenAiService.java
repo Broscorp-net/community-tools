@@ -25,11 +25,6 @@ public class OpenAiService {
   private String model;
   @Value("${openai.temperature}")
   private double temperature;
-  private final ObjectMapper objectMapper;
-
-  public OpenAiService(ObjectMapper objectMapper) {
-    this.objectMapper = objectMapper;
-  }
 
   /**
    * This is the main method in service which processes prompt.
@@ -66,6 +61,7 @@ public class OpenAiService {
    * @return raw string, example: "This is example list//n1)...//n..."
    */
   private String extractMessageFromJsonResponse(String response) throws IOException {
+    ObjectMapper objectMapper = new ObjectMapper();
     JsonNode jsonNode = objectMapper.readTree(response);
     return jsonNode
             .get("choices").get(0)
@@ -81,6 +77,6 @@ public class OpenAiService {
   private String getStringWithLineSeparators(String raw) {
     final String regex = "\\\\n";
     final String newSeparator = System.lineSeparator();
-    return raw.replaceAll(regex,newSeparator);
+    return raw.replaceAll(regex, newSeparator);
   }
 }

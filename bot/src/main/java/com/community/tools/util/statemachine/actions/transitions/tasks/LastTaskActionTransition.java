@@ -6,6 +6,7 @@ import com.community.tools.util.statemachine.Event;
 import com.community.tools.util.statemachine.State;
 import com.community.tools.util.statemachine.actions.Transition;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.action.Action;
 import org.springframework.statemachine.annotation.WithStateMachine;
@@ -14,15 +15,17 @@ import org.springframework.statemachine.guard.Guard;
 
 @WithStateMachine
 public class LastTaskActionTransition implements Transition {
-
-  @Autowired
   private MessageService messageService;
-
-  @Autowired
   private Action<State, Event> errorAction;
-
-  @Autowired
   private Guard<State, Event> lastTaskGuard;
+
+  public LastTaskActionTransition(@Lazy MessageService messageService,
+                                  Action<State, Event> errorAction,
+                                  Guard<State, Event> lastTaskGuard) {
+    this.messageService = messageService;
+    this.errorAction = errorAction;
+    this.lastTaskGuard = lastTaskGuard;
+  }
 
   @Override
   public void configure(

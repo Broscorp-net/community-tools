@@ -22,6 +22,7 @@ public class StatCommand extends Command {
 
   /**
    * Gets statistics from {@link StatisticService} and send a result to user.
+   *
    * @param command received event from Discord
    */
   public void run(SlashCommandEvent command) {

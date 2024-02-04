@@ -5,7 +5,7 @@
   <parent>
     <artifactId>community-tools</artifactId>
     <groupId>com.community-tools</groupId>
-    <version>1-SNAPSHOT</version>
+    <version>2-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
@@ -39,13 +39,13 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
-      <version>2.2.1.RELEASE</version>
+      <version>3.2.0</version>
     </dependency>
 
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
-      <version>2.2.1.RELEASE</version>
+      <version>3.2.0</version>
       <scope>test</scope>
       <exclusions>
         <exclusion>
@@ -62,14 +62,14 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-data-jpa</artifactId>
-      <version>2.2.1.RELEASE</version>
+      <version>3.2.0</version>
     </dependency>
 
     <!--Jackson - Json-->
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>
-      <version>2.10.1</version>
+      <version>2.14.2</version>
     </dependency>
 
     <!-- https://mvnrepository.com/artifact/org.json/json -->
@@ -113,14 +113,14 @@
     <dependency>
       <groupId>org.springframework.statemachine</groupId>
       <artifactId>spring-statemachine-core</artifactId>
-      <version>2.2.0.RELEASE</version>
+      <version>3.2.0</version>
     </dependency>
 
     <!-- https://mvnrepository.com/artifact/org.springframework.statemachine/spring-statemachine-test -->
     <dependency>
       <groupId>org.springframework.statemachine</groupId>
       <artifactId>spring-statemachine-test</artifactId>
-      <version>2.2.0.RELEASE</version>
+      <version>3.2.0</version>
       <scope>test</scope>
     </dependency>
 
@@ -128,7 +128,7 @@
     <dependency>
       <groupId>org.springframework.statemachine</groupId>
       <artifactId>spring-statemachine-data-jpa</artifactId>
-      <version>2.2.0.RELEASE</version>
+      <version>3.2.0</version>
     </dependency>
 
     <!-- Swagger -->
@@ -154,7 +154,7 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-mail</artifactId>
-      <version>2.2.0.RELEASE</version>
+      <version>3.0.4</version>
     </dependency>
 
     <!-- Httpclient -->
@@ -163,6 +163,20 @@
       <artifactId>httpclient</artifactId>
       <version>4.5.14</version>
     </dependency>
+
+    <!-- https://mvnrepository.com/artifact/org.springframework.plugin/spring-plugin-core -->
+    <dependency>
+      <groupId>org.springframework.plugin</groupId>
+      <artifactId>spring-plugin-core</artifactId>
+      <version>3.0.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.community-tools</groupId>
+      <artifactId>message-service</artifactId>
+      <version>2-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+
   </dependencies>
 
   <build>

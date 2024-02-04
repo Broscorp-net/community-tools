@@ -2,7 +2,6 @@ package com.community.tools.discord;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import lombok.Data;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;

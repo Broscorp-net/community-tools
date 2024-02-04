@@ -21,16 +21,17 @@ public class IoUtils {
   //TODO rework it
   /**
    * Getting properties from file.
+   *
    * @param fileName - file name
    * @return - map with properties
    * @throws IOException - exception
    */
-  public static Map<String,String> convertToUnicode(String fileName) throws IOException {
+  public static Map<String, String> convertToUnicode(String fileName) throws IOException {
     Path path = Paths.get(fileName);
     Stream<String> lines = Files.lines(path);
     List<String> dataList = lines.collect(Collectors.toList());
     lines.close();
-    HashMap<String,String> properties = new HashMap<>();
+    HashMap<String, String> properties = new HashMap<>();
 
     for (String str : dataList) {
       String[] arr = str.split(" = ");
@@ -50,11 +51,13 @@ public class IoUtils {
 
   /**
    * This method reads text in the file and finds properties that are separated by "=".
+   *
    * @param fileName file, which contains properties
+   *
    * @return HashMap  Key(String) - name of property, Value(String) - value of property
    */
   public static Map<String, String> readPropertiesFromFile(String fileName) {
-    HashMap<String,String> property = new HashMap<>();
+    HashMap<String, String> property = new HashMap<>();
     Stream<String> linesProp = new BufferedReader(
         new InputStreamReader(Objects.requireNonNull(Thread.currentThread().getContextClassLoader()
             .getResourceAsStream(fileName)))).lines();

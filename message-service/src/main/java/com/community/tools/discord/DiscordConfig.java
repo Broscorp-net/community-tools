@@ -32,6 +32,7 @@ public class DiscordConfig {
 
   /**
    * Created and configure object JDA.
+   *
    * @return object JDA
    */
   @Bean

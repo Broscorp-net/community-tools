@@ -8,7 +8,6 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
@@ -24,16 +23,21 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Data
-@RequiredArgsConstructor
 @Profile("discord")
 public class DiscordService implements MessageService<MessageEmbed> {
-
   private final Button buttonWithEmbed = Button.primary("buttonEmbed", "Button");
+  private JDA jda;
+  private DiscordMessagingService discordMessagingService;
 
   @Autowired
-  private JDA jda;
+  public void setJda(JDA jda) {
+    this.jda = jda;
+  }
+
   @Autowired
-  private DiscordMessagingService discordMessagingService;
+  public void setDiscordMessagingService(DiscordMessagingService discordMessagingService) {
+    this.discordMessagingService = discordMessagingService;
+  }
 
   /**
    * Send private message with messageText to username.
@@ -172,6 +176,7 @@ public class DiscordService implements MessageService<MessageEmbed> {
 
   /**
    * Adds a role to a user within a guild.
+   *
    * @param guildId id of a guild
    * @param userId id of a user
    * @param roleName role's name
@@ -186,6 +191,7 @@ public class DiscordService implements MessageService<MessageEmbed> {
 
   /**
    * Removes a role from a user within a guild.
+   *
    * @param guildId id of a guild
    * @param userId id of a user
    * @param roleName role's name
@@ -200,13 +206,15 @@ public class DiscordService implements MessageService<MessageEmbed> {
 
   /**
    * Calls JDA and retrieves user's name by id.
-   * @param userID id of a user
+   *
+   * @param userId id of a user
+   *
    * @return user's discord name
    */
   @Override
-  public String retrieveById(String userID) {
+  public String retrieveById(String userId) {
     try {
-      return jda.retrieveUserById(userID).submit().thenApply(User::getName).get();
+      return jda.retrieveUserById(userId).submit().thenApply(User::getName).get();
     } catch (InterruptedException | ExecutionException e) {
       throw new RuntimeException(e);
     }

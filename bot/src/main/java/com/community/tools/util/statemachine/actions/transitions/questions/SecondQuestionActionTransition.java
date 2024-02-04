@@ -46,7 +46,7 @@ public class SecondQuestionActionTransition implements Transition {
     QuestionPayload payloadFirstAnswer = (QuestionPayload) stateContext.getExtendedState()
         .getVariables().get("dataPayload");
     String id = payloadFirstAnswer.getUser();
-    User stateEntity = userRepository.findByUserID(id).get();
+    User stateEntity = userRepository.findByUserId(id).get();
     userRepository.save(stateEntity);
     messageService.sendBlocksMessage(
         messageService.getUserById(id),

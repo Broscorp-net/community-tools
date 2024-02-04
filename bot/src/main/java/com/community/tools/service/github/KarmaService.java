@@ -4,34 +4,28 @@ import com.community.tools.model.GitHubComment;
 import com.community.tools.model.User;
 import com.community.tools.repository.MentorsRepository;
 import com.community.tools.repository.UserRepository;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
-
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import org.kohsuke.github.GHIssueComment;
 import org.kohsuke.github.GHPullRequest;
 import org.kohsuke.github.GHPullRequestReviewComment;
 import org.kohsuke.github.GHReaction;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.PagedIterable;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class KarmaService {
-
-  @Autowired
-  private GitHubConnectService service;
-  @Autowired
-  private UserRepository userRepository;
-  @Autowired
-  private MentorsRepository mentorsRepository;
+  private final GitHubConnectService service;
+  private final UserRepository userRepository;
+  private final MentorsRepository mentorsRepository;
 
   /**
    * This method will increase karma, if comment is approved.
@@ -86,7 +80,7 @@ public class KarmaService {
             .filter(c -> c.getBody().toLowerCase().trim().equals("approved"))
             .collect(Collectors.toList());
     List<GitHubComment> comments = new ArrayList<>();
-    for (GHIssueComment issueComment: issueCommentList) {
+    for (GHIssueComment issueComment : issueCommentList) {
       GitHubComment comment = new GitHubComment();
       comment.setAuthorComment(issueComment.getUser().getLogin());
       comment.setCreatedAt(issueComment.getCreatedAt());
@@ -102,7 +96,7 @@ public class KarmaService {
             .filter(c -> c.getBody().toLowerCase().trim().equals("approved"))
             .collect(Collectors.toList());
     List<GitHubComment> comments = new ArrayList<>();
-    for (GHPullRequestReviewComment reviewComment: reviewCommentsList) {
+    for (GHPullRequestReviewComment reviewComment : reviewCommentsList) {
       GitHubComment comment = new GitHubComment();
       comment.setAuthorComment(reviewComment.getUser().getLogin());
       comment.setCreatedAt(reviewComment.getCreatedAt());

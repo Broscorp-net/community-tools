@@ -18,7 +18,6 @@ public class StateMachineService {
   private final UserRepository userRepository;
   private final StateMachineFactory<State, Event> factory;
   private final StateMachinePersister<State, Event, String> persister;
-  private final MessageService messageService;
 
   /**
    * Restore machine by Slack`s userId.
@@ -45,7 +44,7 @@ public class StateMachineService {
     StateMachine<State, Event> machine = factory.getStateMachine();
     machine.start();
     try {
-      persister.restore(machine, user.getUserID());
+      persister.restore(machine, user.getUserId());
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
@@ -53,7 +52,7 @@ public class StateMachineService {
   }
 
   public String getIdByNick(String nick) {
-    return userRepository.findByGitName(nick).get().getUserID();
+    return userRepository.findByGitName(nick).get().getUserId();
   }
 
   /**

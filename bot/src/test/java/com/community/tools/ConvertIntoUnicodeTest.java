@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.community.tools.util.IoUtils;
 import com.mgnt.utils.StringUnicodeEncoderDecoder;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -18,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -29,11 +27,12 @@ import org.junit.jupiter.api.TestInstance;
 public class ConvertIntoUnicodeTest {
   List<String> dataList = new ArrayList<>();
   List<String> expectedList = new ArrayList<>();
-  HashMap<String,String> property = new HashMap<>();
+  HashMap<String, String> property = new HashMap<>();
 
 
   /**
    * This metod read test Data from files.
+   *
    * @throws IOException IOException
    * @throws URISyntaxException URISyntaxException
    */
@@ -100,13 +99,13 @@ public class ConvertIntoUnicodeTest {
       }
     }
     System.out.println(sb);
-    assertEquals(expected,sb.toString());
+    assertEquals(expected, sb.toString());
   }
 
   @SneakyThrows
   @Test
   public void convertProperty() {
-    Map<String,String> prop = IoUtils.convertToUnicode("src/test/resources/prop.txt");
+    Map<String, String> prop = IoUtils.convertToUnicode("src/test/resources/prop.txt");
     assertEquals(prop.get("firstValue"), "My first value");
   }
 

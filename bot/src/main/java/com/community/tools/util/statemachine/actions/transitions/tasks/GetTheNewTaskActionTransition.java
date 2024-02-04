@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.action.Action;
 import org.springframework.statemachine.annotation.WithStateMachine;
@@ -16,18 +17,20 @@ import org.springframework.statemachine.config.builders.StateMachineTransitionCo
 
 @WithStateMachine
 public class GetTheNewTaskActionTransition implements Transition {
-
-  @Autowired
   private MessageService messageService;
-
-  @Autowired
   private MessageConstructor messageConstructor;
 
   @Value("${tasksForUsers}")
   private String[] tasksForUsers;
-
-  @Autowired
   private Action<State, Event> errorAction;
+
+  public GetTheNewTaskActionTransition(@Lazy MessageService messageService,
+                                       MessageConstructor messageConstructor,
+                                       Action<State, Event> errorAction) {
+    this.messageService = messageService;
+    this.messageConstructor = messageConstructor;
+    this.errorAction = errorAction;
+  }
 
   @Override
   public void configure(

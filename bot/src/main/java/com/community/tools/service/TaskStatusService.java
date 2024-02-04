@@ -31,8 +31,8 @@ public class TaskStatusService {
   /**
    * Service for sorting, limiting and creating DTO.
    *
-   * @param limit      - limit of users for view.
-   * @param period     - period of days fow view.
+   * @param limit - limit of users for view.
+   * @param period - period of days fow view.
    * @param comparator - sort order (DESC, ASC).
    * @return - return list of DTO.
    */
@@ -55,8 +55,8 @@ public class TaskStatusService {
                       task.getTaskStatus())));
 
           final int completedTasksCount = (int) taskNamesAndStatuses.stream()
-              .filter(it -> originalTaskNames.contains(it.getTaskName()))
-              .filter(it -> it.getTaskStatus().equals(
+              .filter(it -> originalTaskNames.contains(it.taskName()))
+              .filter(it -> it.taskStatus().equals(
                   TaskStatus.DONE.getDescription())).count();
 
           /* This is supposed to throw NoSuchElementException

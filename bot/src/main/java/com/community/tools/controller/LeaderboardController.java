@@ -21,16 +21,15 @@ public class LeaderboardController {
 
   @Value("${defaultNumberOfDaysForStatistic}")
   private Integer defaultNumberOfDays;
+
   @Value("${defaultRowLimit}")
   private Integer defaultUserLimit;
-  private final Map<String, Comparator<GithubUserDto>> comparators
-      = new HashMap<>();
-  private final LeaderboardService leaderBoardService;
 
+  private final Map<String, Comparator<GithubUserDto>> comparators = new HashMap<>();
+  private final LeaderboardService leaderBoardService;
 
   /**
    * Constructor.
-   * @param leaderBoardService - Inject leaderBoardService
    */
   public LeaderboardController(LeaderboardService leaderBoardService) {
     this.leaderBoardService = leaderBoardService;
@@ -42,8 +41,9 @@ public class LeaderboardController {
 
   /**
    * Endpoint for leaderboard service.
+   *
    * @param limit - limit of users for view.
-   * @param days - period of days fow view.
+   * @param days - period of days for view.
    * @param sort - sort order (DESC, ASC).
    * @return - return list of DTO.
    */
@@ -63,5 +63,4 @@ public class LeaderboardController {
             Period.ofDays(days.orElse(defaultNumberOfDays)),
             comparator), HttpStatus.OK);
   }
-
 }

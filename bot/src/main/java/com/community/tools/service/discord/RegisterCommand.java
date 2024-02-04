@@ -7,29 +7,43 @@ import com.community.tools.repository.UserRepository;
 import com.community.tools.service.MessageService;
 import com.community.tools.service.github.GitHubService;
 import java.io.IOException;
-
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
+@NoArgsConstructor
 public class RegisterCommand extends Command {
 
   private static final String OPTION_NAME = "username";
-  private final GitHubService gitHubService;
-  private final UserRepository userRepository;
-  private final MessageService<?> messageService;
+  private GitHubService gitHubService;
+  private UserRepository userRepository;
+  private MessageService<?> messageService;
 
   @Value("${newbieRole}")
   private String newbieRoleName;
 
+  public RegisterCommand(CommandData commandData,
+                         GitHubService gitHubService,
+                         UserRepository userRepository,
+                         @Lazy MessageService<?> messageService,
+                         OptionData... options) {
+    super(commandData, options);
+    this.gitHubService = gitHubService;
+    this.userRepository = userRepository;
+    this.messageService = messageService;
+  }
+
   /**
    * Basic constructor for the class, specifies command data and injects required beans.
+   *
    * @param gitHubService checks if provided username is correct
    * @param userRepository repository for access to user's entity
    * @param messageService messaging in discord
@@ -46,6 +60,7 @@ public class RegisterCommand extends Command {
 
   /**
    * Saves user's GitHub username to database and removes newbie role.
+   *
    * @param command received event from Discord
    */
   @Override
@@ -59,7 +74,7 @@ public class RegisterCommand extends Command {
       command.reply(Messages.GITHUB_ACCOUNT_NOT_FOUND).queue();
       return;
     }
-    User user = userRepository.findByUserID(userId)
+    User user = userRepository.findByUserId(userId)
         .orElseThrow(() -> new RuntimeException("User with id = [" + userId + "] was not found"));
     if (user.getGitName() == null) {
       messageService.removeRole(user.getGuildId(), userId, newbieRoleName);
