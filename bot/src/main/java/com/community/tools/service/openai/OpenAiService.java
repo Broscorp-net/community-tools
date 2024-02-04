@@ -23,6 +23,8 @@ public class OpenAiService {
   private String apiKey;
   @Value("${openai.model}")
   private String model;
+  @Value("${openai.temperature}")
+  private double temperature;
 
   /**
    * This is the main method in service which processes prompt.
@@ -37,7 +39,7 @@ public class OpenAiService {
       headers.setBearerAuth(apiKey);
       headers.setContentType(MediaType.APPLICATION_JSON);
 
-      OpenAiRequestDto requestDto = new OpenAiRequestDto(model, prompt);
+      OpenAiRequestDto requestDto = new OpenAiRequestDto(model, prompt, temperature);
 
       RequestEntity<OpenAiRequestDto> requestEntity =
               new RequestEntity<>(requestDto, headers, HttpMethod.POST, URI.create(url));
