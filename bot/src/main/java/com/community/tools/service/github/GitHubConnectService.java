@@ -36,12 +36,20 @@ public class GitHubConnectService {
    * @return GHRepository
    */
   public GHRepository getGitHubRepository() {
-    GHRepository repository;
+    return getGitHubRepositoryByName(nameRepository);
+  }
+
+  /**
+   * Method to get GitHub repository by its name.
+   *
+   * @param repositoryName name of the desired repository
+   * @return GHRepository
+   */
+  public GHRepository getGitHubRepositoryByName(String repositoryName) {
     try {
-      repository = getGitHubConnection().getRepository(nameRepository);
+      return getGitHubConnection().getRepository(repositoryName);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
-    return repository;
   }
 }
