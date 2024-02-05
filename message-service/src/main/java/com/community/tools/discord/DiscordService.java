@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 @Data
 @Profile("discord")
 public class DiscordService implements MessageService<MessageEmbed> {
+
   private final Button buttonWithEmbed = Button.primary("buttonEmbed", "Button");
   private JDA jda;
   private DiscordMessagingService discordMessagingService;
@@ -177,8 +178,8 @@ public class DiscordService implements MessageService<MessageEmbed> {
   /**
    * Adds a role to a user within a guild.
    *
-   * @param guildId id of a guild
-   * @param userId id of a user
+   * @param guildId  id of a guild
+   * @param userId   id of a user
    * @param roleName role's name
    */
   @Override
@@ -192,8 +193,8 @@ public class DiscordService implements MessageService<MessageEmbed> {
   /**
    * Removes a role from a user within a guild.
    *
-   * @param guildId id of a guild
-   * @param userId id of a user
+   * @param guildId  id of a guild
+   * @param userId   id of a user
    * @param roleName role's name
    */
   @Override
@@ -208,7 +209,6 @@ public class DiscordService implements MessageService<MessageEmbed> {
    * Calls JDA and retrieves user's name by id.
    *
    * @param userId id of a user
-   *
    * @return user's discord name
    */
   @Override

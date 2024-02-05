@@ -19,8 +19,8 @@ public class DiscordGitHubMappingService {
   private final UserRepository userRepository;
 
   /**
-   * Searches for users within provided GitHub usernames
-   * and returns map of GitHub-Discord usernames.
+   * Searches for users within provided GitHub usernames and returns map of GitHub-Discord
+   * usernames.
    *
    * @param githubUsernames List of GitHub usernames
    *
@@ -28,8 +28,8 @@ public class DiscordGitHubMappingService {
    */
   public Map<String, String> getDiscordGithubUsernames(List<String> githubUsernames) {
     return userRepository.findByGitNameIn(githubUsernames).stream()
-      .collect(Collectors.toMap(User::getGitName, u -> Objects.requireNonNull(
-        messageService.retrieveById(u.getUserId()))));
+        .collect(Collectors.toMap(User::getGitName, u -> Objects.requireNonNull(
+            messageService.retrieveById(u.getUserId()))));
   }
 
   /**

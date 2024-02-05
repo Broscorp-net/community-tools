@@ -31,10 +31,10 @@ public class RegisterCommand extends Command {
   private String newbieRoleName;
 
   public RegisterCommand(CommandData commandData,
-                         GitHubService gitHubService,
-                         UserRepository userRepository,
-                         @Lazy MessageService<?> messageService,
-                         OptionData... options) {
+      GitHubService gitHubService,
+      UserRepository userRepository,
+      @Lazy MessageService<?> messageService,
+      OptionData... options) {
     super(commandData, options);
     this.gitHubService = gitHubService;
     this.userRepository = userRepository;
@@ -44,15 +44,15 @@ public class RegisterCommand extends Command {
   /**
    * Basic constructor for the class, specifies command data and injects required beans.
    *
-   * @param gitHubService checks if provided username is correct
+   * @param gitHubService  checks if provided username is correct
    * @param userRepository repository for access to user's entity
    * @param messageService messaging in discord
    */
   public RegisterCommand(GitHubService gitHubService,
-                            UserRepository userRepository,
-                            MessageService<?> messageService) {
+      UserRepository userRepository,
+      MessageService<?> messageService) {
     super(new CommandData("register", "Saves your GitHub username"),
-            new OptionData(OptionType.STRING, "username", "Your GitHub username"));
+        new OptionData(OptionType.STRING, "username", "Your GitHub username"));
     this.gitHubService = gitHubService;
     this.userRepository = userRepository;
     this.messageService = messageService;
