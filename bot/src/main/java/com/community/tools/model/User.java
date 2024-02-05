@@ -1,6 +1,7 @@
 package com.community.tools.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
@@ -20,6 +21,7 @@ import lombok.Setter;
 public class User {
 
   @Id
+  @Column(name = "userid")
   private String userId;
   private String guildId;
   private String gitName;

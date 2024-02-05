@@ -13,10 +13,19 @@ import lombok.Setter;
 public class OpenAiRequestDto {
   private String model;
   private List<Message> messages;
+  private double temperature;
 
-  public OpenAiRequestDto(String model, String prompt) {
+  /**
+   * Constructor for DTO.
+   *
+   * @param model model that is intended to be used
+   * @param prompt prompt to work with
+   * @param temperature ai temperature
+   */
+  public OpenAiRequestDto(String model, String prompt, double temperature) {
     this.model = model;
     this.messages = Collections.singletonList(new Message("user", prompt));
+    this.temperature = temperature;
   }
 
   @Getter
