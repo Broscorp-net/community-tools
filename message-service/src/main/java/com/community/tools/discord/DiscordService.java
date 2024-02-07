@@ -171,11 +171,12 @@ public class DiscordService implements MessageService<MessageEmbed> {
   @Override
   public String getIdByChannelName(String channelName) {
     TextChannel channel = jda.getTextChannels().stream()
-        .filter(textChannel -> textChannel.getGuild().getId().equals(guildId) &&
-            textChannel.getName().equals(channelName))
+        .filter(textChannel -> textChannel.getGuild().getId().equals(guildId)
+            && textChannel.getName().equals(channelName))
         .findFirst()
-        .orElseThrow(() -> new IllegalArgumentException("Channel with name \"" + channelName +
-            "\" not found on guild with ID: " + guildId));
+        .orElseThrow(() -> new IllegalArgumentException("Channel with name \""
+            + channelName
+            + "\" not found on guild with ID: " + guildId));
     return channel.getId();
   }
 
