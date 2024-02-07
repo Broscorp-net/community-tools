@@ -7,8 +7,10 @@ import com.community.tools.repository.UserRepository;
 import com.community.tools.service.MessageService;
 import com.community.tools.service.github.GitHubService;
 import java.io.IOException;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
@@ -39,7 +41,7 @@ public class RegisterCommand extends Command {
                          UserRepository userRepository,
                          @Lazy MessageService<?> messageService) {
     super(new CommandData("register", "Saves your GitHub username"),
-        new OptionData(OptionType.STRING, "username", "Your GitHub username"));
+        new OptionData(OptionType.STRING, OPTION_NAME, "Your GitHub username"));
     this.gitHubService = gitHubService;
     this.userRepository = userRepository;
     this.messageService = messageService;
@@ -53,7 +55,16 @@ public class RegisterCommand extends Command {
   @Override
   public void run(SlashCommandEvent command) {
     String userId = command.getUser().getId();
-    String username = command.getOptionsByName(OPTION_NAME).get(0).getAsString();
+    User user = userRepository.findByUserId(userId)
+        .orElseThrow(() -> new RuntimeException("User with id = [" + userId + "] was not found"));
+    Optional<OptionMapping> option = Optional.ofNullable(command.getOption(OPTION_NAME));
+    String gitName = user.getGitName();
+    if (option.isEmpty()) {
+      handleNoOption(command, gitName);
+      return;
+    }
+
+    String username = option.get().getAsString();
     try {
       gitHubService.getUserByLoginInGitHub(username);
     } catch (IOException e) {
@@ -61,16 +72,24 @@ public class RegisterCommand extends Command {
       command.reply(Messages.GITHUB_ACCOUNT_NOT_FOUND).queue();
       return;
     }
-    User user = userRepository.findByUserId(userId)
-        .orElseThrow(() -> new RuntimeException("User with id = [" + userId + "] was not found"));
-    if (user.getGitName() == null) {
+
+    if (gitName == null) {
       messageService.removeRole(user.getGuildId(), userId, newbieRoleName);
       command.reply(Messages.REGISTRATION_COMPLETED).queue();
     } else {
       command.reply(Messages.USERNAME_UPDATED).queue();
     }
+
     user.setGitName(username);
     userRepository.save(user);
+  }
+
+  private static void handleNoOption(SlashCommandEvent command, String gitName) {
+    if (gitName == null) {
+      command.reply(Messages.NOT_REGISTERED).queue();
+    } else {
+      command.reply(String.format(Messages.CURRENT_USERNAME, gitName)).queue();
+    }
   }
 
 }
