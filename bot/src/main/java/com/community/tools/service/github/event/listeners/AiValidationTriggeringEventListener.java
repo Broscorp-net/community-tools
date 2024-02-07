@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class TaskHasNewChangesValidationTriggeringEventListener implements
+public class AiValidationTriggeringEventListener implements
     TaskStatusChangeEventListener {
 
   private final PullRequestValidationService pullRequestValidationService;
@@ -18,8 +18,7 @@ public class TaskHasNewChangesValidationTriggeringEventListener implements
 
   @Override
   public void handleEvent(TaskStatusChangeEventDto event) {
-    if (event.isWithNewChanges() && event.getTaskStatus()
-        .equals(TaskStatus.READY_FOR_REVIEW)) {
+    if (event.getTaskStatus().equals(TaskStatus.READY_FOR_REVIEW)) {
       pullRequestValidationService.validatePullRequest(githubOrgName + "/"
           + event.getTaskName() + "-" + event.getTraineeGitName());
     }
