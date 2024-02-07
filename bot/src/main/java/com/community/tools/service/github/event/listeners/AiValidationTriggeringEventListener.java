@@ -7,6 +7,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+/**
+ * This event listener triggers AI validation upon the task first becoming READY_FOR_REVIEW.
+ */
 @Component
 @RequiredArgsConstructor
 public class AiValidationTriggeringEventListener implements
@@ -18,7 +21,8 @@ public class AiValidationTriggeringEventListener implements
 
   @Override
   public void handleEvent(TaskStatusChangeEventDto event) {
-    if (event.getTaskStatus().equals(TaskStatus.READY_FOR_REVIEW)) {
+    if (event.getTaskStatus().equals(TaskStatus.READY_FOR_REVIEW)
+        && !event.isWithNewChanges()) {
       pullRequestValidationService.validatePullRequest(githubOrgName + "/"
           + event.getTaskName() + "-" + event.getTraineeGitName());
     }
