@@ -158,11 +158,14 @@ public class Messages {
           + "или в Discord (Dany Mruie#0342). Удачи!</pre>";
 
   public static final String WELCOME_MENTION =
-      "Greetings, %s! Use /register to complete registration";
+      "Greetings, %s! Use /register and provide your GitHub username to complete registration";
   public static final String GITHUB_ACCOUNT_NOT_FOUND =
       "GitHub username you provided is incorrect. Check it and try again.";
   public static final String REGISTRATION_COMPLETED =
       "Registration completed! Now you should see more channels available.";
-  public static final String USE_REGISTER_COMMAND = "Use /register to complete registration";
   public static final String USERNAME_UPDATED = "Username updated successfully!";
+  public static final String NOT_REGISTERED =
+      "You are not registered yet. Use /register and provide GitHub username";
+  public static final String CURRENT_USERNAME = "Your GitHub username is \"%s\". "
+      + "You can update it by calling /register and providing a username.";
 }

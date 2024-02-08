@@ -6,6 +6,7 @@ import com.community.tools.model.User;
 import com.community.tools.repository.UserRepository;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import net.dv8tion.jda.api.entities.MessageType;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
@@ -40,8 +41,9 @@ public class MessageListener implements EventListener {
   public void memberJoin(GuildMemberJoinEvent event) {
     String userId = event.getUser().getId();
     String guildId = event.getGuild().getId();
-    resetUser(userId, guildId);
-    messageService.addRoleToUser(guildId, userId, newbieRoleName);
+    if (resetUser(userId, guildId)) {
+      messageService.addRoleToUser(guildId, userId, newbieRoleName);
+    }
     messageService.sendMessageToConversation(welcomeChannelName,
         String.format(Messages.WELCOME_MENTION, event.getUser().getAsMention()));
   }
@@ -70,12 +72,21 @@ public class MessageListener implements EventListener {
         Messages.DEFAULT_MESSAGE);
   }
 
-  private void resetUser(String userId, String guildId) {
-    User stateEntity = new User();
-    stateEntity.setUserId(userId);
-    stateEntity.setGuildId(guildId);
-    stateEntity.setDateRegistration(LocalDate.now());
-    userRepository.save(stateEntity);
+  /**
+   * Resets user's entity.
+   *
+   * @param userId user's id
+   * @param guildId guild, the user has joined
+   * @return true if user is new, false if he is registered
+   */
+  private boolean resetUser(String userId, String guildId) {
+    Optional<User> userOptional = userRepository.findByUserId(userId);
+    User user = userOptional.orElseGet(User::new);
+    user.setUserId(userId);
+    user.setGuildId(guildId);
+    user.setDateRegistration(LocalDate.now());
+    userRepository.save(user);
+    return user.getGitName() == null;
   }
 
 }
