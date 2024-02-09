@@ -7,6 +7,7 @@ import com.community.tools.repository.UserRepository;
 import com.community.tools.service.MessageService;
 import com.community.tools.service.github.GitHubService;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
@@ -29,6 +30,9 @@ public class RegisterCommand extends Command {
 
   @Value("${newbieRole}")
   private String newbieRoleName;
+
+  @Value("${guild.id}")
+  private String guildId;
 
   /**
    * Basic constructor for the class, specifies command data and injects required beans.
@@ -55,12 +59,10 @@ public class RegisterCommand extends Command {
   @Override
   public void run(SlashCommandEvent command) {
     String userId = command.getUser().getId();
-    User user = userRepository.findByUserId(userId)
-        .orElseThrow(() -> new RuntimeException("User with id = [" + userId + "] was not found"));
+    User user = getUser(userId);
     Optional<OptionMapping> option = Optional.ofNullable(command.getOption(OPTION_NAME));
-    String gitName = user.getGitName();
     if (option.isEmpty()) {
-      handleNoOption(command, gitName);
+      handleNoOption(command, user.getGitName());
       return;
     }
 
@@ -73,7 +75,7 @@ public class RegisterCommand extends Command {
       return;
     }
 
-    if (gitName == null) {
+    if (user.getGitName() == null) {
       messageService.removeRole(user.getGuildId(), userId, newbieRoleName);
       command.reply(Messages.REGISTRATION_COMPLETED).queue();
     } else {
@@ -82,6 +84,20 @@ public class RegisterCommand extends Command {
 
     user.setGitName(username);
     userRepository.save(user);
+  }
+
+  private User getUser(String userId) {
+    Optional<User> userOptional = userRepository.findByUserId(userId);
+    if (userOptional.isEmpty()) {
+      messageService.addRoleToUser(guildId, userId, newbieRoleName);
+      User user = new User();
+      user.setUserId(userId);
+      user.setGuildId(guildId);
+      user.setDateRegistration(LocalDate.now());
+      return user;
+    } else {
+      return userOptional.get();
+    }
   }
 
   private static void handleNoOption(SlashCommandEvent command, String gitName) {
