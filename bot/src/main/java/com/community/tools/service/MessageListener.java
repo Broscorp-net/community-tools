@@ -46,10 +46,10 @@ public class MessageListener implements EventListener {
     if (resetUser(userId, guildId)) {
       messageService.addRoleToUser(guildId, userId, newbieRoleName);
       messageService.sendMessageToConversation(welcomeChannelName,
-        String.format(Messages.WELCOME_MENTION, event.getUser().getAsMention()));
+          String.format(Messages.WELCOME_MENTION, event.getUser().getAsMention()));
     } else {
       messageService.sendMessageToConversation(welcomeChannelName,
-        String.format(Messages.WELCOME_OLD_MENTION, event.getUser().getAsMention()));
+          String.format(Messages.WELCOME_OLD_MENTION, event.getUser().getAsMention()));
     }
   }
 
@@ -67,6 +67,7 @@ public class MessageListener implements EventListener {
    * Receives and processes messages in guilds.
    * Currently, there is no reaction from bot, as sending default message for any event
    * leads to spamming.
+   *
    * @param event received event from Discord
    */
   @Override
