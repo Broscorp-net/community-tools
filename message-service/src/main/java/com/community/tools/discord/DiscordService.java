@@ -18,6 +18,7 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.components.Button;
 import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +30,9 @@ public class DiscordService implements MessageService<MessageEmbed> {
   private final Button buttonWithEmbed = Button.primary("buttonEmbed", "Button");
   private JDA jda;
   private DiscordMessagingService discordMessagingService;
+
+  @Value("${guild.id}")
+  private String guildId;
 
   @Autowired
   public void setJda(JDA jda) {
@@ -166,13 +170,14 @@ public class DiscordService implements MessageService<MessageEmbed> {
    */
   @Override
   public String getIdByChannelName(String channelName) {
-    TextChannel channel =
-        jda.getTextChannels().stream()
-            .filter(textChannel -> textChannel.getName().equals(channelName))
-            .findFirst()
-            .get();
-    String channelId = channel.getId();
-    return channelId;
+    TextChannel channel = jda.getTextChannels().stream()
+        .filter(textChannel -> textChannel.getGuild().getId().equals(guildId)
+            && textChannel.getName().equals(channelName))
+        .findFirst()
+        .orElseThrow(() -> new IllegalArgumentException("Channel with name \""
+            + channelName
+            + "\" not found on guild with ID: " + guildId));
+    return channel.getId();
   }
 
   /**

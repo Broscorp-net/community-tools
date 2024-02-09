@@ -214,10 +214,15 @@ public class GitHubHookEventService {
     return Optional.empty();
   }
 
+  /**
+   * Determines whether we are not interested in processing this workflow run.
+   * We are only interested in processing changes GitHub Classroom automatically
+   * adds to the pull request with head branch "master" into base branch "feedback", commits by
+   * trainees should be made into master as by GitHub classroom instructions.
+   */
   private boolean checkIfEventIsIrrelevant(JSONObject workflowRun, String taskName) {
-    if (!workflowRun.getString("head_branch").equals("feedback")) {
-      return true; /* we are only interested in processing changes GitHub Classroom automatically
-      adds to the pull request with head branch "feedback" */
+    if (!workflowRun.getString("head_branch").equals("master")) {
+      return true;
     }
     return !originalTaskNames.contains(taskName);
   }
