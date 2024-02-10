@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CommitFileDto {
+public class PullrequestPatchDto {
   private String filename;
   private String code;
 }
