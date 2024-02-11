@@ -24,7 +24,7 @@ public class AiValidationTriggeringEventListener implements
     if (event.getTaskStatus().equals(TaskStatus.READY_FOR_REVIEW)
         && !event.isWithNewChanges()) {
       pullRequestValidationService.validatePullRequest(githubOrgName + "/"
-          + event.getTaskName() + "-" + event.getTraineeGitName());
+          + event.getTaskName() + "-" + event.getTraineeGitName(), event.getTraineeGitName());
     }
   }
 }
