@@ -121,7 +121,7 @@ public class PullRequestValidationService {
    *
    * @throws RuntimeException If github api doesn't find requested objects
    */
-  @Scheduled(cron = "*/21 * * * * *")
+  @Scheduled(fixedDelay = 21000)
   private void processValidation() {
     log.info("Checking ai validation queue.");
     if (!requests.isEmpty()) {
