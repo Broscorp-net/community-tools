@@ -7,7 +7,6 @@ import com.community.tools.repository.UserRepository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import net.dv8tion.jda.api.entities.MessageType;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -39,13 +38,19 @@ public class MessageListener implements EventListener {
 
   @Override
   public void memberJoin(GuildMemberJoinEvent event) {
+    if (event.getUser().isBot()) {
+      return;
+    }
     String userId = event.getUser().getId();
     String guildId = event.getGuild().getId();
     if (resetUser(userId, guildId)) {
       messageService.addRoleToUser(guildId, userId, newbieRoleName);
+      messageService.sendMessageToConversation(welcomeChannelName,
+          String.format(Messages.WELCOME_MENTION, event.getUser().getAsMention()));
+    } else {
+      messageService.sendMessageToConversation(welcomeChannelName,
+          String.format(Messages.WELCOME_OLD_MENTION, event.getUser().getAsMention()));
     }
-    messageService.sendMessageToConversation(welcomeChannelName,
-        String.format(Messages.WELCOME_MENTION, event.getUser().getAsMention()));
   }
 
   @Override
@@ -58,12 +63,16 @@ public class MessageListener implements EventListener {
         .run(event);
   }
 
+  /**
+   * Receives and processes messages in guilds.
+   * Currently, there is no reaction from bot, as sending default message for any event
+   * leads to spamming.
+   *
+   * @param event received event from Discord
+   */
   @Override
   public void guildMessageReceived(GuildMessageReceivedEvent event) {
-    if (event.getMessage().getType() != MessageType.GUILD_MEMBER_JOIN) {
-      messageService.sendMessageToConversation(event.getChannel().getName(),
-          Messages.DEFAULT_MESSAGE);
-    }
+
   }
 
   @Override

@@ -7,6 +7,7 @@ import com.community.tools.repository.UserRepository;
 import com.community.tools.service.MessageService;
 import com.community.tools.service.github.GitHubService;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
@@ -29,6 +30,9 @@ public class RegisterCommand extends Command {
 
   @Value("${newbieRole}")
   private String newbieRoleName;
+
+  @Value("${guild.id}")
+  private String guildId;
 
   /**
    * Basic constructor for the class, specifies command data and injects required beans.
@@ -55,33 +59,62 @@ public class RegisterCommand extends Command {
   @Override
   public void run(SlashCommandEvent command) {
     String userId = command.getUser().getId();
-    User user = userRepository.findByUserId(userId)
-        .orElseThrow(() -> new RuntimeException("User with id = [" + userId + "] was not found"));
+    User user = getUser(userId);
     Optional<OptionMapping> option = Optional.ofNullable(command.getOption(OPTION_NAME));
-    String gitName = user.getGitName();
+
     if (option.isEmpty()) {
-      handleNoOption(command, gitName);
+      handleNoOption(command, user.getGitName());
       return;
     }
 
     String username = option.get().getAsString();
-    try {
-      gitHubService.getUserByLoginInGitHub(username);
-    } catch (IOException e) {
-      log.error("GitHub account with username {} was not found", username, e);
+    if (!gitHubUserExists(username)) {
       command.reply(Messages.GITHUB_ACCOUNT_NOT_FOUND).queue();
       return;
     }
 
+    updateUser(user, username);
+    sendReply(command, user.getGitName());
+  }
+
+  private User getUser(String userId) {
+    return userRepository.findByUserId(userId)
+        .orElseGet(() -> createNewUser(userId));
+  }
+
+  private User createNewUser(String userId) {
+    messageService.addRoleToUser(guildId, userId, newbieRoleName);
+    User user = new User();
+    user.setUserId(userId);
+    user.setGuildId(guildId);
+    user.setDateRegistration(LocalDate.now());
+    return user;
+  }
+
+  private boolean gitHubUserExists(String username) {
+    try {
+      gitHubService.getUserByLoginInGitHub(username);
+      return true;
+    } catch (IOException e) {
+      log.error("GitHub account with username {} was not found", username, e);
+      return false;
+    }
+  }
+
+  private void updateUser(User user, String username) {
+    if (user.getGitName() == null) {
+      messageService.removeRole(user.getGuildId(), user.getUserId(), newbieRoleName);
+    }
+    user.setGitName(username);
+    userRepository.save(user);
+  }
+
+  private void sendReply(SlashCommandEvent command, String gitName) {
     if (gitName == null) {
-      messageService.removeRole(user.getGuildId(), userId, newbieRoleName);
       command.reply(Messages.REGISTRATION_COMPLETED).queue();
     } else {
       command.reply(Messages.USERNAME_UPDATED).queue();
     }
-
-    user.setGitName(username);
-    userRepository.save(user);
   }
 
   private static void handleNoOption(SlashCommandEvent command, String gitName) {
@@ -91,5 +124,6 @@ public class RegisterCommand extends Command {
       command.reply(String.format(Messages.CURRENT_USERNAME, gitName)).queue();
     }
   }
+
 
 }

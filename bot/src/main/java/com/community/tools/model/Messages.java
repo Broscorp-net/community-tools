@@ -159,6 +159,7 @@ public class Messages {
 
   public static final String WELCOME_MENTION =
       "Greetings, %s! Use /register and provide your GitHub username to complete registration";
+  public static final String WELCOME_OLD_MENTION = "Greetings, %s! Haven't seen you in a while.";
   public static final String GITHUB_ACCOUNT_NOT_FOUND =
       "GitHub username you provided is incorrect. Check it and try again.";
   public static final String REGISTRATION_COMPLETED =

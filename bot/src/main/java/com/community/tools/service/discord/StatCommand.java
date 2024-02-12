@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 
@@ -14,6 +15,9 @@ import org.springframework.stereotype.Component;
 public class StatCommand extends Command {
 
   private final StatisticService statisticService;
+
+  @Value("${adminRole}")
+  private String adminRoleName;
 
   public StatCommand(StatisticService statisticService) {
     super(new CommandData("stat", "Receive stats"));
@@ -32,7 +36,7 @@ public class StatCommand extends Command {
       return;
     }
     List<Role> userRoles = member.getRoles();
-    boolean isAdmin = userRoles.stream().anyMatch(role -> role.getName().equals("admin"));
+    boolean isAdmin = userRoles.stream().anyMatch(role -> role.getName().equals(adminRoleName));
 
     if (isAdmin) {
       command.reply("Статистика генерируется.Пожалуйста подождите...").queue();
