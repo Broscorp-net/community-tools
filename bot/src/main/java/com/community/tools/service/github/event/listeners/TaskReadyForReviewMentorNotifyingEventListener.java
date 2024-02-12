@@ -20,6 +20,8 @@ public class TaskReadyForReviewMentorNotifyingEventListener implements
   public void handleEvent(TaskStatusChangeEventDto eventDto) {
     if (!eventDto.isWithNewChanges() && eventDto.getTaskStatus()
         .equals(TaskStatus.READY_FOR_REVIEW)) {
+      log.info("Attempting to notify mentors of the task " + eventDto.getTaskName() + " by "
+          + eventDto.getTraineeGitName() + " being ready to review.");
       mentorNotificationService.notifyAllTraineeMentors(eventDto.getTraineeGitName(),
           String.format(NOTIFICATION_TEMPLATE, eventDto.getTaskName(),
               eventDto.getTraineeGitName(),

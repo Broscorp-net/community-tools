@@ -34,6 +34,8 @@ public class TaskReviewMentorAddingEventListener implements TaskStatusChangeEven
   public void handleEvent(TaskStatusChangeEventDto eventDto) {
     if (eventDto.getTaskStatus()
         .equals(TaskStatus.CHANGES_REQUESTED) && eventDto.getReviewerGitName() != null) {
+      log.info("Attempting to add mentor " + eventDto.getReviewerGitName() + " to trainee "
+          + eventDto.getTraineeGitName());
       Optional<Mentors> maybeReviewer = mentorsRepository.findByGitNick(
           eventDto.getReviewerGitName());
       maybeReviewer.ifPresent(it -> {

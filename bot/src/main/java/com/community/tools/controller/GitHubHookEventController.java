@@ -30,6 +30,7 @@ public class GitHubHookEventController {
   @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
   public void getHookData(@RequestHeader("X-GitHub-Event") String eventType,
       @RequestBody String body) {
+    log.info("Web hook received event " + eventType);
     JSONObject eventJson = new JSONObject(body);
     gitHubHookEventService.processGitHubHookEventData(eventJson, eventType)
         .ifPresent(eventDispatcher::dispatchEvent);
