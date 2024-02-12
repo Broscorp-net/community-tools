@@ -61,42 +61,59 @@ public class RegisterCommand extends Command {
     String userId = command.getUser().getId();
     User user = getUser(userId);
     Optional<OptionMapping> option = Optional.ofNullable(command.getOption(OPTION_NAME));
+
     if (option.isEmpty()) {
       handleNoOption(command, user.getGitName());
       return;
     }
 
     String username = option.get().getAsString();
-    try {
-      gitHubService.getUserByLoginInGitHub(username);
-    } catch (IOException e) {
-      log.error("GitHub account with username {} was not found", username, e);
+    if (!gitHubUserExists(username)) {
       command.reply(Messages.GITHUB_ACCOUNT_NOT_FOUND).queue();
       return;
     }
 
-    if (user.getGitName() == null) {
-      messageService.removeRole(user.getGuildId(), userId, newbieRoleName);
-      command.reply(Messages.REGISTRATION_COMPLETED).queue();
-    } else {
-      command.reply(Messages.USERNAME_UPDATED).queue();
-    }
+    updateUser(user, username);
+    sendReply(command, user.getGitName());
+  }
 
+  private User getUser(String userId) {
+    return userRepository.findByUserId(userId)
+        .orElseGet(() -> createNewUser(userId));
+  }
+
+  private User createNewUser(String userId) {
+    messageService.addRoleToUser(guildId, userId, newbieRoleName);
+    User user = new User();
+    user.setUserId(userId);
+    user.setGuildId(guildId);
+    user.setDateRegistration(LocalDate.now());
+    return user;
+  }
+
+  private boolean gitHubUserExists(String username) {
+    try {
+      gitHubService.getUserByLoginInGitHub(username);
+      return true;
+    } catch (IOException e) {
+      log.error("GitHub account with username {} was not found", username, e);
+      return false;
+    }
+  }
+
+  private void updateUser(User user, String username) {
+    if (user.getGitName() == null) {
+      messageService.removeRole(user.getGuildId(), user.getUserId(), newbieRoleName);
+    }
     user.setGitName(username);
     userRepository.save(user);
   }
 
-  private User getUser(String userId) {
-    Optional<User> userOptional = userRepository.findByUserId(userId);
-    if (userOptional.isEmpty()) {
-      messageService.addRoleToUser(guildId, userId, newbieRoleName);
-      User user = new User();
-      user.setUserId(userId);
-      user.setGuildId(guildId);
-      user.setDateRegistration(LocalDate.now());
-      return user;
+  private void sendReply(SlashCommandEvent command, String gitName) {
+    if (gitName == null) {
+      command.reply(Messages.REGISTRATION_COMPLETED).queue();
     } else {
-      return userOptional.get();
+      command.reply(Messages.USERNAME_UPDATED).queue();
     }
   }
 
@@ -107,5 +124,6 @@ public class RegisterCommand extends Command {
       command.reply(String.format(Messages.CURRENT_USERNAME, gitName)).queue();
     }
   }
+
 
 }
