@@ -216,7 +216,7 @@ public class ClassroomServiceImpl implements ClassroomService {
    *
    * @throws IOException If an I/O error occurs during the GitHub API calls.
    */
-  @Scheduled(fixedRateString = "${millisecondsIntervalForClassroomParse}")
+  //TODO review the relevance this logic in view of new task status system.
   public void handleNotifications() throws IOException {
     Date currentTime = new Date();
 
@@ -418,19 +418,19 @@ public class ClassroomServiceImpl implements ClassroomService {
 
   private int getCompletedTasks(List<GithubRepositoryDto> repositories) {
     return (int) repositories
-            .stream()
-            .flatMap(repository -> repository.labels().stream())
-            .map(String::toLowerCase)
-            .filter(label -> label.equals(completedTaskLabel))
-            .count();
+        .stream()
+        .flatMap(repository -> repository.labels().stream())
+        .map(String::toLowerCase)
+        .filter(label -> label.equals(completedTaskLabel))
+        .count();
   }
 
   private int getTotalPoints(List<GithubRepositoryDto> repositories) {
     return repositories
-            .stream()
-            .map(GithubRepositoryDto::points)
-            .filter(points -> points >= 0)
-            .reduce(0, Integer::sum);
+        .stream()
+        .map(GithubRepositoryDto::points)
+        .filter(points -> points >= 0)
+        .reduce(0, Integer::sum);
   }
 
   private GithubRepositoryDto buildGithubRepositoryDto(FetchedRepository fetchedRepository) {
