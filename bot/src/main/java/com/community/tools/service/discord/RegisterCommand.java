@@ -37,13 +37,13 @@ public class RegisterCommand extends Command {
   /**
    * Basic constructor for the class, specifies command data and injects required beans.
    *
-   * @param gitHubService checks if provided username is correct
+   * @param gitHubService  checks if provided username is correct
    * @param userRepository repository for access to user's entity
    * @param messageService messaging in discord
    */
   public RegisterCommand(GitHubService gitHubService,
-                         UserRepository userRepository,
-                         @Lazy MessageService<?> messageService) {
+      UserRepository userRepository,
+      @Lazy MessageService<?> messageService) {
     super(new CommandData("register", "Saves your GitHub username"),
         new OptionData(OptionType.STRING, OPTION_NAME, "Your GitHub username"));
     this.gitHubService = gitHubService;
@@ -58,6 +58,7 @@ public class RegisterCommand extends Command {
    */
   @Override
   public void run(SlashCommandEvent command) {
+    log.info("Processing register command.");
     String userId = command.getUser().getId();
     User user = getUser(userId);
     Optional<OptionMapping> option = Optional.ofNullable(command.getOption(OPTION_NAME));
@@ -69,6 +70,7 @@ public class RegisterCommand extends Command {
 
     String username = option.get().getAsString();
     if (!gitHubUserExists(username)) {
+      log.info("No GitHub account under username " + username + " was found.");
       command.reply(Messages.GITHUB_ACCOUNT_NOT_FOUND).queue();
       return;
     }

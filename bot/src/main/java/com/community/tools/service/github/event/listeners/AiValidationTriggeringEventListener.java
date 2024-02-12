@@ -4,6 +4,7 @@ import com.community.tools.dto.events.tasks.TaskStatusChangeEventDto;
 import com.community.tools.model.TaskStatus;
 import com.community.tools.service.github.PullRequestValidationService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class AiValidationTriggeringEventListener implements
     TaskStatusChangeEventListener {
 
@@ -23,6 +25,8 @@ public class AiValidationTriggeringEventListener implements
   public void handleEvent(TaskStatusChangeEventDto event) {
     if (event.getTaskStatus().equals(TaskStatus.READY_FOR_REVIEW)
         && !event.isWithNewChanges()) {
+      log.info("Triggering ai validation for task " + event.getTaskName() + " by "
+          + event.getTraineeGitName());
       pullRequestValidationService.validatePullRequest(githubOrgName + "/"
           + event.getTaskName() + "-" + event.getTraineeGitName(), event.getTraineeGitName());
     }

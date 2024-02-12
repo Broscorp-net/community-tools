@@ -19,6 +19,8 @@ public class TaskIsDoneMentorNotifyingEventListener implements TaskStatusChangeE
   public void handleEvent(TaskStatusChangeEventDto eventDto) {
     if (eventDto.getTaskStatus()
         .equals(TaskStatus.DONE)) {
+      log.info("Attempting to notify mentors of the task " + eventDto.getTaskName() + " by "
+          + eventDto.getTraineeGitName() + " being DONE.");
       mentorNotificationService.notifyAllTraineeMentors(eventDto.getTraineeGitName(),
           String.format(NOTIFICATION_TEMPLATE, eventDto.getTaskName(),
               eventDto.getTraineeGitName(),

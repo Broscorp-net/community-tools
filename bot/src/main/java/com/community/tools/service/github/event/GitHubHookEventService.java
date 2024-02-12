@@ -61,6 +61,7 @@ public class GitHubHookEventService {
    * docs about the event</a>
    */
   private Optional<TaskStatusChangeEventDto> handlePullRequestReview(JSONObject eventJson) {
+    log.info("Handling pull request review");
     boolean wereChangesRequested = false;
     boolean isTaskDoneNow = false;
     final JSONObject review = eventJson.getJSONObject("review");
@@ -111,6 +112,7 @@ public class GitHubHookEventService {
    * about the event</a>
    */
   private Optional<TaskStatusChangeEventDto> handleWorkflowRun(JSONObject eventJson) {
+    log.info("Handling workflow run");
     boolean hasNewChanges = false;
     boolean isSubmittedFirstTime = false;
     final JSONObject repo = eventJson.getJSONObject("repository");
@@ -135,6 +137,7 @@ public class GitHubHookEventService {
         record.setTaskStatus(TaskStatus.FAILURE.getDescription());
       } else if (conclusion.equals("success") && !record.getTaskStatus()
           .equals(TaskStatus.DONE.getDescription())) {
+        record.setTaskStatus(TaskStatus.READY_FOR_REVIEW.getDescription());
         hasNewChanges = containsNewChanges(workflowRun, headCommitId);
       }
     } else {
@@ -215,10 +218,10 @@ public class GitHubHookEventService {
   }
 
   /**
-   * Determines whether we are not interested in processing this workflow run.
-   * We are only interested in processing changes GitHub Classroom automatically
-   * adds to the pull request with head branch "master" into base branch "feedback", commits by
-   * trainees should be made into master as by GitHub classroom instructions.
+   * Determines whether we are not interested in processing this workflow run. We are only
+   * interested in processing changes GitHub Classroom automatically adds to the pull request with
+   * head branch "master" into base branch "feedback", commits by trainees should be made into
+   * master as by GitHub classroom instructions.
    */
   private boolean checkIfEventIsIrrelevant(JSONObject workflowRun, String taskName) {
     if (!workflowRun.getString("head_branch").equals("master")) {
