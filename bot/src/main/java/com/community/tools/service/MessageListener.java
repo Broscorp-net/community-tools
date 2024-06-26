@@ -46,21 +46,21 @@ public class MessageListener implements EventListener {
     if (resetUser(userId, guildId)) {
       messageService.addRoleToUser(guildId, userId, newbieRoleName);
       messageService.sendMessageToConversation(welcomeChannelName,
-          String.format(Messages.WELCOME_MENTION, event.getUser().getAsMention()));
+              String.format(Messages.WELCOME_MENTION, event.getUser().getAsMention()));
     } else {
       messageService.sendMessageToConversation(welcomeChannelName,
-          String.format(Messages.WELCOME_OLD_MENTION, event.getUser().getAsMention()));
+              String.format(Messages.WELCOME_OLD_MENTION, event.getUser().getAsMention()));
     }
   }
 
   @Override
   public void commandReceived(SlashCommandEvent event) {
     commands.stream()
-        .filter(c -> c.getCommandData().getName().equals(event.getName()))
-        .findAny()
-        .orElseThrow(() -> new RuntimeException("No matching command found for event = ["
-            + event.getName() + "]"))
-        .run(event);
+            .filter(c -> c.getCommandData().getName().equals(event.getName()))
+            .findAny()
+            .orElseThrow(() -> new RuntimeException("No matching command found for event = ["
+                    + event.getName() + "]"))
+            .run(event);
   }
 
   /**
@@ -78,7 +78,7 @@ public class MessageListener implements EventListener {
   @Override
   public void privateMessageReceived(PrivateMessageReceivedEvent event) {
     messageService.sendPrivateMessage(event.getAuthor().getName(),
-        Messages.DEFAULT_MESSAGE);
+            Messages.DEFAULT_MESSAGE);
   }
 
   /**
