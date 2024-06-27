@@ -81,7 +81,7 @@ public class AiValidationCommand extends Command {
     try {
       executorService.submit(() -> validatePullRequest(link));
     } catch (RejectedExecutionException e) {
-      log.error("Task submission rejected. Executor service might be shutting down.", e);
+      log.error("Task {} submission rejected. Executor service might be shutting down.", link, e);
     }
   }
 
