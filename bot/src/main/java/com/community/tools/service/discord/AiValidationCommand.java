@@ -51,7 +51,7 @@ public class AiValidationCommand extends Command {
 
   @Override
   public void run(SlashCommandEvent command) {
-    log.info("Processing ai validation command.");
+    log.info("Processing ai validation on pull request {}", command.getOption(OPTION_NAME));
     MessageChannel channel = command.getChannel();
 
     if (channel.getId().equals(channelId)) {
@@ -68,13 +68,13 @@ public class AiValidationCommand extends Command {
       }
     } else {
       command.reply(Messages.WRONG_VALIDATION_CHANNEL).queue();
-      log.info("Validation command used in the wrong channel");
+      log.warn("Validation command used in the wrong channel, expected ai-review, actual {}", channel.getName());
     }
   }
 
   @Scheduled(fixedDelay = 60000)
   private void checkPulls() {
-    log.info("Checking pull requests.");
+    log.info("Checking pull requests queue.");
     if (!pulls.isEmpty()) {
       String pull = pulls.poll();
       log.info("Validating pull request: {}", pull);
@@ -101,8 +101,8 @@ public class AiValidationCommand extends Command {
          BufferedReader stdError = new BufferedReader(
                  new InputStreamReader(process.getErrorStream()))) {
 
-      stdInput.lines().forEach(System.out::println);
-      stdError.lines().forEach(System.out::println);
+      stdInput.lines().forEach(log::info);
+      stdError.lines().forEach(log::error);
     } catch (IOException e) {
       throw new RuntimeException("Error while opening process streams", e);
     }

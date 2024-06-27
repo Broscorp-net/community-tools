@@ -19,7 +19,7 @@ def get_prompt_based_on_task(pr_url):
                                                - Use try with resources when working with files
                                                - There shouldn't be files in pull request like outputGlider.txt etc
                                                - Focus on algorithm efficiency
-                                               - Shouldn't be overkill like threads"""
+                                               - Shouldn't be the use of unnecessary techniques that add complexity without significant benefits like threads"""
 
     gc_impl_prompt = common_prompt + """ - It shouldn't be any other classes except GarbageCollectorImplementation.java` in pull request"""
 
