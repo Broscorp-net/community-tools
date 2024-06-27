@@ -68,7 +68,8 @@ public class AiValidationCommand extends Command {
       }
     } else {
       command.reply(Messages.WRONG_VALIDATION_CHANNEL).queue();
-      log.warn("Validation command used in the wrong channel, expected ai-review, actual {}", channel.getName());
+      log.warn("Validation command used in the wrong channel, expected ai-review, actual {}",
+              channel.getName());
     }
   }
 
