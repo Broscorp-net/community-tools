@@ -51,7 +51,8 @@ public class AiValidationCommand extends Command {
 
   @Override
   public void run(SlashCommandEvent command) {
-    log.info("Processing ai validation command on pull request {}.", command.getOption(OPTION_NAME));
+    log.info("Processing ai validation command on pull request {}.",
+            command.getOption(OPTION_NAME));
     MessageChannel channel = command.getChannel();
 
     if (channel.getId().equals(channelId)) {
@@ -68,7 +69,8 @@ public class AiValidationCommand extends Command {
       }
     } else {
       command.reply(Messages.WRONG_VALIDATION_CHANNEL).queue();
-      log.warn("Validation command used in the wrong channel, expected ai-validation, actual {}", channel.getName());
+      log.warn("Validation command used in the wrong channel, expected ai-validation, actual {}",
+              channel.getName());
     }
   }
 
