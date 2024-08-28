@@ -1,12 +1,16 @@
 package com.community.tools.service;
 
 import com.community.tools.discord.Command;
+import com.community.tools.discord.DiscordService;
 import com.community.tools.model.Messages;
 import com.community.tools.model.User;
 import com.community.tools.repository.UserRepository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+
+import com.community.tools.service.github.PullRequestValidator;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -15,42 +19,27 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 public class MessageListener implements EventListener {
-
   private UserRepository userRepository;
-  private MessageService<?> messageService;
+  private DiscordService messageService;
   private List<Command> commands;
-
-  @Value("${welcomeChannel}")
-  private String welcomeChannelName;
-
-  @Value("${newbieRole}")
-  private String newbieRoleName;
+  private PullRequestValidator prValidator;
 
   public MessageListener(UserRepository userRepository,
-                         @Lazy MessageService<?> messageService,
-                         List<Command> commands) {
-    this.userRepository = userRepository;
-    this.messageService = messageService;
-    this.commands = commands;
+                         @Lazy DiscordService messageService,
+                         List<Command> commands,
+                         PullRequestValidator prValidator) {
+      this.userRepository = userRepository;
+      this.messageService = messageService;
+      this.commands = commands;
+      this.prValidator = prValidator;
   }
 
   @Override
   public void memberJoin(GuildMemberJoinEvent event) {
-    if (event.getUser().isBot()) {
-      return;
-    }
-    String userId = event.getUser().getId();
-    String guildId = event.getGuild().getId();
-    if (resetUser(userId, guildId)) {
-      messageService.addRoleToUser(guildId, userId, newbieRoleName);
-      messageService.sendMessageToConversation(welcomeChannelName,
-              String.format(Messages.WELCOME_MENTION, event.getUser().getAsMention()));
-    } else {
-      messageService.sendMessageToConversation(welcomeChannelName,
-              String.format(Messages.WELCOME_OLD_MENTION, event.getUser().getAsMention()));
-    }
+    log.info("User joined guild: {}", event.getMember().getUser().getName());
   }
 
   @Override
@@ -72,7 +61,8 @@ public class MessageListener implements EventListener {
    */
   @Override
   public void guildMessageReceived(GuildMessageReceivedEvent event) {
-
+      log.info("Received message from guild: " + event.getMessage().getContentRaw());
+      prValidator.validatePR(event);
   }
 
   @Override
