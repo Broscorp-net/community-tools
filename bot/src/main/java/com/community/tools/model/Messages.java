@@ -87,6 +87,9 @@ public class Messages {
   public static final String RATING_MESSAGE = ":point_right: Рейтинг этой недели :point_left:";
   public static final String TASKS_STATUS_MESSAGE =
       ":point_right: Прогресс выполнения заданий :point_left:";
+  public static final String WRONG_VALIDATION_CHANNEL = "That`s a wrong channel for this command.";
+  public static final String NO_PULL_ON_VALIDATION = "No pull request link provided.";
+  public static final String VALIDATION = "Validating your pr...";
 
   // Information channels message
   public static final String MESSAGE_ABOUT_SEVERAL_INFO_CHANNEL_1 =

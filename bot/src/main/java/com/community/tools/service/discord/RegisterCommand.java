@@ -76,7 +76,7 @@ public class RegisterCommand extends Command {
     }
 
     updateUser(user, username);
-    sendReply(command, user.getGitName());
+    command.reply(Messages.REGISTRATION_COMPLETED).queue();
   }
 
   private User getUser(String userId) {
