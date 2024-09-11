@@ -8,7 +8,7 @@
   <modules>
     <module>bot</module>
     <module>message-service</module>
-    <module>front</module>
+<!--    <module>front</module>-->
   </modules>
 
   <parent>
