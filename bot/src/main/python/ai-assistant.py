@@ -2,7 +2,7 @@ import sys
 
 from pr_agent import cli
 from pr_agent.config_loader import get_settings
-
+from pr_agent.algo import MAX_TOKENS
 
 def get_prompt_based_on_task(pr_url):
     common_prompt = """The code suggestions should focus only on the following:
@@ -38,8 +38,8 @@ def main(pr_url):
     api_type = "azure"
     api_version = '2024-02-01'
     api_base = str(sys.argv[4])
-    deployment_id = "gpt-4o"
-    model = "gpt-4o"
+    deployment_id = "gpt-4o-mini"
+    model = "gpt-4o-mini"
     command = "/improve"
     num_code_suggestions = 10
 
